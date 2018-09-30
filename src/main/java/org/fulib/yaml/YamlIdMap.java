@@ -1328,7 +1328,7 @@ public class YamlIdMap
             Object id = getId.invoke(obj);
             if (id != null)
             {
-               key = id.toString().replaceAll("\\s+", "_");
+               key = id.toString().replaceAll("\\W+", "_");
             }
          }
          catch (Exception e2)
