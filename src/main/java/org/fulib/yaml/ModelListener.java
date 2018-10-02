@@ -68,6 +68,8 @@ public class ModelListener implements PropertyChangeListener
       // run through elements and fire property changes and subscribe to neighbors
       Reflector reflector = creatorMap.getReflector(newObject);
 
+      if (reflector == null) return; // don't know structure of newObject, probably a String
+
       for (String prop : reflector.getProperties())
       {
          Object newValue = reflector.getValue(newObject, prop);
