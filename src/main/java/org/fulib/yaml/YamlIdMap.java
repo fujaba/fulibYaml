@@ -1293,7 +1293,7 @@ public class YamlIdMap
       }
    }
 
-   private String getOrCreateKey(Object obj)
+   public String getOrCreateKey(Object obj)
    {
       String key = idObjMap.get(obj);
 
