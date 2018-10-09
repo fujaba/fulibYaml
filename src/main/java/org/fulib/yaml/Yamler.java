@@ -193,7 +193,7 @@ public class Yamler
       return currentToken;
    }
 
-   String encapsulate(String value)
+   public static String encapsulate(String value)
    {
       if (value.matches("[a-zA-Z0-9_\\.]+"))
       {
