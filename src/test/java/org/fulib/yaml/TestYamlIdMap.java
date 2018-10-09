@@ -24,6 +24,36 @@ public class TestYamlIdMap
       assertThat(map.get("joining"), equalTo("abu"));
    }
 
+   @Test
+   public void testYammlerObjectList()
+   {
+      String yaml = "" +
+            "- time: 2018.10.09T12:14:55.007\n" +
+            "  source: g1\n" +
+            "  sourceType: GroupEvent\n" +
+            "  property: name\n" +
+            "  newValue: BBQ\n" +
+            "- time: 2018.10.09T12:14:55.008\n" +
+            "  source: m2\n" +
+            "  sourceType: Member\n" +
+            "  property: name\n" +
+            "  newValue: \"Abu Aba\"\n" +
+            "- time: 2018.10.09T12:14:55.009\n" +
+            "  source: g1\n" +
+            "  sourceType: GroupEvent\n" +
+            "  property: members\n" +
+            "  newValue: m2\n" +
+            "  newValueType: Member\n"
+            ;
+
+      Yamler yamler = new Yamler();
+
+      ArrayList<LinkedHashMap<String, String>> list = yamler.decodeList(yaml);
+      assertThat(list.size(), equalTo(3));
+      LinkedHashMap<String, String> map = list.get(1);
+      assertThat(map.get("newValue"), equalTo("Abu Aba"));
+   }
+
 
    @Test
    public void testYamlIdMap()

@@ -1,5 +1,6 @@
 package org.fulib.yaml;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
@@ -99,6 +100,34 @@ public class Yamler
 
       return result;
 
+   }
+
+   public ArrayList<LinkedHashMap<String, String>> decodeList(String yaml)
+   {
+      this.yaml = yaml;
+      tokenizer = new StringTokenizer(yaml);
+      lookAheadToken = "";
+      nextToken();
+      nextToken();
+
+      ArrayList<LinkedHashMap<String, String>> result = new ArrayList<>();
+
+      while (currentToken.equals("-"))
+      {
+         LinkedHashMap<String,String> map = new LinkedHashMap<>();
+         result.add(map);
+         nextToken();
+         while (currentToken.endsWith(":"))
+         {
+            String key = stripColon(currentToken);
+            nextToken();
+            String value = currentToken;
+            nextToken();
+            map.put(key, value);
+         }
+      }
+
+      return result;
    }
 
    public String nextToken()
@@ -217,4 +246,6 @@ public class Yamler
    {
       return lookAheadPos;
    }
+
+
 }
