@@ -623,7 +623,7 @@ public class YamlIdMap
       // skip column names
       String className = yamler.getCurrentToken();
 
-      Reflector creator = getReflector(className);
+      Reflector creator = reflectorMap.getReflector(className);
       yamler.nextToken();
 
       ArrayList<String> colNameList = new ArrayList<String>();
@@ -768,7 +768,7 @@ public class YamlIdMap
       }
       else
       {
-         Reflector reflector = getReflector(className);
+         Reflector reflector = reflectorMap.getReflector(className);
 
          Object obj = objIdMap.get(objectId);
 
@@ -964,7 +964,7 @@ public class YamlIdMap
          }
          else
          {
-            Reflector reflector = getReflector(className);
+            Reflector reflector = reflectorMap.getReflector(className);
             obj = reflector.newInstance();
          }
 
@@ -982,7 +982,7 @@ public class YamlIdMap
       // skip column names
       String className = yamler.getCurrentToken();
 
-      Reflector reflector = getReflector(className);
+      Reflector reflector = reflectorMap.getReflector(className);
 
       while ( ! "".equals(yamler.getCurrentToken()) && yamler.getLookAheadToken().endsWith(":"))
       {
@@ -1050,7 +1050,7 @@ public class YamlIdMap
          buf.append("- ").append(key).append(": \t").append(className).append("\n");
 
          // attrs
-         Reflector creator = getReflector(className);
+         Reflector creator = getReflector(obj);
 
          for (String prop : creator.getProperties())
          {
