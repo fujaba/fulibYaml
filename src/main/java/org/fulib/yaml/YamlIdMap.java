@@ -1309,54 +1309,65 @@ public class YamlIdMap
    {
       String className = obj.getClass().getSimpleName();
 
-      String key = className.substring(0, 1).toLowerCase();
+      String key = null;
 
-      Class<?> clazz = obj.getClass();
-      try
+      if (obj instanceof LinkedHashMap)
       {
-         Method getId = clazz.getMethod("getId");
-         Object id = getId.invoke(obj);
-         if (id != null)
-         {
-            key = id.toString().replaceAll("\\W+", "_");
-         }
+         LinkedHashMap objMap = (LinkedHashMap) obj;
+         Object mapId = objMap.get(".id");
+         key = (String) mapId;
       }
-      catch (Exception e)
+
+      if (key == null)
       {
+         key = className.substring(0, 1).toLowerCase();
+         Class<?> clazz = obj.getClass();
          try
          {
-            Method getId = clazz.getMethod("getName");
+            Method getId = clazz.getMethod("getId");
             Object id = getId.invoke(obj);
             if (id != null)
             {
                key = id.toString().replaceAll("\\W+", "_");
             }
          }
-         catch (Exception e2)
+         catch (Exception e)
          {
-            // go with old key
+            try
+            {
+               Method getId = clazz.getMethod("getName");
+               Object id = getId.invoke(obj);
+               if (id != null)
+               {
+                  key = id.toString().replaceAll("\\W+", "_");
+               }
+            }
+            catch (Exception e2)
+            {
+               // go with old key
+            }
          }
+
+         if (key.length() == 1)
+         {
+            key = key.substring(0, 1).toLowerCase();
+         }
+         else
+         {
+            key = key.substring(0, 1).toLowerCase() + key.substring(1);
+         }
+
+         maxUsedIdNum++;
+
+         key += maxUsedIdNum;
+
+         if (maxUsedIdNum > 1 && userId != null)
+         {
+            // all but the first get a userId prefix
+            key = userId + "." + key;
+         }
+
       }
-
-      if (key.length() == 1)
-      {
-         key = key.substring(0, 1).toLowerCase();
-      }
-      else
-      {
-         key = key.substring(0, 1).toLowerCase() + key.substring(1);
-      }
-
-      maxUsedIdNum++;
-
-      key += maxUsedIdNum;
-
-      if (maxUsedIdNum > 1 && userId != null)
-      {
-         // all but the first get a userId prefix
-         key = userId + "." + key;
-      }
-
       objIdMap.put(key, obj);
       idObjMap.put(obj, key);
 
