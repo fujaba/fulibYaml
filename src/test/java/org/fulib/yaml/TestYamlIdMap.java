@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 public class TestYamlIdMap
 {
@@ -74,10 +75,17 @@ public class TestYamlIdMap
 
       YamlIdMap idMap = new YamlIdMap("");
 
-      LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) idMap.decode(yaml);
+      YamlObject yamlObj = (YamlObject) idMap.decode(yaml);
+      LinkedHashMap<String, Object> map = yamlObj.getMap();
 
       assertThat(map.get("clazz"), equalTo("Uni"));
       ArrayList<Object> rooms = (ArrayList<Object>) map.get("rooms");
       assertThat(rooms.size(), equalTo(2));
+
+      YamlIdMap dumpMap = new YamlIdMap();
+      LinkedHashSet<Object> list = dumpMap.collectObjects(yamlObj);
+
+      assertThat(list.size(), equalTo(3));
+
    }
 }

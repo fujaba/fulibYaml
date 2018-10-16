@@ -27,6 +27,11 @@ public class ReflectorMap
 
    public Reflector getReflector(Object newObject)
    {
+      if (newObject instanceof YamlObject)
+      {
+         return new YamlObjectReflector(newObject);
+      }
+
       String simpleName = newObject.getClass().getSimpleName();
 
       return getReflector(simpleName);

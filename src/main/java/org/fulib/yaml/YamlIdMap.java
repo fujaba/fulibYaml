@@ -702,7 +702,8 @@ public class YamlIdMap
 
       if (className.equals(".Map"))
       {
-         LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) objIdMap.get(objectId);
+         YamlObject yamlObj = (YamlObject) objIdMap.get(objectId);
+         LinkedHashMap<String, Object> map = yamlObj.getMap();
 
          while (!yamler.getCurrentToken().equals("") && !yamler.getCurrentToken().equals("-"))
          {
@@ -958,8 +959,8 @@ public class YamlIdMap
       {
          if (className.equals(".Map"))
          {
-            obj = new LinkedHashMap<String, Object>();
-            ((LinkedHashMap) obj).put(".id", objectId);
+            obj = new YamlObject();
+            ((YamlObject) obj).getMap().put(".id", objectId);
          }
          else
          {
@@ -1019,9 +1020,9 @@ public class YamlIdMap
 
    ReflectorMap reflectorMap;
 
-   public Reflector getReflector(String clazzName)
+   public Reflector getReflector(Object obj)
    {
-      return reflectorMap.getReflector(clazzName);
+      return reflectorMap.getReflector(obj);
    }
 
 
@@ -1155,10 +1156,8 @@ public class YamlIdMap
             // add to map
             key = addToObjIdMap(obj);
 
-            String className = obj.getClass().getSimpleName();
-
             // find neighbors
-            Reflector reflector = getReflector(className);
+            Reflector reflector = getReflector(obj);
 
             for (String prop : reflector.getProperties())
             {
@@ -1175,10 +1174,14 @@ public class YamlIdMap
                {
                   for (Object valueObj : (Collection) value)
                   {
+                     valueClass = valueObj.getClass();
+
+                     if (valueClass.getName().startsWith("java.lang")) break;
+
                      simpleList.add(valueObj);
                   }
                }
-               else if (  valueClass.getName().startsWith("java.lang.") || valueClass == String.class)
+               else if (  valueClass.getName().startsWith("java.lang."))
                {
                   continue;
                }
@@ -1311,10 +1314,10 @@ public class YamlIdMap
 
       String key = null;
 
-      if (obj instanceof LinkedHashMap)
+      if (obj instanceof YamlObject)
       {
-         LinkedHashMap objMap = (LinkedHashMap) obj;
-         Object mapId = objMap.get(".id");
+         YamlObject yamlObj = (YamlObject) obj;
+         Object mapId = yamlObj.getMap().get(".id");
          key = (String) mapId;
       }
 
