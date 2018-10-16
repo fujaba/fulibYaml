@@ -959,6 +959,7 @@ public class YamlIdMap
          if (className.equals(".Map"))
          {
             obj = new LinkedHashMap<String, Object>();
+            ((LinkedHashMap) obj).put(".id", objectId);
          }
          else
          {
