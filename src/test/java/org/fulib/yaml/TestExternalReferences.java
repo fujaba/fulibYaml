@@ -39,7 +39,7 @@ public class TestExternalReferences {
         try {
             yim.encode(student);
         } catch(NullPointerException e) {
-            fail("NullPointerException trown!");
+            fail("NullPointerException thrown!");
         }
     }
 }
