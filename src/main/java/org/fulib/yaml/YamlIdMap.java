@@ -556,7 +556,15 @@ public class YamlIdMap
    public Object decode(String yaml, Object root)
    {
       getOrCreateKey(root);
-      decode(yaml);
+      Object decodedRoot = decode(yaml);
+
+      if (decodedRoot != root)
+      {
+         throw new RuntimeException("Object passed as root does not match the first object in the yaml string.\n" +
+               "Ensure that the type of the passed root and the first object in the yaml string match. \n" +
+               "Ensure that the key of the passed root and the key of the first object in tha yaml string match. \n" +
+               "You get the key of the passed root object via 'String key = getOrCreateKey(root);'\n");
+      }
 
       return root;
    }
