@@ -67,8 +67,6 @@ public class ReflectorMap
 
       if (reflector != null) return reflector; //====================
 
-
-
       for (String packageName : packageNames)
       {
          String fullClassName = packageName + "." + clazzName;
@@ -108,6 +106,21 @@ public class ReflectorMap
                reflector = null;
             }
          }
+      }
+
+      if (reflector == null)
+      {
+         String packagesString = "";
+         for (String name : packageNames)
+         {
+            packagesString += "   " + name + "\n";
+         }
+
+
+         throw new RuntimeException("ReflectorMap could not find class description for " + clazzName + "\n" +
+               "searching in \n" + packagesString +
+               "You might add more packages to the construction of the ReflectorMap / YamlIdMap \n" +
+               "or you might move the missing class into the common model package.");
       }
 
       return reflector;
