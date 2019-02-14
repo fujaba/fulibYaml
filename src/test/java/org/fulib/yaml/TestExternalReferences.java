@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,10 +41,13 @@ class TestExternalReferences {
 
         RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> yim.encode(student));
 
-        assertThat(runtimeException.getMessage(), is(equalTo(
-                "ReflectorMap could not find class description for University\n" +
-                        "searching in \n" + student.getClass().getPackage().getName() +
-                        "You might add more packages to the construction of the ReflectorMap / YamlIdMap \n" +
-                        "or you might move the missing class into the common model package.")));
+        assertThat(runtimeException.getMessage().indexOf("ReflectorMap could not find") >= 0, equalTo(true));
+
+        YamlIdMap idMap = new YamlIdMap(student.getClass().getPackage().getName(),
+              University.class.getPackage().getName());
+
+        String yaml = idMap.encode(student);
+
+        assertThat(yaml, notNullValue());
     }
 }

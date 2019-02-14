@@ -84,7 +84,7 @@ public class ReflectorMap
          }
          catch (Exception e)
          {
-            if (eObject == null) return null; //=======================
+            if (eObject == null) continue; //=======================
 
             try
             {
