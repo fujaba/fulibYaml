@@ -26,5 +26,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.hamcrest:hamcrest-library:2.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
 }

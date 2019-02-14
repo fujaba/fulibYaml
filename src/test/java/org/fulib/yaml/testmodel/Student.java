@@ -1,17 +1,17 @@
 package org.fulib.yaml.testmodel;
 
-import javafx.scene.paint.Color;
+import org.fulib.yaml.testmodel.subpackage.University;
 
 public class Student {
 
-    private Color color;
+    private University university;
 
-    public Student setColor(Color color) {
-        this.color = color;
-        return this;
+    public University getUniversity() {
+        return university;
     }
 
-    public Color getColor() {
-        return color;
+    public Student setUniversity(University university) {
+        this.university = university;
+        return this;
     }
 }
