@@ -195,6 +195,21 @@ public class Reflector
       {
          // e.printStackTrace();
       }
+
+      // maybe a huge number
+      try {
+         long longValue = Long.parseLong((String) value);
+         Class<?> clazz = Class.forName(className);
+
+         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), long.class);
+
+         method.invoke(object, longValue);
+
+         return true;
+      } catch (Exception e) {
+         // e.printStackTrace(); // I don't like this :(
+      }
+
       // maybe a double
       try
       {
