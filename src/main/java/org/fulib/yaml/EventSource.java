@@ -34,11 +34,15 @@ public class EventSource
       return pull(since, e -> filterRelevantEventTypes(e, Arrays.asList(relevantEventTypes)));
    }
 
+
+
    private Boolean filterRelevantEventTypes(Map.Entry<Long, LinkedHashMap<String, String>> e, List<String> relevantEventTypes)
    {
       LinkedHashMap<String, String> map = e.getValue();
       return relevantEventTypes.contains(map.get(EVENT_TYPE));
    }
+
+
 
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since, Function<Map.Entry<Long, LinkedHashMap<String, String>>,Boolean> filterOp)
    {
@@ -56,6 +60,21 @@ public class EventSource
 
       return resultMap;
    }
+
+
+
+   public LinkedHashMap<String, String> getEvent(String eventKey)
+   {
+      Long aLong = keyNumMap.get(eventKey);
+
+      if (aLong == null) return null; //======================
+
+      LinkedHashMap<String, String> map = numEventMap.get(aLong);
+
+      return map;
+   }
+
+
 
    public boolean isOverwritten(LinkedHashMap<String, String> map)
    {
