@@ -1,12 +1,18 @@
 package org.fulib.yaml;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Reflector
 {
    private String className = "";
+   private Method emfCreateMethod;
+   private Object emfFactory;
+   private Class<?> eObjectClass;
 
    public String getClassName()
    {
@@ -88,6 +94,12 @@ public class Reflector
    {
       try
       {
+         if (emfCreateMethod != null)
+         {
+            Object emfObject = emfCreateMethod.invoke(emfFactory);
+            return emfObject;
+         }
+
          Class<?> clazz = Class.forName(className);
          return clazz.newInstance();
       }
@@ -149,7 +161,14 @@ public class Reflector
       {
          Class<?> clazz = Class.forName(className);
 
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), value.getClass());
+         Class<?> valueClass = value.getClass();
+
+         if (eObjectClass != null && eObjectClass.isAssignableFrom(valueClass))
+         {
+            valueClass = valueClass.getInterfaces()[0];
+         }
+
+         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), valueClass);
 
          Object result = method.invoke(object, value);
 
@@ -210,6 +229,7 @@ public class Reflector
          // e.printStackTrace();
       }
 
+      // to-many?
       try
       {
          Class<?> clazz = Class.forName(className);
@@ -224,7 +244,63 @@ public class Reflector
       {
          // e.printStackTrace();
       }
+
+      try
+      {
+         if (emfCreateMethod != null)
+         {
+            Class<?> clazz = Class.forName(className);
+
+            // its o.getAssoc().add(v)
+            Method getMethod = clazz.getMethod("get" + StrUtil.cap(attribute));
+
+            Object collection = getMethod.invoke(object);
+
+            Method addMethod = collection.getClass().getMethod("add", Object.class);
+
+            addMethod.invoke(collection, value);
+            return true;
+         }
+      }
+      catch (Exception e)
+      {
+         // e.printStackTrace();
+      }
+
       return null;
    }
 
+   public Reflector setUseEMF()
+   {
+      String packageName = className;
+      // chop simpleClassName
+      int pos = packageName.lastIndexOf('.');
+      String simpleClassName = packageName.substring(pos+1);
+      simpleClassName = simpleClassName.substring(0, simpleClassName.length()-"Impl".length());
+      packageName = packageName.substring(0, pos);
+
+      // chop .impl
+      packageName = packageName.substring(0, packageName.length()-".impl".length());
+
+      pos = packageName.lastIndexOf('.');
+      String lastPart = packageName.substring(pos+1);
+      String simpleFactoryName = StrUtil.cap(lastPart) + "Factory";
+      try
+      {
+         Class factoryClass = Class.forName(packageName + "." + simpleFactoryName);
+         Field eInstanceField = factoryClass.getField("eINSTANCE");
+         emfFactory = eInstanceField.get(null);
+
+         emfCreateMethod = emfFactory.getClass().getMethod("create" + simpleClassName);
+
+         eObjectClass = Class.forName("org.eclipse.emf.ecore.EObject");
+
+      }
+      catch (Exception e)
+      {
+         Logger.getGlobal().log(Level.SEVERE, "could not find EMF Factory createXY method", e);
+      }
+
+      return this;
+   }
 }

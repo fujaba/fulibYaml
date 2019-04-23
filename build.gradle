@@ -17,7 +17,6 @@ apply plugin: 'signing'
 apply plugin: 'java'
 apply from: 'gradle/mavencentral.gradle'
 
-
 sourceCompatibility = 1.8
 
 repositories {
@@ -26,5 +25,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.hamcrest:hamcrest-library:2.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+}
+
+test {
+    useJUnitPlatform()
 }

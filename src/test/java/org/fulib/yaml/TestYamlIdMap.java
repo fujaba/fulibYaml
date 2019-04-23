@@ -1,19 +1,20 @@
 
 package org.fulib.yaml;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-public class TestYamlIdMap
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class TestYamlIdMap
 {
    @Test
-   public void testPlainYaml()
+   void testPlainYaml()
    {
       String yaml = "" +
             "joining: abu \n" +
@@ -22,11 +23,11 @@ public class TestYamlIdMap
       Yamler yamler = new Yamler();
 
       LinkedHashMap<String, String> map = yamler.decode(yaml);
-      assertThat(map.get("joining"), equalTo("abu"));
+      assertThat(map.get("joining"), is(equalTo("abu")));
    }
 
    @Test
-   public void testYammlerObjectList()
+   void testYammlerObjectList()
    {
       String yaml = "" +
             "- time: 2018.10.09T12:14:55.007\n" +
@@ -57,7 +58,7 @@ public class TestYamlIdMap
 
 
    @Test
-   public void testYamlIdMap()
+   void testYamlIdMap()
    {
       String yaml = "" +
             "- sr: .Map\n" +
