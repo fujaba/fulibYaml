@@ -1069,8 +1069,7 @@ public class YamlIdMap
                continue;
             }
 
-            if (value instanceof Collection)
-            {
+            if (value instanceof Collection) {
                if (((Collection) value).isEmpty())
                {
                   continue;
@@ -1083,9 +1082,9 @@ public class YamlIdMap
                   buf.append(valueKey).append(" \t");
                }
                buf.append("\n");
-            }
-            else
-            {
+            } else if (value instanceof Map){
+               continue;
+            } else {
                String valueKey = idObjMap.get(value);
 
                if (valueKey != null)
@@ -1138,20 +1137,17 @@ public class YamlIdMap
       return this;
    }
 
-   public LinkedHashSet<Object> collectObjects(Object... rootObjList)
-   {
+   public LinkedHashSet<Object> collectObjects(Object... rootObjList) {
       LinkedList<Object> simpleList = new LinkedList<>();
       LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
 
-      for (Object obj : rootObjList)
-      {
+      for (Object obj : rootObjList) {
          simpleList.add(obj);
       }
 
 
       // collect objects
-      while ( ! simpleList.isEmpty())
-      {
+      while ( ! simpleList.isEmpty()) {
          Object obj = simpleList.get(0);
          simpleList.remove(0);
          collectedObjects.add(obj);
@@ -1159,42 +1155,35 @@ public class YamlIdMap
          // already known?
          String key = idObjMap.get(obj);
 
-         if (key == null)
-         {
+         if (key == null) {
             // add to map
             key = addToObjIdMap(obj);
 
             // find neighbors
             Reflector reflector = getReflector(obj);
 
-            for (String prop : reflector.getProperties())
-            {
+            for (String prop : reflector.getProperties()) {
                Object value = reflector.getValue(obj, prop);
 
-               if (value == null)
-               {
+               if (value == null) {
                   continue;
                }
 
                Class valueClass = value.getClass();
 
-               if (value instanceof Collection)
-               {
-                  for (Object valueObj : (Collection) value)
-                  {
+               if (value instanceof Collection) {
+                  for (Object valueObj : (Collection) value) {
                      valueClass = valueObj.getClass();
 
                      if (valueClass.getName().startsWith("java.lang")) break;
 
                      simpleList.add(valueObj);
                   }
-               }
-               else if (  valueClass.getName().startsWith("java.lang."))
-               {
+               } else if (  valueClass.getName().startsWith("java.util.")) {
+                  continue; // not (yet) supported
+               } else if (  valueClass.getName().startsWith("java.lang.")) {
                   continue;
-               }
-               else
-               {
+               } else {
                   simpleList.add(value);
                }
             }
