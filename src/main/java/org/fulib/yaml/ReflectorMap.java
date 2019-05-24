@@ -55,6 +55,21 @@ public class ReflectorMap
       }
 
       String simpleName = newObject.getClass().getSimpleName();
+      String fullName = newObject.getClass().getName();
+      String packageName = newObject.getClass().getPackage().getName();
+
+
+      if (this.packageNames.contains(packageName)) {
+         // yes, we should reflect this object
+         Reflector reflector = reflectorMap.get(simpleName);
+
+         if (reflector == null) {
+            reflector = new Reflector().setClassName(fullName).setClazz(newObject.getClass());
+            reflectorMap.put(simpleName, reflector);
+         }
+
+         return reflector;
+      }
 
       return getReflector(simpleName);
    }

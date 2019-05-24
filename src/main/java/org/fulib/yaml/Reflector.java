@@ -13,6 +13,28 @@ public class Reflector
    private Method emfCreateMethod;
    private Object emfFactory;
    private Class<?> eObjectClass;
+   private Class<?> clazz = null;
+
+   public Class<?> getClazz()
+   {
+      if (clazz == null) {
+         try
+         {
+            clazz = Class.forName(className);
+         }
+         catch (ClassNotFoundException e)
+         {
+            e.printStackTrace();
+         }
+      }
+      return clazz;
+   }
+
+   public Reflector setClazz(Class<?> clazz)
+   {
+      this.clazz = clazz;
+      return this;
+   }
 
    public String getClassName()
    {
@@ -30,7 +52,7 @@ public class Reflector
       // call removeYou if possible
       try
       {
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
          Method removeYou = clazz.getMethod("removeYou");
          removeYou.invoke(object);
       }
@@ -51,43 +73,36 @@ public class Reflector
          return properties;
       }
 
-      try
+
+      Class<?> clazz = getClazz();
+
+      Method[] methods = clazz.getMethods();
+
+      LinkedHashSet<String> fieldNames = new LinkedHashSet<String>();
+      for (Method method : methods)
       {
-         Class<?> clazz = Class.forName(className);
+         String methodName = method.getName();
 
-         Method[] methods = clazz.getMethods();
-
-         LinkedHashSet<String> fieldNames = new LinkedHashSet<String>();
-         for (Method method : methods)
+         if (methodName.startsWith("get")
+               && ! methodName.equals("getClass"))
          {
-            String methodName = method.getName();
+            methodName = methodName.substring(3);
 
-            if (methodName.startsWith("get")
-                  && ! methodName.equals("getClass"))
+            methodName = StrUtil.downFirstChar(methodName);
+
+            if (!"".equals(methodName.trim()))
             {
-               methodName = methodName.substring(3);
-
-               methodName = StrUtil.downFirstChar(methodName);
-
-               if (!"".equals(methodName.trim()))
-               {
-                  fieldNames.add(methodName);
-               }
+               fieldNames.add(methodName);
             }
-
          }
 
-         properties = fieldNames.toArray(new String[]{});
-
-         Arrays.sort(properties);
-
-         return properties;
       }
-      catch (ClassNotFoundException e)
-      {
-         e.printStackTrace();
-      }
-      return null;
+
+      properties = fieldNames.toArray(new String[]{});
+
+      Arrays.sort(properties);
+
+      return properties;
    }
 
    public Object newInstance()
@@ -100,7 +115,7 @@ public class Reflector
             return emfObject;
          }
 
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
          return clazz.newInstance();
       }
       catch (Exception e)
@@ -120,7 +135,7 @@ public class Reflector
 
       try
       {
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("get" + StrUtil.cap(attribute));
 
@@ -132,7 +147,7 @@ public class Reflector
       {
          try
          {
-            Class<?> clazz = Class.forName(className);
+            Class<?> clazz = getClazz();
 
             Method method = clazz.getMethod(attribute);
 
@@ -159,7 +174,7 @@ public class Reflector
 
       try
       {
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Class<?> valueClass = value.getClass();
 
@@ -183,7 +198,7 @@ public class Reflector
       try
       {
          int intValue = Integer.parseInt((String) value);
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), int.class);
 
@@ -199,7 +214,7 @@ public class Reflector
       // maybe a huge number
       try {
          long longValue = Long.parseLong((String) value);
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), long.class);
 
@@ -214,7 +229,7 @@ public class Reflector
       try
       {
          double doubleValue = Double.parseDouble((String) value);
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), double.class);
 
@@ -231,7 +246,7 @@ public class Reflector
       try
       {
          float floatValue = Float.parseFloat((String) value);
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), float.class);
 
@@ -247,7 +262,7 @@ public class Reflector
       // to-many?
       try
       {
-         Class<?> clazz = Class.forName(className);
+         Class<?> clazz = getClazz();
 
          Method method = clazz.getMethod("with" + StrUtil.cap(attribute), Object[].class);
 
@@ -264,7 +279,7 @@ public class Reflector
       {
          if (emfCreateMethod != null)
          {
-            Class<?> clazz = Class.forName(className);
+            Class<?> clazz = getClazz();
 
             // its o.getAssoc().add(v)
             Method getMethod = clazz.getMethod("get" + StrUtil.cap(attribute));
