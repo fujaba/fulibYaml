@@ -145,22 +145,38 @@ public class Reflector
       }
       catch (Exception e)
       {
-         try
-         {
-            Class<?> clazz = getClazz();
+      }
 
-            Method method = clazz.getMethod(attribute);
+      try
+      {
+         Class<?> clazz = getClazz();
 
-            Object invoke = method.invoke(object);
+         Method method = clazz.getMethod(attribute);
 
-            return invoke;
-         }
-         catch (Exception e2)
-         {
-            // e.printStackTrace();
-         }
+         Object invoke = method.invoke(object);
+
+         return invoke;
+      }
+      catch (Exception e2)
+      {
 
       }
+
+      try
+      {
+         Class<?> clazz = getClazz();
+
+         Method method = clazz.getMethod("is" + StrUtil.cap(attribute));
+
+         Object invoke = method.invoke(object);
+
+         return invoke;
+      }
+      catch (Exception e3)
+      {
+         // e.printStackTrace();
+      }
+
 
       return null;
    }

@@ -33,6 +33,7 @@ public class EventFiler
          InputStream inputStream = new FileInputStream(historyFile);
          int read = inputStream.read(bytes);
          content = new String(bytes);
+         inputStream.close();
       }
       catch (Exception e)
       {
