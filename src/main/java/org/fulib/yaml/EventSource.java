@@ -132,7 +132,13 @@ public class EventSource
       }
       else
       {
-         lastEventTime = System.currentTimeMillis();
+         long currentTime = System.currentTimeMillis();
+         if (currentTime > lastEventTime) {
+            lastEventTime = currentTime;
+         }
+         else {
+            lastEventTime ++;
+         }
       }
       timestampString = dateFormat.format(lastEventTime);
       oldEventTimeStamp = 0;
