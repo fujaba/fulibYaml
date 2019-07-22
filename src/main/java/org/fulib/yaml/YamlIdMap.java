@@ -806,7 +806,7 @@ public class YamlIdMap
             {
                String attrValue = yamler.getCurrentToken();
 
-               if (yamler.getLookAheadToken().endsWith(".time:"))
+               if (yamler.getLookAheadToken() != null && yamler.getLookAheadToken().endsWith(".time:"))
                {
                   String propWithTime = yamler.nextToken();
                   String newTimeStamp = yamler.nextToken();
