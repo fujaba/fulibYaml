@@ -34,7 +34,7 @@ public class Yamler
       this.yaml = yaml;
 
       tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = "";
+      lookAheadToken = null;
       nextToken();
       nextToken();
    }
@@ -71,13 +71,13 @@ public class Yamler
    {
       this.yaml = yaml;
       tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = "";
+      lookAheadToken = null;
       nextToken();
       nextToken();
 
       LinkedHashMap<String, String> result = new LinkedHashMap<>();
 
-      while (currentToken.endsWith(":"))
+      while (currentToken != null && currentToken.endsWith(":"))
       {
          String attrName = stripColon(currentToken);
 
@@ -87,7 +87,7 @@ public class Yamler
          int valueStart = currentPos;
 
          // many values
-         while ( ! currentToken.equals("")
+         while ( currentToken != null
                  && ! currentToken.endsWith(":"))
          {
             value = yaml.substring(valueStart, currentPos + currentToken.length());
@@ -106,18 +106,18 @@ public class Yamler
    {
       this.yaml = yaml;
       tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = "";
+      lookAheadToken = null;
       nextToken();
       nextToken();
 
       ArrayList<LinkedHashMap<String, String>> result = new ArrayList<>();
 
-      while (currentToken.equals("-"))
+      while (currentToken != null && currentToken.equals("-"))
       {
          LinkedHashMap<String,String> map = new LinkedHashMap<>();
          result.add(map);
          nextToken();
-         while (currentToken.endsWith(":"))
+         while (currentToken != null && currentToken.endsWith(":"))
          {
             String key = stripColon(currentToken);
             nextToken();
@@ -139,17 +139,21 @@ public class Yamler
       {
 
          lookAheadToken = tokenizer.nextToken();
-         lookAheadPos = yaml.indexOf(lookAheadToken, lookAheadPos + currentToken.length());
+         int currentLength = 0;
+         if (currentToken != null) {
+            currentLength = currentToken.length();
+         }
+         lookAheadPos = yaml.indexOf(lookAheadToken, lookAheadPos + currentLength);
          // lookAheadPos = scanner.match().start();
       }
       else
       {
-         lookAheadToken = "";
+         lookAheadToken = null;
       }
 
 
 
-      if (lookAheadToken.startsWith("\""))
+      if (lookAheadToken != null && lookAheadToken.startsWith("\""))
       {
          // get up to end of string
          int stringStartPos = lookAheadPos + 1;

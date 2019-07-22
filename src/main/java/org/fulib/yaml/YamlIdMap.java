@@ -602,7 +602,7 @@ public class YamlIdMap
 
    private void parseObjectAttrs()
    {
-      while ( ! "".equals(yamler.getCurrentToken()))
+      while ( yamler.getCurrentToken() != null)
       {
          if ( ! "-".equals(yamler.getCurrentToken()) )
          {
@@ -636,14 +636,14 @@ public class YamlIdMap
 
       ArrayList<String> colNameList = new ArrayList<String>();
 
-      while ( ! "".equals(yamler.getCurrentToken()) && yamler.getLookAheadToken().endsWith(":"))
+      while ( yamler.getCurrentToken() != null && yamler.getLookAheadToken() != null && yamler.getLookAheadToken().endsWith(":"))
       {
          String colName = yamler.stripColon(yamler.getCurrentToken());
          colNameList.add(colName);
          yamler.nextToken();
       }
 
-      while ( ! "".equals(yamler.getCurrentToken()) && ! "-".equals(yamler.getCurrentToken()))
+      while ( yamler.getCurrentToken() != null  && ! "-".equals(yamler.getCurrentToken()))
       {
          String objectId = yamler.stripColon(yamler.getCurrentToken());
          yamler.nextToken();
@@ -652,7 +652,7 @@ public class YamlIdMap
 
          // column values
          int colNum = 0;
-         while ( ! "".equals(yamler.getCurrentToken()) && ! yamler.getCurrentToken().endsWith(":") && ! "-".equals(yamler.getCurrentToken()))
+         while ( yamler.getCurrentToken() != null && ! yamler.getCurrentToken().endsWith(":") && ! "-".equals(yamler.getCurrentToken()))
          {
             String attrName = colNameList.get(colNum);
 
@@ -665,7 +665,7 @@ public class YamlIdMap
                }
                setValue(creator, obj, attrName, value);
 
-               while (! "".equals(yamler.getCurrentToken()) && ! yamler.getCurrentToken().endsWith("]") )
+               while (yamler.getCurrentToken() != null && ! yamler.getCurrentToken().endsWith("]") )
                {
                   yamler.nextToken();
                   value = yamler.getCurrentToken();
@@ -700,7 +700,7 @@ public class YamlIdMap
          objIdMap.remove(objectId);
 
          // skip time stamp, if necessary
-         while ( ! yamler.getCurrentToken().equals("")
+         while ( yamler.getCurrentToken() != null
                && ! yamler.getCurrentToken().equals("-"))
          {
             yamler.nextToken();
@@ -713,7 +713,7 @@ public class YamlIdMap
          YamlObject yamlObj = (YamlObject) objIdMap.get(objectId);
          LinkedHashMap<String, Object> map = yamlObj.getMap();
 
-         while (!yamler.getCurrentToken().equals("") && !yamler.getCurrentToken().equals("-"))
+         while ( yamler.getCurrentToken() != null && !yamler.getCurrentToken().equals("-"))
          {
             String attrName = yamler.stripColon(yamler.getCurrentToken());
             yamler.nextToken();
@@ -722,7 +722,7 @@ public class YamlIdMap
             {
                // no object created by parseObjectIds. Object has been removed.
                // ignore attr changes
-               while (!yamler.getCurrentToken().equals("")
+               while ( yamler.getCurrentToken() != null
                      && !yamler.getCurrentToken().endsWith(":")
                      && !yamler.getCurrentToken().equals("-"))
                {
@@ -733,7 +733,7 @@ public class YamlIdMap
 
             // many values
             ArrayList<Object> previousValue = null;
-            while (!yamler.getCurrentToken().equals("")
+            while ( yamler.getCurrentToken() != null
                   && !yamler.getCurrentToken().endsWith(":")
                   && !yamler.getCurrentToken().equals("-"))
             {
@@ -781,7 +781,7 @@ public class YamlIdMap
          Object obj = objIdMap.get(objectId);
 
          // read attributes
-         while (!yamler.getCurrentToken().equals("") && !yamler.getCurrentToken().equals("-"))
+         while (yamler.getCurrentToken() != null && !yamler.getCurrentToken().equals("-"))
          {
             String attrName = yamler.stripColon(yamler.getCurrentToken());
             yamler.nextToken();
@@ -790,7 +790,7 @@ public class YamlIdMap
             {
                // no object created by parseObjectIds. Object has been removed.
                // ignore attr changes
-               while (!yamler.getCurrentToken().equals("")
+               while (yamler.getCurrentToken() != null
                      && !yamler.getCurrentToken().endsWith(":")
                      && !yamler.getCurrentToken().equals("-"))
                {
@@ -800,7 +800,7 @@ public class YamlIdMap
             }
 
             // many values
-            while (!yamler.getCurrentToken().equals("")
+            while (yamler.getCurrentToken() != null
                   && !yamler.getCurrentToken().endsWith(":")
                   && !yamler.getCurrentToken().equals("-"))
             {
@@ -881,7 +881,7 @@ public class YamlIdMap
    private Object parseObjectIds()
    {
       Object root = null;
-      while ( ! "".equals(yamler.getCurrentToken()))
+      while ( yamler.getCurrentToken() != null)
       {
          if ( ! "-".equals(yamler.getCurrentToken()) )
          {
@@ -939,10 +939,10 @@ public class YamlIdMap
       String userId = null;
 
       // skip attributes
-      while ( ! yamler.getCurrentToken().equals("") && ! yamler.getCurrentToken().equals("-"))
+      while ( yamler.getCurrentToken() != null && ! yamler.getCurrentToken().equals("-"))
       {
          String token = yamler.nextToken();
-         if (token.endsWith(".time:"))
+         if (token != null && token.endsWith(".time:"))
          {
             token = yamler.nextToken();
 
