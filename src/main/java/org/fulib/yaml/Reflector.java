@@ -84,7 +84,8 @@ public class Reflector
          String methodName = method.getName();
 
          if (methodName.startsWith("get")
-               && ! methodName.equals("getClass"))
+               && ! methodName.equals("getClass")
+               && method.getParameterCount() == 0)
          {
             methodName = methodName.substring(3);
 
