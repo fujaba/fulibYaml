@@ -1,56 +1,48 @@
-// add the build script
-//buildscript {
-//  repositories {
-//    maven {
-//      url 'https://plugins.gradle.org/m2/'
-//    }
-//  }
-//  dependencies {
-//    classpath 'net.researchgate:gradle-release:2.6.0'
-//  }
-//}
-
 plugins {
 	id 'java'
 	id 'maven-publish'
 	id 'com.jfrog.bintray' version '1.8.4'
-	id 'de.clashsoft.simple-publish' version '0.2.0'
+	id 'de.clashsoft.simple-publish' version '0.5.0'
 	// id 'org.fulib.fulibGradle' version '0.1.0'
 }
 
-javadoc {
-	exclude "**"
-	source = sourceSets.main.allJava
+group = 'org.fulib'
+version = 'git describe --tags'.execute().text[1..-2] // strip v and \n
+description = 'Yaml serialization for fulib object models. Used for storage and communication.'
+
+publishInfo {
+	organization = 'fujaba'
+	githubRepo = 'fujaba/fulibYaml'
+	labels = [ 'fulib', 'yaml' ]
+
+	developer {
+		id = 'zuendorf'
+		name = 'Albert Zuendorf'
+	}
+	developer {
+		id = 'digitalhoax'
+		name = 'Tobias George'
+	}
+	developer {
+		id = 'eicke123'
+		name = 'Christoph Eickhoff'
+	}
+
+	license {
+		name = 'MIT License'
+		url = 'http://www.opensource.org/licenses/mit-license.php'
+	}
 }
 
-//declare the release plugin
-// apply plugin: 'net.researchgate.release'
-//apply plugin: 'maven'
-//apply plugin: 'maven-publish'
-//apply plugin: 'com.jfrog.bintray'
-//apply plugin: 'de.clashsoft.simple-publish' version '0.2.0'
-//// apply plugin: 'signing'
-//apply plugin: 'java'
-// apply from: 'gradle/mavencentral.gradle'
-
 sourceCompatibility = 1.8
+
+// --------------- Dependencies ---------------
 
 repositories {
 	mavenLocal()
 	mavenCentral()
 	jcenter()
 }
-
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            from components.java
-//        }
-//    }
-//    repositories {
-//        mavenLocal()
-//    }
-//}
 
 dependencies {
 	// https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library
@@ -61,6 +53,13 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
 	testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
+}
+
+// --------------- Misc. Settings ---------------
+
+javadoc {
+	exclude "**"
+	source = sourceSets.main.allJava
 }
 
 test {
