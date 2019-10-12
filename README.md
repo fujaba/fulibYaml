@@ -12,7 +12,6 @@ Yaml serialization for fulib object models. Used for storage and communication.
 ```groovy
 repositories {
     mavenCentral()
-    // and/or:
     jcenter()
 }
 ```
