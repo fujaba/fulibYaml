@@ -204,12 +204,12 @@ public class EventSource
 
    public String encodeYaml()
    {
-      return YamlGenerator.encodeYaml(this.numEventMap.values());
+      return YamlGenerator.serialize(this.numEventMap.values());
    }
 
    public void encodeYaml(Writer writer) throws IOException
    {
-      YamlGenerator.encodeYaml(this.numEventMap.values(), writer);
+      YamlGenerator.serialize(this.numEventMap.values(), writer);
    }
 
    // =============== Static Methods ===============
@@ -222,12 +222,12 @@ public class EventSource
     *
     * @return the encoded YAML object list
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Iterable) YamlGenerator.encodeYaml}{@code (events.values())} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#serialize(Iterable) YamlGenerator.encodeYaml}{@code (events.values())} instead
     */
    @Deprecated
    public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
    {
-      return YamlGenerator.encodeYaml(events.values());
+      return YamlGenerator.serialize(events.values());
    }
 
    /**
@@ -238,12 +238,12 @@ public class EventSource
     *
     * @return the encoded YAML object list
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Iterable)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#serialize(Iterable)} instead
     */
    @Deprecated
    public static String encodeYaml(List<? extends Map<String, String>> events)
    {
-      return YamlGenerator.encodeYaml(events);
+      return YamlGenerator.serialize(events);
    }
 
    /**
@@ -254,11 +254,11 @@ public class EventSource
     *
     * @return the encoded YAML object
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Map)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#serialize(Map)} instead
     */
    @Deprecated
    public static String encodeYaml(LinkedHashMap<String, String> event)
    {
-      return YamlGenerator.encodeYaml(event);
+      return YamlGenerator.serialize(event);
    }
 }

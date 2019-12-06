@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -119,7 +118,7 @@ public class EventFiler
 
       try (final Writer writer = Files.newBufferedWriter(historyFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND))
       {
-         YamlGenerator.encodeYaml(event, writer);
+         YamlGenerator.serialize(event, writer);
       }
       catch (IOException e)
       {

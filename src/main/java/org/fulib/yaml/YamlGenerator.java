@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * @author Adrian Kunz
@@ -21,12 +20,12 @@ public class YamlGenerator
     *
     * @return the encoded YAML object list
     */
-   public static String encodeYaml(Iterable<? extends Map<String, String>> events)
+   public static String serialize(Iterable<? extends Map<String, String>> events)
    {
       final StringWriter writer = new StringWriter();
       try
       {
-         encodeYaml(events, writer);
+         serialize(events, writer);
       }
       catch (IOException e)
       {
@@ -43,11 +42,11 @@ public class YamlGenerator
     * @param writer
     *    the writer
     */
-   public static void encodeYaml(Iterable<? extends Map<String, String>> events, Writer writer) throws IOException
+   public static void serialize(Iterable<? extends Map<String, String>> events, Writer writer) throws IOException
    {
       for (final Map<String, String> event : events)
       {
-         encodeYaml(event, writer);
+         serialize(event, writer);
       }
    }
 
@@ -59,12 +58,12 @@ public class YamlGenerator
     *
     * @return the encoded YAML object
     */
-   public static String encodeYaml(Map<String, String> event)
+   public static String serialize(Map<String, String> event)
    {
       final StringWriter writer = new StringWriter();
       try
       {
-         encodeYaml(event, writer);
+         serialize(event, writer);
       }
       catch (IOException e)
       {
@@ -81,7 +80,7 @@ public class YamlGenerator
     * @param writer
     *    the writer
     */
-   public static void encodeYaml(Map<String, String> event, Writer writer) throws IOException
+   public static void serialize(Map<String, String> event, Writer writer) throws IOException
    {
       String prefix = "- ";
       for (Map.Entry<String, String> keyValuePair : event.entrySet())
