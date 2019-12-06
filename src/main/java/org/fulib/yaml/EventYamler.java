@@ -72,7 +72,7 @@ public class EventYamler
 
          if (valueClass == String.class)
          {
-            String encapsulted = Yamler.encapsulate((String) oldValue);
+            String encapsulted = YamlGenerator.encapsulate((String) oldValue);
             buf.append("  " + OLD_VALUE + ": ").append(encapsulted).append("\n");
          }
          else if (  valueClass.getName().startsWith("java.lang."))
@@ -98,7 +98,7 @@ public class EventYamler
 
          if (valueClass == String.class)
          {
-            String encapsulted = Yamler.encapsulate((String) newValue);
+            String encapsulted = YamlGenerator.encapsulate((String) newValue);
             buf.append("  " + NEW_VALUE + ": ").append(encapsulted).append("\n");
          }
          else if (  valueClass.getName().startsWith("java.lang."))

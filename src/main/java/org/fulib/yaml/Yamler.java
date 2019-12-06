@@ -197,14 +197,19 @@ public class Yamler
       return currentToken;
    }
 
+   /**
+    * Encapsulates a YAML value by enclosing it in quotes ("), if necessary.
+    *
+    * @param value
+    *    the YAML value to encapsulate
+    *
+    * @return the encapsulated YAML value
+    *
+    * @deprecated since 1.2; use {@link YamlGenerator#encapsulate(String)} instead
+    */
    public static String encapsulate(String value)
    {
-      if (value.matches("[a-zA-Z0-9_\\.]+"))
-      {
-         return value;
-      }
-      value = value.replaceAll("\"", "\\\\\"");
-      return "\"" + value + "\"";
+      return YamlGenerator.encapsulate(value);
    }
 
    String deEncapsulate(String value)

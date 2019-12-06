@@ -116,10 +116,28 @@ public class YamlGenerator
          writer.write(prefix);
          writer.write(keyValuePair.getKey());
          writer.write(": ");
-         writer.write(Yamler.encapsulate(keyValuePair.getValue()));
+         writer.write(YamlGenerator.encapsulate(keyValuePair.getValue()));
          writer.write('\n');
          prefix = "  ";
       }
       writer.write('\n');
+   }
+
+   /**
+    * Encapsulates a YAML value by enclosing it in quotes ("), if necessary.
+    *
+    * @param value
+    *    the YAML value to encapsulate
+    *
+    * @return the encapsulated YAML value
+    */
+   public static String encapsulate(String value)
+   {
+      if (value.matches("[a-zA-Z0-9_.]+"))
+      {
+         return value;
+      }
+      // replace " with \"
+      return "\"" + value.replace("\"", "\\\"") + "\"";
    }
 }

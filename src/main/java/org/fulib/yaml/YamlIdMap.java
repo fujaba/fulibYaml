@@ -536,7 +536,7 @@ public class YamlIdMap
 
          if (found)
          {
-            token = yamler.encapsulate(token);
+            token = YamlGenerator.encapsulate(token);
             split[i] = token;
          }
       }
@@ -1095,7 +1095,7 @@ public class YamlIdMap
                {
                   if (value instanceof String)
                   {
-                     value = yamler.encapsulate((String) value);
+                     value = YamlGenerator.encapsulate((String) value);
                   }
                   buf.append("  ").append(prop).append(": \t").append(value).append("\n");
                }
@@ -1246,7 +1246,8 @@ public class YamlIdMap
 
       if (  valueClass.getName().startsWith("java.lang.") || valueClass == String.class)
       {
-         buf.append("  ").append(propertyName).append(": \t").append(yamler.encapsulate(value.toString())).append("\n");
+         buf.append("  ").append(propertyName).append(": \t").append(YamlGenerator.encapsulate(value.toString()))
+            .append("\n");
          if (userId != null)
          {
             String now = "" + LocalDateTime.now() + "." + userId;
