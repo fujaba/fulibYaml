@@ -1,6 +1,8 @@
 package org.fulib.yaml;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -21,18 +23,21 @@ public class YamlGenerator
     */
    public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
    {
-      StringBuilder buf = new StringBuilder();
+      return encodeYaml(events.values());
+   }
 
-      for (Map.Entry<Long, ? extends Map<String, String>> entry : events.entrySet())
-      {
-         Map<String, String> event = entry.getValue();
-
-         String oneObj = encodeYaml(event);
-
-         buf.append(oneObj);
-      }
-
-      return buf.toString();
+   /**
+    * Encodes the events as a list of YAML objects into the writer.
+    *
+    * @param events
+    *    the events
+    * @param writer
+    *    the writer
+    */
+   public static void encodeYaml(SortedMap<Long, ? extends Map<String, String>> events, Writer writer)
+      throws IOException
+   {
+      encodeYaml(events.values(), writer);
    }
 
    /**
@@ -43,17 +48,34 @@ public class YamlGenerator
     *
     * @return the encoded YAML object list
     */
-   public static String encodeYaml(List<? extends Map<String, String>> events)
+   public static String encodeYaml(Iterable<? extends Map<String, String>> events)
    {
-      StringBuilder buf = new StringBuilder();
-
-      for (Map<String, String> event : events)
+      final StringWriter writer = new StringWriter();
+      try
       {
-         String oneObj = encodeYaml(event);
-         buf.append(oneObj);
+         encodeYaml(events, writer);
       }
+      catch (IOException e)
+      {
+         // cannot happen
+      }
+      return writer.toString();
+   }
 
-      return buf.toString();
+   /**
+    * Encodes the events as a list of YAML objects into the writer.
+    *
+    * @param events
+    *    the events
+    * @param writer
+    *    the writer
+    */
+   public static void encodeYaml(Iterable<? extends Map<String, String>> events, Writer writer) throws IOException
+   {
+      for (final Map<String, String> event : events)
+      {
+         encodeYaml(event, writer);
+      }
    }
 
    /**
@@ -66,17 +88,38 @@ public class YamlGenerator
     */
    public static String encodeYaml(Map<String, String> event)
    {
-      StringBuilder buf = new StringBuilder();
+      final StringWriter writer = new StringWriter();
+      try
+      {
+         encodeYaml(event, writer);
+      }
+      catch (IOException e)
+      {
+         // cannot happen
+      }
+      return writer.toString();
+   }
 
+   /**
+    * Encodes the event as a YAML object into the writer.
+    *
+    * @param event
+    *    the event
+    * @param writer
+    *    the writer
+    */
+   public static void encodeYaml(Map<String, String> event, Writer writer) throws IOException
+   {
       String prefix = "- ";
       for (Map.Entry<String, String> keyValuePair : event.entrySet())
       {
-         buf.append(prefix).append(keyValuePair.getKey()).append(": ")
-            .append(Yamler.encapsulate(keyValuePair.getValue())).append("\n");
+         writer.write(prefix);
+         writer.write(keyValuePair.getKey());
+         writer.write(": ");
+         writer.write(Yamler.encapsulate(keyValuePair.getValue()));
+         writer.write('\n');
          prefix = "  ";
       }
-      buf.append("\n");
-
-      return buf.toString();
+      writer.write('\n');
    }
 }
