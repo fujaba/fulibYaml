@@ -202,38 +202,41 @@ public class EventSource
 
    public String encodeYaml()
    {
-      return encodeYaml(this.numEventMap);
+      return YamlGenerator.encodeYaml(this.numEventMap);
    }
 
    // =============== Static Methods ===============
 
-   public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> eventMap)
+   /**
+    * Encodes the events as a list of YAML objects.
+    *
+    * @param events
+    *    the events
+    *
+    * @return the encoded YAML object list
+    *
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(List)} instead
+    */
+   @Deprecated
+   public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
    {
-      StringBuilder buf = new StringBuilder();
-
-      for (Map.Entry<Long, ? extends Map<String, String>> entry : eventMap.entrySet())
-      {
-         Map<String, String> event = entry.getValue();
-
-         String oneObj = encodeYaml(event);
-
-         buf.append(oneObj);
-      }
-
-      return buf.toString();
+      return YamlGenerator.encodeYaml(events);
    }
 
+   /**
+    * Encodes the events as a list of YAML objects.
+    *
+    * @param events
+    *    the events
+    *
+    * @return the encoded YAML object list
+    *
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(List)} instead
+    */
+   @Deprecated
    public static String encodeYaml(List<? extends Map<String, String>> events)
    {
-      StringBuilder buf = new StringBuilder();
-
-      for (Map<String, String> event : events)
-      {
-         String oneObj = encodeYaml(event);
-         buf.append(oneObj);
-      }
-
-      return buf.toString();
+      return YamlGenerator.encodeYaml(events);
    }
 
    /**
@@ -244,37 +247,11 @@ public class EventSource
     *
     * @return the encoded YAML object
     *
-    * @deprecated since 1.2; use {@link #encodeYaml(Map)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Map)} instead
     */
    @Deprecated
    public static String encodeYaml(LinkedHashMap<String, String> event)
    {
-      return encodeYaml((Map<String, String>) event);
-   }
-
-   /**
-    * Encodes the event as a YAML object.
-    *
-    * @param event
-    *    the event
-    *
-    * @return the encoded YAML object
-    *
-    * @since 1.2
-    */
-   public static String encodeYaml(Map<String, String> event)
-   {
-      StringBuilder buf = new StringBuilder();
-
-      String prefix = "- ";
-      for (Map.Entry<String, String> keyValuePair : event.entrySet())
-      {
-         buf.append(prefix).append(keyValuePair.getKey()).append(": ")
-            .append(Yamler.encapsulate(keyValuePair.getValue())).append("\n");
-         prefix = "  ";
-      }
-      buf.append("\n");
-
-      return buf.toString();
+      return YamlGenerator.encodeYaml(event);
    }
 }

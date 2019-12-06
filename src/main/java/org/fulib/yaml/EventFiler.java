@@ -113,7 +113,7 @@ public class EventFiler
 
       final Path historyFile = Paths.get(this.historyFileName);
 
-      final String yaml = EventSource.encodeYaml(event);
+      final String yaml = YamlGenerator.encodeYaml(event);
 
       try
       {
