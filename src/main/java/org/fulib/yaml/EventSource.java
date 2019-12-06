@@ -183,13 +183,13 @@ public class EventSource
       return encodeYaml(numEventMap);
    }
 
-   public static String encodeYaml(SortedMap<Long, LinkedHashMap<String, String>> eventMap)
+   public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> eventMap)
    {
       StringBuffer buf = new StringBuffer();
 
-      for (Map.Entry<Long, LinkedHashMap<String, String>> entry : eventMap.entrySet())
+      for (Map.Entry<Long, ? extends Map<String, String>> entry : eventMap.entrySet())
       {
-         LinkedHashMap<String, String> event = entry.getValue();
+         Map<String, String> event = entry.getValue();
 
          String oneObj = encodeYaml(event);
 
@@ -199,11 +199,12 @@ public class EventSource
       return buf.toString();
    }
    
-   public static String encodeYaml(List<LinkedHashMap<String, String>> events)
+   public static String encodeYaml(List<? extends Map<String, String>> events)
    {
       StringBuffer buf = new StringBuffer();
       
-      for (LinkedHashMap<String, String> event : events) {
+      for (Map<String, String> event : events)
+      {
          String oneObj = encodeYaml(event);
          buf.append(oneObj);
       }
@@ -211,7 +212,32 @@ public class EventSource
       return buf.toString();
    }
 
+   /**
+    * Encodes the event as a YAML object.
+    *
+    * @param event
+    *    the event
+    * @return the encoded YAML object
+    *
+    * @deprecated since 1.2; use {@link #encodeYaml(Map)} instead
+    */
+   @Deprecated
    public static String encodeYaml(LinkedHashMap<String, String> event)
+   {
+      return encodeYaml((Map<String, String>) event);
+   }
+
+   /**
+    * Encodes the event as a YAML object.
+    *
+    * @param event
+    *    the event
+    *
+    * @return the encoded YAML object
+    *
+    * @since 1.2
+    */
+   public static String encodeYaml(Map<String, String> event)
    {
       StringBuffer buf = new StringBuffer();
 
