@@ -67,15 +67,15 @@ public class EventFiler
    {
       final Path historyFile = Paths.get(this.historyFileName);
 
-      String yaml = this.eventSource.encodeYaml();
+      createDirs(historyFile);
 
-      try
+      try (final Writer writer = Files.newBufferedWriter(historyFile, StandardOpenOption.CREATE))
       {
-         Files.write(historyFile, yaml.getBytes());
+         this.eventSource.encodeYaml(writer);
       }
       catch (IOException e)
       {
-         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + this.historyFileName, e);
+         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + historyFile, e);
          return false;
       }
 
@@ -109,20 +109,29 @@ public class EventFiler
     */
    public void storeEvent(Map<String, String> event)
    {
-      Objects.requireNonNull(this.historyFileName);
-
       final Path historyFile = Paths.get(this.historyFileName);
 
-      final String yaml = YamlGenerator.encodeYaml(event);
+      createDirs(historyFile);
 
-      try
+      try (final Writer writer = Files.newBufferedWriter(historyFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND))
       {
-         Files.createDirectories(historyFile.getParent());
-         Files.write(historyFile, yaml.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+         YamlGenerator.encodeYaml(event, writer);
       }
       catch (IOException e)
       {
-         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + this.historyFileName, e);
+         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + historyFile, e);
+      }
+   }
+
+   private static void createDirs(Path historyFile)
+   {
+      try
+      {
+         Files.createDirectories(historyFile.getParent());
+      }
+      catch (IOException e)
+      {
+         Logger.getGlobal().log(Level.SEVERE, "could create directories for historyFile " + historyFile, e);
       }
    }
 }

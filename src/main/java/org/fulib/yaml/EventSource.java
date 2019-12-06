@@ -1,5 +1,7 @@
 package org.fulib.yaml;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -203,6 +205,11 @@ public class EventSource
    public String encodeYaml()
    {
       return YamlGenerator.encodeYaml(this.numEventMap);
+   }
+
+   public void encodeYaml(Writer writer) throws IOException
+   {
+      YamlGenerator.encodeYaml(this.numEventMap, writer);
    }
 
    // =============== Static Methods ===============
