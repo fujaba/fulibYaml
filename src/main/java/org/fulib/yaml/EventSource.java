@@ -215,7 +215,7 @@ public class EventSource
     *
     * @return the encoded YAML object list
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(List)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(SortedMap)} instead
     */
    @Deprecated
    public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
@@ -231,7 +231,7 @@ public class EventSource
     *
     * @return the encoded YAML object list
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(List)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Iterable)} instead
     */
    @Deprecated
    public static String encodeYaml(List<? extends Map<String, String>> events)
