@@ -2,6 +2,7 @@ package org.fulib.yaml;
 
 import java.io.*;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +71,25 @@ public class EventFiler
       return this;
    }
 
+   /**
+    * @param event
+    *    the event
+    *
+    * @deprecated since 1.2; use {@link #storeEvent(Map)}
+    */
+   @Deprecated
    public void storeEvent(LinkedHashMap<String, String> event)
+   {
+      this.storeEvent((Map<String, String>) event);
+   }
+
+   /**
+    * @param event
+    *    the event
+    *
+    * @since 1.2
+    */
+   public void storeEvent(Map<String, String> event)
    {
       Objects.requireNonNull(historyFileName);
       int dirEndPos = historyFileName.lastIndexOf('/');
