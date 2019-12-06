@@ -6,18 +6,33 @@ public class StrUtil
 {
    public static String cap(String oldTxt)
    {
-      Objects.requireNonNull(oldTxt);
-      return oldTxt.substring(0,1).toUpperCase() + oldTxt.substring(1);
+      final StringBuilder builder = new StringBuilder(oldTxt);
+      builder.setCharAt(0, Character.toUpperCase(builder.charAt(0)));
+      return builder.toString();
    }
 
+   /**
+    * Checks if the two strings are equal, handling nulls correctly.
+    *
+    * @param word1
+    *    the first string
+    * @param word2
+    *    the second string
+    *
+    * @return true if the two strings are equal or both null, false otherwise
+    *
+    * @deprecated since 1.2; use {@link Objects#equals(Object, Object)} instead
+    */
+   @Deprecated
    public static boolean stringEquals(String word1, String word2)
    {
-      return word1 == null ? word2 == null : word1.equals(word2);
+      return Objects.equals(word1, word2);
    }
 
    public static String downFirstChar(String oldTxt)
    {
-      Objects.requireNonNull(oldTxt);
-      return oldTxt.substring(0,1).toLowerCase() + oldTxt.substring(1);
+      final StringBuilder builder = new StringBuilder(oldTxt);
+      builder.setCharAt(0, Character.toLowerCase(builder.charAt(0)));
+      return builder.toString();
    }
 }
