@@ -1,6 +1,10 @@
 package org.fulib.yaml;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -9,13 +13,29 @@ import java.util.logging.Logger;
 
 public class EventFiler
 {
-   String historyFileName = null;
+   // =============== Fields ===============
 
-   private EventSource eventSource;
+   private final EventSource eventSource;
+
+   private String historyFileName = null;
+
+   // =============== Constructors ===============
 
    public EventFiler(EventSource eventSource)
    {
       this.eventSource = eventSource;
+   }
+
+   // =============== Properties ===============
+
+   public EventSource getEventSource()
+   {
+      return this.eventSource;
+   }
+
+   public String getHistoryFileName()
+   {
+      return this.historyFileName;
    }
 
    public EventFiler setHistoryFileName(String historyFileName)
@@ -24,49 +44,47 @@ public class EventFiler
       return this;
    }
 
+   // =============== Methods ===============
+
    public String loadHistory()
    {
-      File historyFile = new File(historyFileName);
-      String content = null;
+      final Path historyFile = Paths.get(this.historyFileName);
+      if (Files.exists(historyFile))
+      {
+         return null;
+      }
       try
       {
-         byte[] bytes = new byte[(int) historyFile.length()];
-         InputStream inputStream = new FileInputStream(historyFile);
-         int read = inputStream.read(bytes);
-         content = new String(bytes);
-         inputStream.close();
+         return new String(Files.readAllBytes(historyFile));
       }
-      catch (Exception e)
+      catch (IOException e)
       {
-         // Logger.getGlobal().log(Level.SEVERE, "could not load history", e);
+         return null;
       }
-
-      return content;
    }
-
 
    public boolean storeHistory()
    {
-      File historyFile = new File(historyFileName);
+      final Path historyFile = Paths.get(this.historyFileName);
 
-      String yaml = eventSource.encodeYaml();
-      try {
-         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(historyFileName)));
-         out.print(yaml);
-         out.close();
-      } catch (IOException e) {
-         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + historyFileName, e);
+      String yaml = this.eventSource.encodeYaml();
+
+      try
+      {
+         Files.write(historyFile, yaml.getBytes());
+      }
+      catch (IOException e)
+      {
+         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + this.historyFileName, e);
          return false;
       }
 
       return true;
    }
 
-
-
    public EventFiler startEventLogging()
    {
-      eventSource.addEventListener(map -> this.storeEvent(map));
+      this.eventSource.addEventListener(this::storeEvent);
 
       return this;
    }
@@ -91,40 +109,20 @@ public class EventFiler
     */
    public void storeEvent(Map<String, String> event)
    {
-      Objects.requireNonNull(historyFileName);
-      int dirEndPos = historyFileName.lastIndexOf('/');
-      if (dirEndPos > 0)
+      Objects.requireNonNull(this.historyFileName);
+
+      final Path historyFile = Paths.get(this.historyFileName);
+
+      final String yaml = EventSource.encodeYaml(event);
+
+      try
       {
-         // mkdir
-         String dirName = historyFileName.substring(0, dirEndPos);
-         File dataDir = new File(dirName);
-         if ( ! dataDir.exists())
-         {
-            dataDir.mkdirs();
-         }
+         Files.createDirectories(historyFile.getParent());
+         Files.write(historyFile, yaml.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
       }
-
-      File historyFile = new File(historyFileName);
-      if ( ! historyFile.exists())
+      catch (IOException e)
       {
-         try
-         {
-            historyFile.createNewFile();
-         }
-         catch (IOException e)
-         {
-            Logger.getGlobal().log(Level.SEVERE, "could not create historyFile " + historyFileName, e);
-         }
-      }
-
-      String yaml = EventSource.encodeYaml(event);
-
-      try {
-         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(historyFileName, true)));
-         out.print(yaml);
-         out.close();
-      } catch (IOException e) {
-         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + historyFileName, e);
+         Logger.getGlobal().log(Level.SEVERE, "could not write to historyFile " + this.historyFileName, e);
       }
    }
 }
