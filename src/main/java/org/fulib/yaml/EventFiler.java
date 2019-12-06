@@ -90,6 +90,8 @@ public class EventFiler
    }
 
    /**
+    * Appends the event to the history file.
+    *
     * @param event
     *    the event
     *
@@ -102,6 +104,8 @@ public class EventFiler
    }
 
    /**
+    * Appends the event to the history file.
+    *
     * @param event
     *    the event
     *
