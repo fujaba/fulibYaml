@@ -204,12 +204,12 @@ public class EventSource
 
    public String encodeYaml()
    {
-      return YamlGenerator.encodeYaml(this.numEventMap);
+      return YamlGenerator.encodeYaml(this.numEventMap.values());
    }
 
    public void encodeYaml(Writer writer) throws IOException
    {
-      YamlGenerator.encodeYaml(this.numEventMap, writer);
+      YamlGenerator.encodeYaml(this.numEventMap.values(), writer);
    }
 
    // =============== Static Methods ===============
@@ -222,12 +222,12 @@ public class EventSource
     *
     * @return the encoded YAML object list
     *
-    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(SortedMap)} instead
+    * @deprecated since 1.2; use {@link YamlGenerator#encodeYaml(Iterable) YamlGenerator.encodeYaml}{@code (events.values())} instead
     */
    @Deprecated
    public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
    {
-      return YamlGenerator.encodeYaml(events);
+      return YamlGenerator.encodeYaml(events.values());
    }
 
    /**

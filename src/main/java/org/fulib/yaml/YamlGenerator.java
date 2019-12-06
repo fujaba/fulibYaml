@@ -21,33 +21,6 @@ public class YamlGenerator
     *
     * @return the encoded YAML object list
     */
-   public static String encodeYaml(SortedMap<Long, ? extends Map<String, String>> events)
-   {
-      return encodeYaml(events.values());
-   }
-
-   /**
-    * Encodes the events as a list of YAML objects into the writer.
-    *
-    * @param events
-    *    the events
-    * @param writer
-    *    the writer
-    */
-   public static void encodeYaml(SortedMap<Long, ? extends Map<String, String>> events, Writer writer)
-      throws IOException
-   {
-      encodeYaml(events.values(), writer);
-   }
-
-   /**
-    * Encodes the events as a list of YAML objects.
-    *
-    * @param events
-    *    the events
-    *
-    * @return the encoded YAML object list
-    */
    public static String encodeYaml(Iterable<? extends Map<String, String>> events)
    {
       final StringWriter writer = new StringWriter();
