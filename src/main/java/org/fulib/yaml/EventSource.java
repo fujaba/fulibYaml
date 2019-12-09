@@ -54,14 +54,8 @@ public class EventSource
 
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since, String... relevantEventTypes)
    {
-      return this.pull(since, e -> this.filterRelevantEventTypes(e, Arrays.asList(relevantEventTypes)));
-   }
-
-   private Boolean filterRelevantEventTypes(Map.Entry<Long, LinkedHashMap<String, String>> e,
-      List<String> relevantEventTypes)
-   {
-      LinkedHashMap<String, String> map = e.getValue();
-      return relevantEventTypes.contains(map.get(EVENT_TYPE));
+      final Set<String> eventTypes = new HashSet<>(Arrays.asList(relevantEventTypes));
+      return this.pull(since, e -> eventTypes.contains(e.getValue().get(EVENT_KEY)));
    }
 
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since,
