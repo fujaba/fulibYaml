@@ -43,10 +43,7 @@ public class EventSource
 
    // =============== Methods ===============
 
-   public void addEventListener(Consumer<? super Map<String, String>> listener)
-   {
-      this.eventListeners.add(listener);
-   }
+   // --------------- Bulk Retrieval ---------------
 
    /**
     * Gets all events after or at the specified timestamp.
@@ -196,6 +193,8 @@ public class EventSource
       return result;
    }
 
+   // --------------- Single Events ---------------
+
    /**
     * Gets the newest event with the given key, or null if not found.
     *
@@ -269,6 +268,13 @@ public class EventSource
       String storedTimeTxt = this.dateFormat.format(storedTime);
 
       return storedTimeTxt.compareTo(eventTimeTxt) >= 0;
+   }
+
+   // --------------- Modification ---------------
+
+   public void addEventListener(Consumer<? super Map<String, String>> listener)
+   {
+      this.eventListeners.add(listener);
    }
 
    public EventSource setOldEventTimeStamp(String oldTimeStampString)
@@ -361,6 +367,8 @@ public class EventSource
 
       return this;
    }
+
+   // --------------- Conversion ---------------
 
    public String encodeYaml()
    {
