@@ -84,12 +84,12 @@ public class EventSource
     *
     * @return the newest event with the given key
     *
-    * @deprecated since 1.2; use {@link #getEventByKey(String)} instead
+    * @deprecated since 1.2; use {@link #getNewestEvent(String)} instead
     */
    @Deprecated
    public LinkedHashMap<String, String> getEvent(String eventKey)
    {
-      final Map<String, String> byKey = this.getEventByKey(eventKey);
+      final Map<String, String> byKey = this.getNewestEvent(eventKey);
       return byKey instanceof LinkedHashMap ? (LinkedHashMap<String, String>) byKey : new LinkedHashMap<>(byKey);
    }
 
@@ -100,8 +100,10 @@ public class EventSource
     *    the event key
     *
     * @return the newest event with the given key
+    *
+    * @since 1.2
     */
-   public Map<String, String> getEventByKey(String eventKey)
+   public Map<String, String> getNewestEvent(String eventKey)
    {
       final Long timeStamp = this.keyNumMap.get(eventKey);
       return timeStamp != null ? this.numEventMap.get(timeStamp) : null;
