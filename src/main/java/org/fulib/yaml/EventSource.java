@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -25,7 +26,7 @@ public class EventSource
 
    private final LinkedHashMap<String, Long> keyNumMap = new LinkedHashMap<>();
 
-   private final TreeMap<Long, LinkedHashMap<String, String>> numEventMap = new TreeMap<>();
+   private final TreeMap<Long, Map<String, String>> numEventMap = new TreeMap<>();
 
    private long lastEventTime;
 
@@ -47,33 +48,140 @@ public class EventSource
       this.eventListeners.add(listener);
    }
 
+   /**
+    * Gets all events after or at the specified timestamp.
+    *
+    * @param since
+    *    the timestamp
+    *
+    * @return all events after or at the specified timestamp
+    *
+    * @deprecated since 1.2; use {@link #getEvents(long)} instead
+    */
+   @Deprecated
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since)
    {
-      return this.numEventMap.tailMap(since);
+      return this.pull(since, (Function<Map.Entry<Long, LinkedHashMap<String, String>>, Boolean>) null);
    }
 
+   /**
+    * Gets all events after or at the specified timestamp that have any one of the relevant event types.
+    *
+    * @param since
+    *    the timestamp
+    * @param relevantEventTypes
+    *    the relevant event types
+    *
+    * @return all events after or at the specified timestamp that have any one of the relevant event types
+    *
+    * @deprecated since 1.2; use {@link #getEvents(long, String...)} instead
+    */
+   @Deprecated
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since, String... relevantEventTypes)
    {
       final Set<String> eventTypes = new HashSet<>(Arrays.asList(relevantEventTypes));
       return this.pull(since, e -> eventTypes.contains(e.getValue().get(EVENT_KEY)));
    }
 
+   /**
+    * Gets all events after or at the specified timestamp that fulfill the given predicate.
+    *
+    * @param since
+    *    the timestamp
+    * @param filterOp
+    *    the predicate on timestamp and event
+    *
+    * @return all events after or at the specified timestamp that fulfill the given predicate
+    *
+    * @deprecated since 1.2; use {@link #getEvents(long, BiPredicate)} instead
+    */
+   @Deprecated
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since,
       Function<Map.Entry<Long, LinkedHashMap<String, String>>, Boolean> filterOp)
    {
-      SortedMap<Long, LinkedHashMap<String, String>> tailMap = this.numEventMap.tailMap(since);
-      TreeMap<Long, LinkedHashMap<String, String>> resultMap = new TreeMap<>();
-      for (Map.Entry<Long, LinkedHashMap<String, String>> entry : tailMap.entrySet())
-      {
-         boolean result = filterOp.apply(entry);
+      final SortedMap<Long, Map<String, String>> tailMap = this.numEventMap.tailMap(since);
+      final TreeMap<Long, LinkedHashMap<String, String>> resultMap = new TreeMap<>();
 
-         if (result)
+      for (Map.Entry<Long, Map<String, String>> entry : tailMap.entrySet())
+      {
+         final LinkedHashMap<String, String> linkedEvent = makeLinked(entry.getValue());
+
+         if (filterOp == null || filterOp.apply(new AbstractMap.SimpleEntry<>(entry.getKey(), linkedEvent)))
          {
-            resultMap.put(entry.getKey(), entry.getValue());
+            resultMap.put(entry.getKey(), linkedEvent);
          }
       }
 
       return resultMap;
+   }
+
+   /**
+    * Gets all events after or at the specified timestamp.
+    *
+    * @param since
+    *    the timestamp
+    *
+    * @return all events after or at the specified timestamp
+    *
+    * @since 1.2
+    */
+   public SortedMap<Long, Map<String, String>> getEvents(long since)
+   {
+      return Collections.unmodifiableSortedMap(this.numEventMap.tailMap(since));
+   }
+
+   /**
+    * Gets all events after or at the specified timestamp that have any one of the relevant event types.
+    *
+    * @param since
+    *    the timestamp
+    * @param relevantEventTypes
+    *    the relevant event types
+    *
+    * @return all events after or at the specified timestamp that have any one of the relevant event types
+    *
+    * @since 1.2
+    */
+   public SortedMap<Long, Map<String, String>> getEvents(long since, String... relevantEventTypes)
+   {
+      final Set<String> eventTypes = new HashSet<>(Arrays.asList(relevantEventTypes));
+      return this.getEvents(since, (k, v) -> eventTypes.contains(v.get(EVENT_KEY)));
+   }
+
+   /**
+    * Gets all events after or at the specified timestamp that fulfill the given predicate.
+    *
+    * @param since
+    *    the timestamp
+    * @param filterOp
+    *    the predicate on timestamp and event
+    *
+    * @return all events after or at the specified timestamp that fulfill the given predicate
+    *
+    * @since 1.2
+    */
+   public SortedMap<Long, Map<String, String>> getEvents(long since,
+      BiPredicate<? super Long, ? super Map<String, String>> filterOp)
+   {
+      final SortedMap<Long, Map<String, String>> events = this.numEventMap.tailMap(since);
+      if (filterOp == null)
+      {
+         return events;
+      }
+
+      final SortedMap<Long, Map<String, String>> result = new TreeMap<>();
+
+      for (final Map.Entry<Long, Map<String, String>> entry : events.entrySet())
+      {
+         final Long key = entry.getKey();
+         final Map<String, String> value = entry.getValue();
+         if (filterOp.test(key, value))
+         {
+            result.put(key, value);
+         }
+      }
+
+      return result;
    }
 
    /**
