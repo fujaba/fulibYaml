@@ -109,10 +109,36 @@ public class EventSource
       return timeStamp != null ? this.numEventMap.get(timeStamp) : null;
    }
 
-   public boolean isOverwritten(LinkedHashMap<String, String> map)
+   /**
+    * Checks whether the given event was already overwritten, i.e. whether a newer event with the same key exists.
+    *
+    * @param event
+    *    the event
+    *
+    * @return true if the event was overwritten, false otherwise.
+    *
+    * @deprecated since 1.2; use {@link #isOverwritten(Map)} instead
+    */
+   @Deprecated
+   public boolean isOverwritten(LinkedHashMap<String, String> event)
    {
-      String eventKey = map.get(EVENT_KEY);
-      String eventTimeTxt = map.get(EVENT_TIMESTAMP);
+      return this.isOverwritten((Map<String, String>) event);
+   }
+
+   /**
+    * Checks whether the given event was already overwritten, i.e. whether a newer event with the same key exists.
+    *
+    * @param event
+    *    the event
+    *
+    * @return true if the event was overwritten, false otherwise.
+    *
+    * @since 1.2
+    */
+   public boolean isOverwritten(Map<String, String> event)
+   {
+      String eventKey = event.get(EVENT_KEY);
+      String eventTimeTxt = event.get(EVENT_TIMESTAMP);
 
       Long storedTime = this.keyNumMap.get(eventKey);
 
