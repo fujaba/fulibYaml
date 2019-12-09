@@ -22,11 +22,10 @@ public class EventSource
 
    private final Yamler yamler = new Yamler();
 
-   private final ArrayList<Consumer<? super Map<String, String>>> eventListeners = new ArrayList<>();
+   private final List<Consumer<? super Map<String, String>>> eventListeners = new ArrayList<>();
 
-   private final LinkedHashMap<String, Long> keyNumMap = new LinkedHashMap<>();
-
-   private final TreeMap<Long, Map<String, String>> numEventMap = new TreeMap<>();
+   private final Map<String, Long>                    keyToTimeStampMap   = new HashMap<>();
+   private final SortedMap<Long, Map<String, String>> timeStampToEventMap = new TreeMap<>();
 
    private long lastEventTime;
 
@@ -96,7 +95,7 @@ public class EventSource
    public SortedMap<Long, LinkedHashMap<String, String>> pull(long since,
       Function<Map.Entry<Long, LinkedHashMap<String, String>>, Boolean> filterOp)
    {
-      final SortedMap<Long, Map<String, String>> tailMap = this.numEventMap.tailMap(since);
+      final SortedMap<Long, Map<String, String>> tailMap = this.timeStampToEventMap.tailMap(since);
       final TreeMap<Long, LinkedHashMap<String, String>> resultMap = new TreeMap<>();
 
       for (Map.Entry<Long, Map<String, String>> entry : tailMap.entrySet())
@@ -121,7 +120,7 @@ public class EventSource
     */
    public SortedMap<Long, Map<String, String>> getEvents()
    {
-      return Collections.unmodifiableSortedMap(this.numEventMap);
+      return Collections.unmodifiableSortedMap(this.timeStampToEventMap);
    }
 
    /**
@@ -136,7 +135,7 @@ public class EventSource
     */
    public SortedMap<Long, Map<String, String>> getEvents(long since)
    {
-      return Collections.unmodifiableSortedMap(this.numEventMap.tailMap(since));
+      return Collections.unmodifiableSortedMap(this.timeStampToEventMap.tailMap(since));
    }
 
    /**
@@ -172,7 +171,7 @@ public class EventSource
    public SortedMap<Long, Map<String, String>> getEvents(long since,
       BiPredicate<? super Long, ? super Map<String, String>> filterOp)
    {
-      final SortedMap<Long, Map<String, String>> events = this.numEventMap.tailMap(since);
+      final SortedMap<Long, Map<String, String>> events = this.timeStampToEventMap.tailMap(since);
       if (filterOp == null)
       {
          return events;
@@ -223,8 +222,8 @@ public class EventSource
     */
    public Map<String, String> getNewestEvent(String eventKey)
    {
-      final Long timeStamp = this.keyNumMap.get(eventKey);
-      return timeStamp != null ? this.numEventMap.get(timeStamp) : null;
+      final Long timeStamp = this.keyToTimeStampMap.get(eventKey);
+      return timeStamp != null ? this.timeStampToEventMap.get(timeStamp) : null;
    }
 
    /**
@@ -258,7 +257,7 @@ public class EventSource
       String eventKey = event.get(EVENT_KEY);
       String eventTimeTxt = event.get(EVENT_TIMESTAMP);
 
-      Long storedTime = this.keyNumMap.get(eventKey);
+      Long storedTime = this.keyToTimeStampMap.get(eventKey);
 
       if (storedTime == null)
       {
@@ -380,15 +379,15 @@ public class EventSource
       String key = event.get(EVENT_KEY);
       if (key != null)
       {
-         Long oldNum = this.keyNumMap.get(key);
+         Long oldNum = this.keyToTimeStampMap.get(key);
          if (oldNum != null)
          {
-            this.numEventMap.remove(oldNum);
+            this.timeStampToEventMap.remove(oldNum);
          }
       }
 
-      this.keyNumMap.put(key, this.lastEventTime);
-      this.numEventMap.put(this.lastEventTime, event);
+      this.keyToTimeStampMap.put(key, this.lastEventTime);
+      this.timeStampToEventMap.put(this.lastEventTime, event);
 
       for (Consumer<? super Map<String, String>> listener : this.eventListeners)
       {
@@ -430,12 +429,12 @@ public class EventSource
 
    public String encodeYaml()
    {
-      return YamlGenerator.serialize(this.numEventMap.values());
+      return YamlGenerator.serialize(this.timeStampToEventMap.values());
    }
 
    public void encodeYaml(Writer writer) throws IOException
    {
-      YamlGenerator.serialize(this.numEventMap.values(), writer);
+      YamlGenerator.serialize(this.timeStampToEventMap.values(), writer);
    }
 
    // =============== Static Methods ===============
