@@ -303,7 +303,33 @@ public class EventSource
       return this;
    }
 
+   /**
+    * Adds the given event to this event source.
+    *
+    * @param event
+    *    the event
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @deprecated since 1.2; use {@link #append(Map)} instead
+    */
+   @Deprecated
    public EventSource append(LinkedHashMap<String, String> event)
+   {
+      return this.append((Map<String, String>) event);
+   }
+
+   /**
+    * Adds the given event to this event source.
+    *
+    * @param event
+    *    the event
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @since 1.2
+    */
+   public EventSource append(Map<String, String> event)
    {
       String timestampString;
 
@@ -351,14 +377,25 @@ public class EventSource
       return this;
    }
 
-   public EventSource append(String buf)
+   /**
+    * Parses the string as a YAML object list and adds each object as an event via {@link #append(Map)}.
+    *
+    * @param yaml
+    *    the YAML object list
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @deprecated since 1.2; parse the YAML yourself and use {@link #append(Map)}
+    */
+   @Deprecated
+   public EventSource append(String yaml)
    {
-      if (buf == null)
+      if (yaml == null)
       {
          return this; //===========================================
       }
 
-      ArrayList<LinkedHashMap<String, String>> list = this.yamler.decodeList(buf);
+      ArrayList<LinkedHashMap<String, String>> list = this.yamler.decodeList(yaml);
 
       for (LinkedHashMap<String, String> event : list)
       {
