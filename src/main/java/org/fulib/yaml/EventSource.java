@@ -277,9 +277,20 @@ public class EventSource
       this.eventListeners.add(listener);
    }
 
-   public EventSource setOldEventTimeStamp(String oldTimeStampString)
+   /**
+    * Sets the timestamp to use for the next event added with {@link #append(Map)}.
+    *
+    * @param oldEventTimeStamp
+    *    the old timestamp, as a string
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @deprecated since 1.2; parse the string yourself and use {@link #setOldEventTimeStamp(long)}
+    */
+   @Deprecated
+   public EventSource setOldEventTimeStamp(String oldEventTimeStamp)
    {
-      if (oldTimeStampString == null)
+      if (oldEventTimeStamp == null)
       {
          return this; //========================
       }
@@ -287,7 +298,7 @@ public class EventSource
       long oldTimeStamp = 0;
       try
       {
-         oldTimeStamp = this.dateFormat.parse(oldTimeStampString).getTime();
+         oldTimeStamp = this.dateFormat.parse(oldEventTimeStamp).getTime();
       }
       catch (ParseException e)
       {
@@ -297,6 +308,16 @@ public class EventSource
       return this.setOldEventTimeStamp(oldTimeStamp);
    }
 
+   /**
+    * Sets the timestamp to use for the next event added with {@link #append(Map)}.
+    *
+    * @param oldEventTimeStamp
+    *    the old timestamp, as a string
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @since 1.2
+    */
    public EventSource setOldEventTimeStamp(long oldEventTimeStamp)
    {
       this.oldEventTimeStamp = oldEventTimeStamp;
