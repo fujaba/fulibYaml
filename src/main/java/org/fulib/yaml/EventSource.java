@@ -116,6 +116,18 @@ public class EventSource
    }
 
    /**
+    * Gets all events, sorted by timestamp.
+    *
+    * @return all events, sorted by timestamp
+    *
+    * @since 1.2
+    */
+   public SortedMap<Long, Map<String, String>> getEvents()
+   {
+      return Collections.unmodifiableSortedMap(this.numEventMap);
+   }
+
+   /**
     * Gets all events after or at the specified timestamp.
     *
     * @param since
