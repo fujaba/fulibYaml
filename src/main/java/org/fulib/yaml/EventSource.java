@@ -21,7 +21,7 @@ public class EventSource
 
    private final Yamler yamler = new Yamler();
 
-   private final ArrayList<Consumer<LinkedHashMap<String, String>>> eventListeners = new ArrayList<>();
+   private final ArrayList<Consumer<? super Map<String, String>>> eventListeners = new ArrayList<>();
 
    private final LinkedHashMap<String, Long> keyNumMap = new LinkedHashMap<>();
 
@@ -42,7 +42,7 @@ public class EventSource
 
    // =============== Methods ===============
 
-   public void addEventListener(Consumer<LinkedHashMap<String, String>> listener)
+   public void addEventListener(Consumer<? super Map<String, String>> listener)
    {
       this.eventListeners.add(listener);
    }
@@ -196,7 +196,7 @@ public class EventSource
       this.keyNumMap.put(key, this.lastEventTime);
       this.numEventMap.put(this.lastEventTime, event);
 
-      for (Consumer<LinkedHashMap<String, String>> listener : this.eventListeners)
+      for (Consumer<? super Map<String, String>> listener : this.eventListeners)
       {
          listener.accept(event);
       }
