@@ -82,16 +82,35 @@ public class EventSource
       return resultMap;
    }
 
+   /**
+    * Gets the newest event with the given key, or null if not found.
+    *
+    * @param eventKey
+    *    the event key
+    *
+    * @return the newest event with the given key
+    *
+    * @deprecated since 1.2; use {@link #getEventByKey(String)} instead
+    */
+   @Deprecated
    public LinkedHashMap<String, String> getEvent(String eventKey)
    {
-      Long aLong = this.keyNumMap.get(eventKey);
+      final Map<String, String> byKey = this.getEventByKey(eventKey);
+      return byKey instanceof LinkedHashMap ? (LinkedHashMap<String, String>) byKey : new LinkedHashMap<>(byKey);
+   }
 
-      if (aLong == null)
-      {
-         return null; //======================
-      }
-
-      return this.numEventMap.get(aLong);
+   /**
+    * Gets the newest event with the given key, or null if not found.
+    *
+    * @param eventKey
+    *    the event key
+    *
+    * @return the newest event with the given key
+    */
+   public Map<String, String> getEventByKey(String eventKey)
+   {
+      final Long timeStamp = this.keyNumMap.get(eventKey);
+      return timeStamp != null ? this.numEventMap.get(timeStamp) : null;
    }
 
    public boolean isOverwritten(LinkedHashMap<String, String> map)
