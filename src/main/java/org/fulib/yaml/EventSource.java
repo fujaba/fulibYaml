@@ -89,8 +89,7 @@ public class EventSource
    @Deprecated
    public LinkedHashMap<String, String> getEvent(String eventKey)
    {
-      final Map<String, String> byKey = this.getNewestEvent(eventKey);
-      return byKey instanceof LinkedHashMap ? (LinkedHashMap<String, String>) byKey : new LinkedHashMap<>(byKey);
+      return makeLinked(this.getNewestEvent(eventKey));
    }
 
    /**
@@ -254,6 +253,12 @@ public class EventSource
    }
 
    // =============== Static Methods ===============
+
+   @Deprecated // only used by legacy methods
+   private static LinkedHashMap<String, String> makeLinked(Map<String, String> event)
+   {
+      return event instanceof LinkedHashMap ? (LinkedHashMap<String, String>) event : new LinkedHashMap<>(event);
+   }
 
    /**
     * Encodes the events as a list of YAML objects.
