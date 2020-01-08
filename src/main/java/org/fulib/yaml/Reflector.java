@@ -4,30 +4,32 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Reflector
 {
-   private String className = "";
-   private Method emfCreateMethod;
-   private Object emfFactory;
+   private String   className = "";
+   private Method   emfCreateMethod;
+   private Object   emfFactory;
    private Class<?> eObjectClass;
-   private Class<?> clazz = null;
+   private Class<?> clazz     = null;
 
    public Class<?> getClazz()
    {
-      if (clazz == null) {
+      if (this.clazz == null)
+      {
          try
          {
-            clazz = Class.forName(className);
+            this.clazz = Class.forName(this.className);
          }
          catch (ClassNotFoundException e)
          {
             e.printStackTrace();
          }
       }
-      return clazz;
+      return this.clazz;
    }
 
    public Reflector setClazz(Class<?> clazz)
@@ -38,7 +40,7 @@ public class Reflector
 
    public String getClassName()
    {
-      return className;
+      return this.className;
    }
 
    public Reflector setClassName(String className)
@@ -52,7 +54,7 @@ public class Reflector
       // call removeYou if possible
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
          Method removeYou = clazz.getMethod("removeYou");
          removeYou.invoke(object);
       }
@@ -60,32 +62,27 @@ public class Reflector
       {
          // e.printStackTrace();
       }
-
    }
-
 
    private String[] properties = null;
 
    public String[] getProperties()
    {
-      if (properties != null)
+      if (this.properties != null)
       {
-         return properties;
+         return this.properties;
       }
 
-
-      Class<?> clazz = getClazz();
+      Class<?> clazz = this.getClazz();
 
       Method[] methods = clazz.getMethods();
 
-      LinkedHashSet<String> fieldNames = new LinkedHashSet<String>();
+      Set<String> fieldNames = new LinkedHashSet<>();
       for (Method method : methods)
       {
          String methodName = method.getName();
 
-         if (methodName.startsWith("get")
-               && ! methodName.equals("getClass")
-               && method.getParameterCount() == 0)
+         if (methodName.startsWith("get") && !"getClass".equals(methodName) && method.getParameterCount() == 0)
          {
             methodName = methodName.substring(3);
 
@@ -96,27 +93,25 @@ public class Reflector
                fieldNames.add(methodName);
             }
          }
-
       }
 
-      properties = fieldNames.toArray(new String[]{});
+      this.properties = fieldNames.toArray(new String[] {});
 
-      Arrays.sort(properties);
+      Arrays.sort(this.properties);
 
-      return properties;
+      return this.properties;
    }
 
    public Object newInstance()
    {
       try
       {
-         if (emfCreateMethod != null)
+         if (this.emfCreateMethod != null)
          {
-            Object emfObject = emfCreateMethod.invoke(emfFactory);
-            return emfObject;
+            return this.emfCreateMethod.invoke(this.emfFactory);
          }
 
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
          return clazz.newInstance();
       }
       catch (Exception e)
@@ -136,48 +131,41 @@ public class Reflector
 
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("get" + StrUtil.cap(attribute));
 
-         Object invoke = method.invoke(object);
-
-         return invoke;
+         return method.invoke(object);
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
       }
 
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod(attribute);
 
-         Object invoke = method.invoke(object);
-
-         return invoke;
+         return method.invoke(object);
       }
-      catch (Exception e2)
+      catch (Exception ignored)
       {
 
       }
 
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("is" + StrUtil.cap(attribute));
 
-         Object invoke = method.invoke(object);
-
-         return invoke;
+         return method.invoke(object);
       }
       catch (Exception e3)
       {
          // e.printStackTrace();
       }
-
 
       return null;
    }
@@ -191,20 +179,18 @@ public class Reflector
 
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Class<?> valueClass = value.getClass();
 
-         if (eObjectClass != null && eObjectClass.isAssignableFrom(valueClass))
+         if (this.eObjectClass != null && this.eObjectClass.isAssignableFrom(valueClass))
          {
             valueClass = valueClass.getInterfaces()[0];
          }
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), valueClass);
 
-         Object result = method.invoke(object, value);
-
-         return result;
+         return method.invoke(object, value);
       }
       catch (Exception e)
       {
@@ -215,7 +201,7 @@ public class Reflector
       try
       {
          int intValue = Integer.parseInt((String) value);
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), int.class);
 
@@ -229,16 +215,19 @@ public class Reflector
       }
 
       // maybe a huge number
-      try {
+      try
+      {
          long longValue = Long.parseLong((String) value);
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), long.class);
 
          method.invoke(object, longValue);
 
          return true;
-      } catch (Exception e) {
+      }
+      catch (Exception e)
+      {
          // e.printStackTrace(); // I don't like this :(
       }
 
@@ -246,7 +235,7 @@ public class Reflector
       try
       {
          double doubleValue = Double.parseDouble((String) value);
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), double.class);
 
@@ -263,7 +252,7 @@ public class Reflector
       try
       {
          float floatValue = Float.parseFloat((String) value);
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("set" + StrUtil.cap(attribute), float.class);
 
@@ -279,11 +268,11 @@ public class Reflector
       // to-many?
       try
       {
-         Class<?> clazz = getClazz();
+         Class<?> clazz = this.getClazz();
 
          Method method = clazz.getMethod("with" + StrUtil.cap(attribute), Object[].class);
 
-         method.invoke(object, new Object[]{new Object[]{value}});
+         method.invoke(object, new Object[] { new Object[] { value } });
 
          return true;
       }
@@ -294,9 +283,9 @@ public class Reflector
 
       try
       {
-         if (emfCreateMethod != null)
+         if (this.emfCreateMethod != null)
          {
-            Class<?> clazz = getClazz();
+            Class<?> clazz = this.getClazz();
 
             // its o.getAssoc().add(v)
             Method getMethod = clazz.getMethod("get" + StrUtil.cap(attribute));
@@ -319,29 +308,28 @@ public class Reflector
 
    public Reflector setUseEMF()
    {
-      String packageName = className;
+      String packageName = this.className;
       // chop simpleClassName
       int pos = packageName.lastIndexOf('.');
-      String simpleClassName = packageName.substring(pos+1);
-      simpleClassName = simpleClassName.substring(0, simpleClassName.length()-"Impl".length());
+      String simpleClassName = packageName.substring(pos + 1);
+      simpleClassName = simpleClassName.substring(0, simpleClassName.length() - "Impl".length());
       packageName = packageName.substring(0, pos);
 
       // chop .impl
-      packageName = packageName.substring(0, packageName.length()-".impl".length());
+      packageName = packageName.substring(0, packageName.length() - ".impl".length());
 
       pos = packageName.lastIndexOf('.');
-      String lastPart = packageName.substring(pos+1);
+      String lastPart = packageName.substring(pos + 1);
       String simpleFactoryName = StrUtil.cap(lastPart) + "Factory";
       try
       {
-         Class factoryClass = Class.forName(packageName + "." + simpleFactoryName);
+         Class<?> factoryClass = Class.forName(packageName + "." + simpleFactoryName);
          Field eInstanceField = factoryClass.getField("eINSTANCE");
-         emfFactory = eInstanceField.get(null);
+         this.emfFactory = eInstanceField.get(null);
 
-         emfCreateMethod = emfFactory.getClass().getMethod("create" + simpleClassName);
+         this.emfCreateMethod = this.emfFactory.getClass().getMethod("create" + simpleClassName);
 
-         eObjectClass = Class.forName("org.eclipse.emf.ecore.EObject");
-
+         this.eObjectClass = Class.forName("org.eclipse.emf.ecore.EObject");
       }
       catch (Exception e)
       {
