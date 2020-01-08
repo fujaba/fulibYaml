@@ -153,42 +153,37 @@ public class Reflector
          return null;
       }
 
+      final String capName = StrUtil.cap(attribute);
+      Class<?> clazz = this.getClazz();
+
+      // e.g. foo.getName(); default bean getter naming convention
       try
       {
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("get" + StrUtil.cap(attribute));
-
+         Method method = clazz.getMethod("get" + capName);
          return method.invoke(object);
       }
       catch (Exception ignored)
       {
       }
 
+      // e.g. foo.name(); used by some code styles and Scala
       try
       {
-         Class<?> clazz = this.getClazz();
-
          Method method = clazz.getMethod(attribute);
-
          return method.invoke(object);
       }
       catch (Exception ignored)
       {
-
       }
 
+      // e.g. foo.isValid(); for booleans
       try
       {
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("is" + StrUtil.cap(attribute));
-
+         Method method = clazz.getMethod("is" + capName);
          return method.invoke(object);
       }
-      catch (Exception e3)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
       return null;
