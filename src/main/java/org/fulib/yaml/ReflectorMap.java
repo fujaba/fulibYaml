@@ -12,7 +12,7 @@ public class ReflectorMap
 
    private ArrayList<String> packageNames;
 
-   private Class eObject = null;
+   private Class<?> eObject;
 
    public ReflectorMap(String packageName)
    {
@@ -24,10 +24,10 @@ public class ReflectorMap
 
       try
       {
-         eObject = Class.forName("org.eclipse.emf.ecore.EClass");
+         this.eObject = Class.forName("org.eclipse.emf.ecore.EClass");
          Logger.getGlobal().log(Level.INFO, "could load org.eclipse.emf.ecore.EClass");
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException ignored)
       {
       }
    }
@@ -38,14 +38,13 @@ public class ReflectorMap
 
       try
       {
-         eObject = ClassLoader.getSystemClassLoader().loadClass("org.eclipse.emf.ecore.EObject");
+         this.eObject = ClassLoader.getSystemClassLoader().loadClass("org.eclipse.emf.ecore.EObject");
          Logger.getGlobal().log(Level.INFO, "could load org.eclipse.emf.ecore.EObject");
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException ignored)
       {
       }
    }
-
 
    public Reflector getReflector(Object newObject)
    {
@@ -58,31 +57,32 @@ public class ReflectorMap
       String fullName = newObject.getClass().getName();
       String packageName = newObject.getClass().getPackage().getName();
 
-
-      if (this.packageNames.contains(packageName)) {
+      if (this.packageNames.contains(packageName))
+      {
          // yes, we should reflect this object
-         Reflector reflector = reflectorMap.get(simpleName);
+         Reflector reflector = this.reflectorMap.get(simpleName);
 
-         if (reflector == null) {
+         if (reflector == null)
+         {
             reflector = new Reflector().setClassName(fullName).setClazz(newObject.getClass());
-            reflectorMap.put(simpleName, reflector);
+            this.reflectorMap.put(simpleName, reflector);
          }
 
          return reflector;
       }
 
-      return getReflector(simpleName);
+      return this.getReflector(simpleName);
    }
-
 
    public Reflector getReflector(String clazzName)
    {
       // already known?
-      Reflector reflector = reflectorMap.get(clazzName);
+      Reflector reflector = this.reflectorMap.get(clazzName);
 
-      if (reflector != null) return reflector; //====================
+      if (reflector != null)
+         return reflector; //====================
 
-      for (String packageName : packageNames)
+      for (String packageName : this.packageNames)
       {
          String fullClassName = packageName + "." + clazzName;
 
@@ -93,13 +93,14 @@ public class ReflectorMap
             if (theClass != null)
             {
                reflector = new Reflector().setClassName(fullClassName);
-               reflectorMap.put(clazzName, reflector);
+               this.reflectorMap.put(clazzName, reflector);
                return reflector;
             }
          }
          catch (Exception e)
          {
-            if (eObject == null) continue; //=======================
+            if (this.eObject == null)
+               continue; //=======================
 
             try
             {
@@ -109,10 +110,8 @@ public class ReflectorMap
 
                if (theClass != null)
                {
-                  reflector = new Reflector()
-                        .setClassName(fullClassName)
-                        .setUseEMF();
-                  reflectorMap.put(clazzName, reflector);
+                  reflector = new Reflector().setClassName(fullClassName).setUseEMF();
+                  this.reflectorMap.put(clazzName, reflector);
                   return reflector;
                }
             }
@@ -125,20 +124,21 @@ public class ReflectorMap
 
       if (reflector == null)
       {
-         String packagesString = "";
-         for (String name : packageNames)
+         StringBuilder message = new StringBuilder();
+         message.append("ReflectorMap could not find class description for ").append(clazzName)
+                .append("\nsearching in \n");
+
+         for (String name : this.packageNames)
          {
-            packagesString += "   " + name + "\n";
+            message.append("   ").append(name).append("\n");
          }
 
+         message.append("You might add more packages to the construction of the ReflectorMap / YamlIdMap \n"
+                        + "or you might move the missing class into the common model package.");
 
-         throw new RuntimeException("ReflectorMap could not find class description for " + clazzName + "\n" +
-               "searching in \n" + packagesString +
-               "You might add more packages to the construction of the ReflectorMap / YamlIdMap \n" +
-               "or you might move the missing class into the common model package.");
+         throw new RuntimeException(message.toString());
       }
 
       return reflector;
    }
-
 }
