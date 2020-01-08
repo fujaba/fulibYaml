@@ -146,6 +146,17 @@ public class Reflector
       return null;
    }
 
+   /**
+    * Gets the attribute of the object by invoking either {@code object.get<attribute>()}, {@code object.<attribute>()}
+    * or {@code object.is<attribute>()} (trying in that order).
+    *
+    * @param object
+    *    the receiver object
+    * @param attribute
+    *    the attribute name
+    *
+    * @return the return value of the getter, or {@code null} if no getter was found
+    */
    public Object getValue(Object object, String attribute)
    {
       if (object == null)
