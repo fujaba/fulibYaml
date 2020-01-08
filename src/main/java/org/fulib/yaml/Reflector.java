@@ -245,130 +245,98 @@ public class Reflector
          return null;
       }
 
+      Class<?> clazz = this.getClazz();
+      final String capName = StrUtil.cap(attribute);
+      final String setterName = "set" + capName;
+
       try
       {
-         Class<?> clazz = this.getClazz();
-
          Class<?> valueClass = value.getClass();
-
          if (this.eObjectClass != null && this.eObjectClass.isAssignableFrom(valueClass))
          {
             valueClass = valueClass.getInterfaces()[0];
          }
 
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), valueClass);
-
+         Method method = clazz.getMethod(setterName, valueClass);
          return method.invoke(object, value);
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
       // maybe a number
       try
       {
          int intValue = Integer.parseInt((String) value);
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), int.class);
-
+         Method method = clazz.getMethod(setterName, int.class);
          method.invoke(object, intValue);
-
          return true;
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
       // maybe a huge number
       try
       {
          long longValue = Long.parseLong((String) value);
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), long.class);
-
+         Method method = clazz.getMethod(setterName, long.class);
          method.invoke(object, longValue);
-
          return true;
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace(); // I don't like this :(
       }
 
       // maybe a double
       try
       {
          double doubleValue = Double.parseDouble((String) value);
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), double.class);
-
+         Method method = clazz.getMethod(setterName, double.class);
          method.invoke(object, doubleValue);
-
          return true;
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
       // maybe a float
       try
       {
          float floatValue = Float.parseFloat((String) value);
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("set" + StrUtil.cap(attribute), float.class);
-
+         Method method = clazz.getMethod(setterName, float.class);
          method.invoke(object, floatValue);
-
          return true;
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
       // to-many?
       try
       {
-         Class<?> clazz = this.getClazz();
-
-         Method method = clazz.getMethod("with" + StrUtil.cap(attribute), Object[].class);
-
+         Method method = clazz.getMethod("with" + capName, Object[].class);
          method.invoke(object, new Object[] { new Object[] { value } });
-
          return true;
       }
-      catch (Exception e)
+      catch (Exception ignored)
       {
-         // e.printStackTrace();
       }
 
-      try
+      if (this.emfCreateMethod != null)
       {
-         if (this.emfCreateMethod != null)
+         try
          {
-            Class<?> clazz = this.getClazz();
-
             // its o.getAssoc().add(v)
-            Method getMethod = clazz.getMethod("get" + StrUtil.cap(attribute));
-
+            Method getMethod = clazz.getMethod("get" + capName);
             Object collection = getMethod.invoke(object);
-
             Method addMethod = collection.getClass().getMethod("add", Object.class);
-
             addMethod.invoke(collection, value);
             return true;
          }
-      }
-      catch (Exception e)
-      {
-         // e.printStackTrace();
+         catch (Exception ignored)
+         {
+         }
       }
 
       return null;
