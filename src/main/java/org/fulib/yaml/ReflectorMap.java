@@ -8,11 +8,15 @@ import java.util.logging.Logger;
 
 public class ReflectorMap
 {
-   Map<String, Reflector> reflectorMap = new LinkedHashMap<>();
+   // =============== Fields ===============
+
+   private Map<String, Reflector> reflectorMap = new LinkedHashMap<>();
 
    private ArrayList<String> packageNames;
 
    private Class<?> eObject;
+
+   // =============== Constructors ===============
 
    public ReflectorMap(String packageName)
    {
@@ -45,6 +49,8 @@ public class ReflectorMap
       {
       }
    }
+
+   // =============== Methods ===============
 
    public Reflector getReflector(Object newObject)
    {
