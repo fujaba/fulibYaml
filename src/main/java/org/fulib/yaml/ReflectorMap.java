@@ -1,8 +1,6 @@
 package org.fulib.yaml;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,31 +10,42 @@ public class ReflectorMap
 
    private Map<String, Reflector> reflectorMap = new LinkedHashMap<>();
 
-   private ArrayList<String> packageNames;
+   private final Collection<String> packageNames;
 
    private Class<?> eObject;
 
    // =============== Constructors ===============
 
+   /**
+    * Creates a new {@link ReflectorMap}.
+    *
+    * @param packageName the package name to search for classes
+    */
    public ReflectorMap(String packageName)
    {
-      ArrayList<String> packageNames = new ArrayList<>();
-
-      packageNames.add(packageName);
-
-      this.packageNames = packageNames;
-
-      try
-      {
-         this.eObject = Class.forName("org.eclipse.emf.ecore.EClass");
-         Logger.getGlobal().log(Level.INFO, "could load org.eclipse.emf.ecore.EClass");
-      }
-      catch (ClassNotFoundException ignored)
-      {
-      }
+      this(Collections.singleton(packageName));
    }
 
-   public ReflectorMap(ArrayList<String> packageNames)
+   /**
+    * Creates a new {@link ReflectorMap}.
+    * 
+    * @param packageNames the package names to search for classes
+    *                     
+    * @since 1.2
+    */
+   public ReflectorMap(String... packageNames)
+   {
+      this(Arrays.asList(packageNames));
+   }
+
+   /**
+    * Creates a new {@link ReflectorMap}.
+    *
+    * @param packageNames the package names to search for classes
+    *
+    * @since 1.2
+    */
+   public ReflectorMap(Collection<String> packageNames)
    {
       this.packageNames = packageNames;
 
@@ -48,6 +57,18 @@ public class ReflectorMap
       catch (ClassNotFoundException ignored)
       {
       }
+   }
+
+   /**
+    * Creates a new {@link ReflectorMap}.
+    *
+    * @param packageNames the package names to search for classes
+    *
+    * @deprecated since 1.2; use {@link #ReflectorMap(Collection)} instead
+    */
+   public ReflectorMap(ArrayList<String> packageNames)
+   {
+      this((Collection<String>) packageNames);
    }
 
    // =============== Methods ===============

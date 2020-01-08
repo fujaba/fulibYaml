@@ -461,7 +461,7 @@ public class YamlIdMap
       Objects.requireNonNull(packageNames);
       List<String> list = Arrays.asList(packageNames);
       this.packageNames = new ArrayList<String>(list);
-      reflectorMap = new ReflectorMap(this.packageNames);
+      reflectorMap = new ReflectorMap(list);
    }
 
 

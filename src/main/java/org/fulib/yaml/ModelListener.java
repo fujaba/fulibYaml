@@ -22,9 +22,7 @@ public class ModelListener implements PropertyChangeListener
    {
       this.elementListener = elementListener;
       String packageName = root.getClass().getPackage().getName();
-      ArrayList<String> packageNameList = new ArrayList<>();
-      packageNameList.add(packageName);
-      creatorMap = new ReflectorMap(packageNameList);
+      creatorMap = new ReflectorMap(packageName);
       subscribeTo(root);
    }
 
