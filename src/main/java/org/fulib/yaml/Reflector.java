@@ -200,7 +200,45 @@ public class Reflector
       return null;
    }
 
+   /**
+    * Sets the attribute of the object to the new value by invoking a fitting {@code set<attribute>(...)} or
+    * {@code with<attribute>(...)} method or {@code get<attribute>.add(...)} for EMF to-many associations.
+    *
+    * @param object
+    *    the object to modify
+    * @param attribute
+    *    the attribute name
+    * @param value
+    *    the new value
+    * @param type
+    *    unused
+    *
+    * @return the return value of the setter, or {@code true} if successful, or {@code null} if unsuccessful
+    *
+    * @deprecated since 1.2; use {@link #setValue(Object, String, Object)} instead
+    */
+   @Deprecated
    public Object setValue(Object object, String attribute, Object value, String type)
+   {
+      return this.setValue(object, attribute, value);
+   }
+
+   /**
+    * Sets the attribute of the object to the new value by invoking a fitting {@code set<attribute>(...)} or
+    * {@code with<attribute>(...)} method or {@code get<attribute>.add(...)} for EMF to-many associations.
+    *
+    * @param object
+    *    the object to modify
+    * @param attribute
+    *    the attribute name
+    * @param value
+    *    the new value
+    *
+    * @return the return value of the setter, or {@code true} if successful, or {@code null} if unsuccessful
+    *
+    * @since 1.2
+    */
+   public Object setValue(Object object, String attribute, Object value)
    {
       if (object == null)
       {
