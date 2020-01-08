@@ -2,9 +2,8 @@ package org.fulib.yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,32 +94,25 @@ public class Reflector
          return this.properties;
       }
 
-      Class<?> clazz = this.getClazz();
+      final Class<?> clazz = this.getClazz();
+      final Method[] methods = clazz.getMethods();
 
-      Method[] methods = clazz.getMethods();
-
-      Set<String> fieldNames = new LinkedHashSet<>();
+      // TreeSet because we want it sorted
+      final Set<String> fieldNames = new TreeSet<>();
       for (Method method : methods)
       {
          String methodName = method.getName();
 
-         if (methodName.startsWith("get") && !"getClass".equals(methodName) && method.getParameterCount() == 0)
+         // getter, but not getClass(), get() or parameterized
+         if (method.getParameterCount() == 0 && methodName.length() > 3 // fast checks
+             && methodName.startsWith("get") && !"getClass".equals(methodName))
          {
-            methodName = methodName.substring(3);
-
-            methodName = StrUtil.downFirstChar(methodName);
-
-            if (!"".equals(methodName.trim()))
-            {
-               fieldNames.add(methodName);
-            }
+            final String attributeName = StrUtil.downFirstChar(methodName.substring(3));
+            fieldNames.add(attributeName);
          }
       }
 
       this.properties = fieldNames.toArray(new String[] {});
-
-      Arrays.sort(this.properties);
-
       return this.properties;
    }
 
