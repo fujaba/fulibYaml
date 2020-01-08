@@ -2,6 +2,7 @@ package org.fulib.yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -17,7 +18,8 @@ public class Reflector
    private Class<?> eObjectClass;
    private Class<?> clazz;
 
-   private String[] properties; // cache
+   private Set<String> ownProperties; // cache
+   private Set<String> allProperties; // cache
 
    // =============== Properties ===============
 
@@ -87,18 +89,55 @@ public class Reflector
       return this;
    }
 
+   /**
+    * @return a sorted array of names of properties the underlying {@link #getClazz() clazz} has.
+    *
+    * @deprecated since 1.2; use {@link #getOwnProperties()} instead
+    */
+   @Deprecated
    public String[] getProperties()
    {
-      if (this.properties != null)
+      return this.getOwnProperties().toArray(new String[0]);
+   }
+
+   /**
+    * @return a sorted set of names of properties the underlying {@link #getClazz() clazz} has.
+    *
+    * @since 1.2
+    */
+   public Set<String> getOwnProperties()
+   {
+      if (this.ownProperties != null)
       {
-         return this.properties;
+         return this.ownProperties;
       }
 
-      final Class<?> clazz = this.getClazz();
-      final Method[] methods = clazz.getMethods();
+      final Set<String> ownProperties = new TreeSet<>();
+      addOwnProperties(this.getClazz(), ownProperties);
+      return this.ownProperties = Collections.unmodifiableSet(ownProperties);
+   }
 
-      // TreeSet because we want it sorted
-      final Set<String> fieldNames = new TreeSet<>();
+   /**
+    * @return a sorted set of names of properties the underlying {@link #getClazz() clazz} and it's super class and
+    * interfaces have.
+    *
+    * @since 1.2
+    */
+   public Set<String> getAllProperties()
+   {
+      if (this.allProperties != null)
+      {
+         return this.allProperties;
+      }
+
+      final Set<String> ownProperties = new TreeSet<>();
+      addAllProperties(this.getClazz(), ownProperties);
+      return this.allProperties = Collections.unmodifiableSet(ownProperties);
+   }
+
+   private static void addOwnProperties(Class<?> clazz, Set<String> fieldNames)
+   {
+      final Method[] methods = clazz.getMethods();
       for (Method method : methods)
       {
          String methodName = method.getName();
@@ -111,9 +150,22 @@ public class Reflector
             fieldNames.add(attributeName);
          }
       }
+   }
 
-      this.properties = fieldNames.toArray(new String[] {});
-      return this.properties;
+   private static void addAllProperties(Class<?> clazz, Set<String> fieldNames)
+   {
+      addOwnProperties(clazz, fieldNames);
+
+      final Class<?> superClass = clazz.getSuperclass();
+      if (superClass != null)
+      {
+         addAllProperties(superClass, fieldNames);
+      }
+
+      for (final Class<?> superInterface : clazz.getInterfaces())
+      {
+         addAllProperties(superInterface, fieldNames);
+      }
    }
 
    // =============== Methods ===============

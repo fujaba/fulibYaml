@@ -1060,7 +1060,7 @@ public class YamlIdMap
          // attrs
          Reflector creator = getReflector(obj);
 
-         for (String prop : creator.getProperties())
+         for (String prop : creator.getOwnProperties())
          {
             Object value = creator.getValue(obj, prop);
 
@@ -1162,7 +1162,7 @@ public class YamlIdMap
             // find neighbors
             Reflector reflector = getReflector(obj);
 
-            for (String prop : reflector.getProperties()) {
+            for (String prop : reflector.getOwnProperties()) {
                Object value = reflector.getValue(obj, prop);
 
                if (value == null) {

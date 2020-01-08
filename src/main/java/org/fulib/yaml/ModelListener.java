@@ -70,7 +70,7 @@ public class ModelListener implements PropertyChangeListener
 
       if (reflector == null) return; // don't know structure of newObject, probably a String
 
-      for (String prop : reflector.getProperties())
+      for (String prop : reflector.getOwnProperties())
       {
          Object newValue = reflector.getValue(newObject, prop);
 
