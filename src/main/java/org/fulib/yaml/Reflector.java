@@ -10,11 +10,17 @@ import java.util.logging.Logger;
 
 public class Reflector
 {
+   // =============== Fields ===============
+
    private String   className = "";
    private Method   emfCreateMethod;
    private Object   emfFactory;
    private Class<?> eObjectClass;
-   private Class<?> clazz     = null;
+   private Class<?> clazz;
+
+   private String[] properties; // cache
+
+   // =============== Properties ===============
 
    public Class<?> getClazz()
    {
@@ -49,22 +55,38 @@ public class Reflector
       return this;
    }
 
-   public void removeObject(Object object)
+   public Reflector setUseEMF()
    {
-      // call removeYou if possible
+      String packageName = this.className;
+      // chop simpleClassName
+      int pos = packageName.lastIndexOf('.');
+      String simpleClassName = packageName.substring(pos + 1);
+      simpleClassName = simpleClassName.substring(0, simpleClassName.length() - "Impl".length());
+      packageName = packageName.substring(0, pos);
+
+      // chop .impl
+      packageName = packageName.substring(0, packageName.length() - ".impl".length());
+
+      pos = packageName.lastIndexOf('.');
+      String lastPart = packageName.substring(pos + 1);
+      String simpleFactoryName = StrUtil.cap(lastPart) + "Factory";
       try
       {
-         Class<?> clazz = this.getClazz();
-         Method removeYou = clazz.getMethod("removeYou");
-         removeYou.invoke(object);
+         Class<?> factoryClass = Class.forName(packageName + "." + simpleFactoryName);
+         Field eInstanceField = factoryClass.getField("eINSTANCE");
+         this.emfFactory = eInstanceField.get(null);
+
+         this.emfCreateMethod = this.emfFactory.getClass().getMethod("create" + simpleClassName);
+
+         this.eObjectClass = Class.forName("org.eclipse.emf.ecore.EObject");
       }
       catch (Exception e)
       {
-         // e.printStackTrace();
+         Logger.getGlobal().log(Level.SEVERE, "could not find EMF Factory createXY method", e);
       }
-   }
 
-   private String[] properties = null;
+      return this;
+   }
 
    public String[] getProperties()
    {
@@ -101,6 +123,8 @@ public class Reflector
 
       return this.properties;
    }
+
+   // =============== Methods ===============
 
    public Object newInstance()
    {
@@ -306,36 +330,18 @@ public class Reflector
       return null;
    }
 
-   public Reflector setUseEMF()
+   public void removeObject(Object object)
    {
-      String packageName = this.className;
-      // chop simpleClassName
-      int pos = packageName.lastIndexOf('.');
-      String simpleClassName = packageName.substring(pos + 1);
-      simpleClassName = simpleClassName.substring(0, simpleClassName.length() - "Impl".length());
-      packageName = packageName.substring(0, pos);
-
-      // chop .impl
-      packageName = packageName.substring(0, packageName.length() - ".impl".length());
-
-      pos = packageName.lastIndexOf('.');
-      String lastPart = packageName.substring(pos + 1);
-      String simpleFactoryName = StrUtil.cap(lastPart) + "Factory";
+      // call removeYou if possible
       try
       {
-         Class<?> factoryClass = Class.forName(packageName + "." + simpleFactoryName);
-         Field eInstanceField = factoryClass.getField("eINSTANCE");
-         this.emfFactory = eInstanceField.get(null);
-
-         this.emfCreateMethod = this.emfFactory.getClass().getMethod("create" + simpleClassName);
-
-         this.eObjectClass = Class.forName("org.eclipse.emf.ecore.EObject");
+         Class<?> clazz = this.getClazz();
+         Method removeYou = clazz.getMethod("removeYou");
+         removeYou.invoke(object);
       }
       catch (Exception e)
       {
-         Logger.getGlobal().log(Level.SEVERE, "could not find EMF Factory createXY method", e);
+         // e.printStackTrace();
       }
-
-      return this;
    }
 }
