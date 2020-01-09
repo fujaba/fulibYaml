@@ -57,18 +57,17 @@ public class YamlObjectReflector extends Reflector
    @Override
    public Object getValue(Object object, String attribute)
    {
-      return yamlObject.getMap().get(attribute);
+      return this.yamlObject.get(attribute);
    }
 
    @Override
-   public Object setValue(Object object, String attribute, Object value, String type)
+   public Object setValue(Object object, String attribute, Object value)
    {
-      return yamlObject.getMap().put(attribute, value);
+      return this.yamlObject.put(attribute, value);
    }
 
    @Override
    public void removeObject(Object object)
    {
-      super.removeObject(object);
    }
 }
