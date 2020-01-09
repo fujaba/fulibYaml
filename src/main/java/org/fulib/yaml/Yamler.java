@@ -20,12 +20,21 @@ import java.util.StringTokenizer;
  */
 public class Yamler
 {
+   // =============== Fields ===============
+
    private String          yaml;
    private StringTokenizer tokenizer;
    private String          lookAheadToken;
    private String          currentToken;
    private int             currentPos;
    private int             lookAheadPos;
+
+   // =============== Constructors ===============
+
+   public Yamler()
+   {
+      // empty
+   }
 
    public Yamler(String yaml)
    {
@@ -37,10 +46,29 @@ public class Yamler
       this.nextToken();
    }
 
-   public Yamler()
+   // =============== Properties ===============
+
+   public String getCurrentToken()
    {
-      // empty
+      return this.currentToken;
    }
+
+   public int getCurrentPos()
+   {
+      return this.currentPos;
+   }
+
+   public String getLookAheadToken()
+   {
+      return this.lookAheadToken;
+   }
+
+   public int getLookAheadPos()
+   {
+      return this.lookAheadPos;
+   }
+
+   // =============== Methods ===============
 
    /**
     * Storyboard
@@ -186,11 +214,6 @@ public class Yamler
       return id;
    }
 
-   public String getCurrentToken()
-   {
-      return this.currentToken;
-   }
-
    /**
     * Encapsulates a YAML value by enclosing it in quotes ("), if necessary.
     *
@@ -234,20 +257,5 @@ public class Yamler
 
       System.err.println(this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml
          .substring(this.currentPos, endPos));
-   }
-
-   public String getLookAheadToken()
-   {
-      return this.lookAheadToken;
-   }
-
-   public int getCurrentPos()
-   {
-      return this.currentPos;
-   }
-
-   public int getLookAheadPos()
-   {
-      return this.lookAheadPos;
    }
 }
