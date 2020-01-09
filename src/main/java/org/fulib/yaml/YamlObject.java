@@ -6,47 +6,41 @@ import java.util.LinkedHashMap;
 public class YamlObject
 {
 
-   public static final String ID = ".id";
+   public static final String ID   = ".id";
    public static final String TYPE = "type";
-
 
    public YamlObject()
    {
       // empty
    }
 
-
    public YamlObject(String id, String type)
    {
-      map.put(ID, id);
-      map.put(TYPE, type);
+      this.map.put(ID, id);
+      this.map.put(TYPE, type);
    }
-
 
    private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
-
    public LinkedHashMap<String, Object> getMap()
    {
-      return map;
+      return this.map;
    }
-
 
    public YamlObject put(String tag, Object value)
    {
-      map.put(tag, value);
+      this.map.put(tag, value);
       return this;
    }
 
-
    public YamlObject with(String tag, Object value)
    {
-      ArrayList<Object> list = (ArrayList<Object>) map.get(tag);
+      ArrayList<Object> list = (ArrayList<Object>) this.map.get(tag);
 
       if (list == null)
       {
          list = new ArrayList<>();
-         map.put(tag, list);
+         this.map.put(tag, list);
       }
 
       list.add(value);
@@ -54,18 +48,20 @@ public class YamlObject
       return this;
    }
 
-
    public Object get(String tag)
    {
-      return map.get(tag);
+      return this.map.get(tag);
    }
 
    @Override
    public String toString()
    {
-      Object id = map.get(ID);
+      Object id = this.map.get(ID);
 
-      if (id != null) return id.toString();
+      if (id != null)
+      {
+         return id.toString();
+      }
 
       return super.toString();
    }
