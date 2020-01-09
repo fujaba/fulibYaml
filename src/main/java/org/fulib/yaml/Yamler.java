@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 
 /**
- *
  * <p>Storyboard <a href='.././src/test/java/org/sdmlib/test/doc/TestJavaDocStories.java'>GenJavaDocStory</a></p>
  * <p>Yamler reads simple key value pairs in YAML syntax.</p>
  * <p>Example:</p>
@@ -21,24 +20,22 @@ import java.util.StringTokenizer;
  */
 public class Yamler
 {
-   private String yaml;
+   private String          yaml;
    private StringTokenizer tokenizer;
-   private String lookAheadToken;
-   private String currentToken;
-   private int currentPos;
-   private int lookAheadPos;
-
+   private String          lookAheadToken;
+   private String          currentToken;
+   private int             currentPos;
+   private int             lookAheadPos;
 
    public Yamler(String yaml)
    {
       this.yaml = yaml;
 
-      tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = null;
-      nextToken();
-      nextToken();
+      this.tokenizer = new StringTokenizer(yaml);
+      this.lookAheadToken = null;
+      this.nextToken();
+      this.nextToken();
    }
-
 
    public Yamler()
    {
@@ -46,7 +43,6 @@ public class Yamler
    }
 
    /**
-    *
     * Storyboard
     *
     * <p>Storyboard <a href='https://github.com/fujaba/SDMLib/blob/master/src/test/java/org/sdmlib/test/examples/groupaccount/GroupAccountTests.java'>PlainYaml</a></p>
@@ -62,67 +58,67 @@ public class Yamler
     * <pre>{joining=abu, lastChanges=2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia}</pre>
     * <p>Check: value for joining abu actual abu</p>
     *
+    * @param yaml
+    *    yaml text
+    *
+    * @return map with key value pairs
     *
     * @see <a href='file://YamlFileMap.java'>YamlFileMap.java</a>
-    * @param yaml yaml text
-    * @return map with key value pairs
     */
-   public LinkedHashMap<String,String> decode(String yaml)
+   public LinkedHashMap<String, String> decode(String yaml)
    {
       this.yaml = yaml;
-      tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = null;
-      nextToken();
-      nextToken();
+      this.tokenizer = new StringTokenizer(yaml);
+      this.lookAheadToken = null;
+      this.nextToken();
+      this.nextToken();
 
       LinkedHashMap<String, String> result = new LinkedHashMap<>();
 
-      while (currentToken != null && currentToken.endsWith(":"))
+      while (this.currentToken != null && this.currentToken.endsWith(":"))
       {
-         String attrName = stripColon(currentToken);
+         String attrName = this.stripColon(this.currentToken);
 
-         nextToken();
+         this.nextToken();
 
          String value = "";
-         int valueStart = currentPos;
+         int valueStart = this.currentPos;
 
          // many values
-         while ( currentToken != null
-                 && ! currentToken.endsWith(":"))
+         while (this.currentToken != null && !this.currentToken.endsWith(":"))
          {
-            value = yaml.substring(valueStart, currentPos + currentToken.length());
+            value = yaml.substring(valueStart, this.currentPos + this.currentToken.length());
 
-            nextToken();
+            this.nextToken();
          }
 
          result.put(attrName, value);
       }
 
       return result;
-
    }
 
    public ArrayList<LinkedHashMap<String, String>> decodeList(String yaml)
    {
       this.yaml = yaml;
-      tokenizer = new StringTokenizer(yaml);
-      lookAheadToken = null;
-      nextToken();
-      nextToken();
+      this.tokenizer = new StringTokenizer(yaml);
+      this.lookAheadToken = null;
+      this.nextToken();
+      this.nextToken();
 
       ArrayList<LinkedHashMap<String, String>> result = new ArrayList<>();
 
-      while (currentToken != null && currentToken.equals("-"))
+      while ("-".equals(this.currentToken))
       {
-         LinkedHashMap<String,String> map = new LinkedHashMap<>();
+         LinkedHashMap<String, String> map = new LinkedHashMap<>();
          result.add(map);
-         nextToken();
-         while (currentToken != null && currentToken.endsWith(":"))
+         this.nextToken();
+         while (this.currentToken != null && this.currentToken.endsWith(":"))
          {
-            String key = stripColon(currentToken);
-            nextToken();
-            String value = currentToken;
-            nextToken();
+            String key = this.stripColon(this.currentToken);
+            this.nextToken();
+            String value = this.currentToken;
+            this.nextToken();
             map.put(key, value);
          }
       }
@@ -132,47 +128,46 @@ public class Yamler
 
    public String nextToken()
    {
-      currentToken = lookAheadToken;
-      currentPos = lookAheadPos;
+      this.currentToken = this.lookAheadToken;
+      this.currentPos = this.lookAheadPos;
 
-      if (tokenizer.hasMoreTokens())
+      if (this.tokenizer.hasMoreTokens())
       {
 
-         lookAheadToken = tokenizer.nextToken();
+         this.lookAheadToken = this.tokenizer.nextToken();
          int currentLength = 0;
-         if (currentToken != null) {
-            currentLength = currentToken.length();
+         if (this.currentToken != null)
+         {
+            currentLength = this.currentToken.length();
          }
-         lookAheadPos = yaml.indexOf(lookAheadToken, lookAheadPos + currentLength);
+         this.lookAheadPos = this.yaml.indexOf(this.lookAheadToken, this.lookAheadPos + currentLength);
          // lookAheadPos = scanner.match().start();
       }
       else
       {
-         lookAheadToken = null;
+         this.lookAheadToken = null;
       }
 
-
-
-      if (lookAheadToken != null && lookAheadToken.startsWith("\""))
+      if (this.lookAheadToken != null && this.lookAheadToken.startsWith("\""))
       {
          // get up to end of string
-         int stringStartPos = lookAheadPos + 1;
-         String subToken = lookAheadToken;
+         int stringStartPos = this.lookAheadPos + 1;
+         String subToken = this.lookAheadToken;
          //MatchResult match = scanner.match();
-         int subTokenEnd = lookAheadPos + subToken.length();
-         while ( subTokenEnd < stringStartPos+1 || ( ! subToken.endsWith("\"") || subToken.endsWith("\\\""))
-                 && tokenizer.hasMoreTokens())
+         int subTokenEnd = this.lookAheadPos + subToken.length();
+         while (subTokenEnd < stringStartPos + 1
+                || (!subToken.endsWith("\"") || subToken.endsWith("\\\"")) && this.tokenizer.hasMoreTokens())
          {
-            subToken = tokenizer.nextToken();
-            subTokenEnd = yaml.indexOf(subToken, subTokenEnd) + subToken.length();
+            subToken = this.tokenizer.nextToken();
+            subTokenEnd = this.yaml.indexOf(subToken, subTokenEnd) + subToken.length();
          }
 
-         lookAheadToken = yaml.substring(stringStartPos, subTokenEnd - 1);
+         this.lookAheadToken = this.yaml.substring(stringStartPos, subTokenEnd - 1);
 
-         lookAheadToken = deEncapsulate(lookAheadToken);
+         this.lookAheadToken = this.deEncapsulate(this.lookAheadToken);
       }
 
-      return currentToken;
+      return this.currentToken;
    }
 
    public String stripColon(String key)
@@ -185,16 +180,15 @@ public class Yamler
       }
       else
       {
-         printError("key does not end with ':' " + key);
+         this.printError("key does not end with ':' " + key);
       }
 
       return id;
    }
 
-
    public String getCurrentToken()
    {
-      return currentToken;
+      return this.currentToken;
    }
 
    /**
@@ -220,9 +214,9 @@ public class Yamler
 
    void printError(String msg)
    {
-      int startPos = currentPos;
+      int startPos = this.currentPos;
 
-      if (startPos >=  10)
+      if (startPos >= 10)
       {
          startPos -= 10;
       }
@@ -231,30 +225,29 @@ public class Yamler
          startPos = 0;
       }
 
-      int endPos = currentPos + 20;
+      int endPos = this.currentPos + 20;
 
-      if (endPos >=  yaml.length())
+      if (endPos >= this.yaml.length())
       {
-         endPos = yaml.length();
+         endPos = this.yaml.length();
       }
 
-      System.err.println(yaml.substring(startPos, currentPos) + "<--" + msg + "-->" + yaml.substring(currentPos, endPos));
+      System.err.println(this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml
+         .substring(this.currentPos, endPos));
    }
 
    public String getLookAheadToken()
    {
-      return lookAheadToken;
+      return this.lookAheadToken;
    }
 
    public int getCurrentPos()
    {
-      return currentPos;
+      return this.currentPos;
    }
 
    public int getLookAheadPos()
    {
-      return lookAheadPos;
+      return this.lookAheadPos;
    }
-
-
 }
