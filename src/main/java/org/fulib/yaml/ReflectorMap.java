@@ -103,7 +103,7 @@ public class ReflectorMap
          return reflector;
       }
 
-      return this.getReflector(simpleName);
+      throw this.unknownClassException(fullName);
    }
 
    public Reflector getReflector(String clazzName)
