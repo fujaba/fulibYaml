@@ -43,15 +43,19 @@ public class Yamler
 
    public Yamler(String yaml)
    {
-      this.yaml = yaml;
+      this.setInput(yaml);
+   }
 
+   // =============== Properties ===============
+
+   private void setInput(String yaml)
+   {
+      this.yaml = yaml;
       this.tokenizer = new StringTokenizer(yaml);
       this.lookAheadToken = null;
       this.nextToken();
       this.nextToken();
    }
-
-   // =============== Properties ===============
 
    public String getCurrentToken()
    {
@@ -100,11 +104,7 @@ public class Yamler
     */
    public LinkedHashMap<String, String> decode(String yaml)
    {
-      this.yaml = yaml;
-      this.tokenizer = new StringTokenizer(yaml);
-      this.lookAheadToken = null;
-      this.nextToken();
-      this.nextToken();
+      this.setInput(yaml);
 
       LinkedHashMap<String, String> result = new LinkedHashMap<>();
 
@@ -133,11 +133,7 @@ public class Yamler
 
    public ArrayList<LinkedHashMap<String, String>> decodeList(String yaml)
    {
-      this.yaml = yaml;
-      this.tokenizer = new StringTokenizer(yaml);
-      this.lookAheadToken = null;
-      this.nextToken();
-      this.nextToken();
+      this.setInput(yaml);
 
       ArrayList<LinkedHashMap<String, String>> result = new ArrayList<>();
 
