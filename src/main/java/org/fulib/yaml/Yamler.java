@@ -195,9 +195,7 @@ public class Yamler
             subTokenEnd = this.yaml.indexOf(subToken, subTokenEnd) + subToken.length();
          }
 
-         this.lookAheadToken = this.yaml.substring(stringStartPos, subTokenEnd - 1);
-
-         this.lookAheadToken = this.deEncapsulate(this.lookAheadToken);
+         this.lookAheadToken = this.yaml.substring(stringStartPos, subTokenEnd - 1).replace("\\\"", "\"");
       }
 
       return this.currentToken;
@@ -232,12 +230,6 @@ public class Yamler
    public static String encapsulate(String value)
    {
       return YamlGenerator.encapsulate(value);
-   }
-
-   String deEncapsulate(String value)
-   {
-      value = value.replaceAll("\\\\\"", "\"");
-      return value;
    }
 
    void printError(String msg)
