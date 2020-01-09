@@ -20,6 +20,11 @@ import java.util.StringTokenizer;
  */
 public class Yamler
 {
+   // =============== Constants ===============
+
+   private static final int LEADING_CONTEXT_CHARS  = 10;
+   private static final int TRAILING_CONTEXT_CHARS = 20;
+
    // =============== Fields ===============
 
    private String          yaml;
@@ -237,25 +242,20 @@ public class Yamler
 
    void printError(String msg)
    {
-      int startPos = this.currentPos;
-
-      if (startPos >= 10)
-      {
-         startPos -= 10;
-      }
-      else
+      int startPos = this.currentPos - LEADING_CONTEXT_CHARS;
+      if (startPos < 0)
       {
          startPos = 0;
       }
 
-      int endPos = this.currentPos + 20;
-
+      int endPos = this.currentPos + TRAILING_CONTEXT_CHARS;
       if (endPos >= this.yaml.length())
       {
          endPos = this.yaml.length();
       }
 
-      System.err.println(this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml
-         .substring(this.currentPos, endPos));
+      final String info = this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml
+         .substring(this.currentPos, endPos);
+      System.err.println(info);
    }
 }
