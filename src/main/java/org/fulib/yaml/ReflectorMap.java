@@ -108,14 +108,11 @@ public class ReflectorMap
 
    public Reflector getReflector(String clazzName)
    {
-      // already known?
-      final Reflector oldReflector = this.reflectorMap.get(clazzName);
+      return this.reflectorMap.computeIfAbsent(clazzName, this::createReflector);
+   }
 
-      if (oldReflector != null)
-      {
-         return oldReflector;
-      }
-
+   private Reflector createReflector(String clazzName)
+   {
       for (String packageName : this.packageNames)
       {
          String fullClassName = packageName + "." + clazzName;
@@ -123,9 +120,7 @@ public class ReflectorMap
          try
          {
             Class<?> theClass = Class.forName(fullClassName);
-            final Reflector newReflector = new Reflector().setClassName(fullClassName).setClazz(theClass);
-            this.reflectorMap.put(clazzName, newReflector);
-            return newReflector;
+            return new Reflector().setClassName(fullClassName).setClazz(theClass);
          }
          catch (ClassNotFoundException ignored)
          {
@@ -140,10 +135,7 @@ public class ReflectorMap
          {
             final String implClassName = packageName + ".impl." + clazzName;
             final Class<?> implClass = Class.forName(implClassName);
-            final Reflector newEMFReflector = new Reflector().setClassName(implClassName).setClazz(implClass)
-                                                             .setUseEMF();
-            this.reflectorMap.put(clazzName, newEMFReflector);
-            return newEMFReflector;
+            return new Reflector().setClassName(implClassName).setClazz(implClass).setUseEMF();
          }
          catch (ClassNotFoundException ignored)
          {
