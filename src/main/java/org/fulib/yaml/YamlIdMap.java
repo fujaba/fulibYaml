@@ -156,7 +156,6 @@ public class YamlIdMap
 
    // =============== Fields ===============
 
-   private ArrayList<String> packageNames;
    private String            yaml;
    private String            userId = null;
    private boolean           decodingPropertyChange;
@@ -451,10 +450,7 @@ public class YamlIdMap
     */
    public YamlIdMap(String... packageNames)
    {
-      Objects.requireNonNull(packageNames);
-      List<String> list = Arrays.asList(packageNames);
-      this.packageNames = new ArrayList<>(list);
-      this.reflectorMap = new ReflectorMap(list);
+      this.reflectorMap = new ReflectorMap(packageNames);
    }
 
    // =============== Properties ===============
