@@ -84,9 +84,13 @@ public class ReflectorMap
          return new YamlObjectReflector((YamlObject) newObject);
       }
 
-      final Class<?> objectClass = newObject.getClass();
-      String packageName = objectClass.getPackage().getName();
-      String fullName = objectClass.getName();
+      return this.getReflector(newObject.getClass());
+   }
+
+   public Reflector getReflector(Class<?> clazz)
+   {
+      final String packageName = clazz.getPackage().getName();
+      final String fullName = clazz.getName();
 
       if (!this.packageNames.contains(packageName))
       {
@@ -95,9 +99,8 @@ public class ReflectorMap
 
       // yes, we should reflect this object
 
-      final String simpleName = objectClass.getSimpleName();
-      return this.reflectorMap
-         .computeIfAbsent(simpleName, k -> new Reflector().setClassName(fullName).setClazz(objectClass));
+      final String simpleName = clazz.getSimpleName();
+      return this.reflectorMap.computeIfAbsent(simpleName, k -> new Reflector().setClassName(fullName).setClazz(clazz));
    }
 
    public Reflector getReflector(String clazzName)
