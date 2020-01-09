@@ -1043,11 +1043,6 @@ public class YamlIdMap
       return root;
    }
 
-   private Object parseObjList(String key, String second)
-   {
-      return null;
-   }
-
    // --------------- Object Access ---------------
 
    public Reflector getReflector(Object obj)
