@@ -5,9 +5,16 @@ import java.util.LinkedHashMap;
 
 public class YamlObject
 {
+   // =============== Constants ===============
 
    public static final String ID   = ".id";
    public static final String TYPE = "type";
+
+   // =============== Fields ===============
+
+   private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+
+   // =============== Constructors ===============
 
    public YamlObject()
    {
@@ -20,11 +27,18 @@ public class YamlObject
       this.map.put(TYPE, type);
    }
 
-   private LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+   // =============== Properties ===============
 
    public LinkedHashMap<String, Object> getMap()
    {
       return this.map;
+   }
+
+   // =============== Methods ===============
+
+   public Object get(String tag)
+   {
+      return this.map.get(tag);
    }
 
    public YamlObject put(String tag, Object value)
@@ -46,11 +60,6 @@ public class YamlObject
       list.add(value);
 
       return this;
-   }
-
-   public Object get(String tag)
-   {
-      return this.map.get(tag);
    }
 
    @Override
