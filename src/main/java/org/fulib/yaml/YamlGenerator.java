@@ -1,17 +1,21 @@
 package org.fulib.yaml;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Adrian Kunz
- *
  * @since 1.2
  */
 public class YamlGenerator
 {
+   // =============== Constants ===============
+
+   private static final Pattern SIMPLE_VALUE_PATTERN = Pattern.compile("[a-zA-Z0-9_.]+");
+
+   // =============== Static Methods ===============
+
    /**
     * Encodes the events as a list of YAML objects.
     *
@@ -88,7 +92,7 @@ public class YamlGenerator
          writer.append(prefix);
          writer.append(keyValuePair.getKey());
          writer.append(": ");
-         writer.append(YamlGenerator.encapsulate(keyValuePair.getValue()));
+         encapsulate(keyValuePair.getValue(), writer);
          writer.append('\n');
          prefix = "  ";
       }
@@ -105,11 +109,30 @@ public class YamlGenerator
     */
    public static String encapsulate(String value)
    {
-      if (value.matches("[a-zA-Z0-9_.]+"))
+      if (SIMPLE_VALUE_PATTERN.matcher(value).matches())
       {
          return value;
       }
       // replace " with \"
       return "\"" + value.replace("\"", "\\\"") + "\"";
+   }
+
+   /**
+    * Encapsulates a YAML value by enclosing it in quotes ("), if necessary, and appends the result to the writer.
+    *
+    * @param value
+    *    the YAML value to encapsulate
+    * @param writer
+    *    the writer
+    */
+   public static void encapsulate(String value, Appendable writer) throws IOException
+   {
+      if (SIMPLE_VALUE_PATTERN.matcher(value).matches())
+      {
+         writer.append(value);
+      }
+      writer.append('"');
+      writer.append(value.replace("\"", "\\\""));
+      writer.append('"');
    }
 }
