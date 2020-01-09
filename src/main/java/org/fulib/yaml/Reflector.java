@@ -18,8 +18,8 @@ public class Reflector
    private Class<?> eObjectClass;
    private Class<?> clazz;
 
-   private Set<String> ownProperties; // cache
-   private Set<String> allProperties; // cache
+   private transient Set<String> ownProperties;
+   private transient Set<String> allProperties;
 
    // =============== Properties ===============
 
