@@ -85,25 +85,19 @@ public class ReflectorMap
       }
 
       final Class<?> objectClass = newObject.getClass();
-      String simpleName = objectClass.getSimpleName();
-      String fullName = objectClass.getName();
       String packageName = objectClass.getPackage().getName();
+      String fullName = objectClass.getName();
 
-      if (this.packageNames.contains(packageName))
+      if (!this.packageNames.contains(packageName))
       {
-         // yes, we should reflect this object
-         Reflector reflector = this.reflectorMap.get(simpleName);
-
-         if (reflector == null)
-         {
-            reflector = new Reflector().setClassName(fullName).setClazz(objectClass);
-            this.reflectorMap.put(simpleName, reflector);
-         }
-
-         return reflector;
+         throw this.unknownClassException(fullName);
       }
 
-      throw this.unknownClassException(fullName);
+      // yes, we should reflect this object
+
+      final String simpleName = objectClass.getSimpleName();
+      return this.reflectorMap
+         .computeIfAbsent(simpleName, k -> new Reflector().setClassName(fullName).setClazz(objectClass));
    }
 
    public Reflector getReflector(String clazzName)
