@@ -4,12 +4,17 @@ import java.util.Set;
 
 public class YamlObjectReflector extends Reflector
 {
+   // =============== Fields ===============
+
    private YamlObject yamlObject;
+
+   // =============== Constructors ===============
 
    /**
     * Creates a new {@link YamlObjectReflector} instance.
     *
-    * @param newObject the yaml object (must be a {@link YamlObject} instance)
+    * @param newObject
+    *    the yaml object (must be a {@link YamlObject} instance)
     *
     * @deprecated since 1.2; use {@link #YamlObjectReflector(YamlObject)} instead
     */
@@ -22,7 +27,8 @@ public class YamlObjectReflector extends Reflector
    /**
     * Creates a new {@link YamlObjectReflector} instance.
     *
-    * @param yamlObject the yaml object
+    * @param yamlObject
+    *    the yaml object
     *
     * @since 1.2
     */
@@ -31,11 +37,7 @@ public class YamlObjectReflector extends Reflector
       this.yamlObject = yamlObject;
    }
 
-   @Override
-   public void removeObject(Object object)
-   {
-      super.removeObject(object);
-   }
+   // =============== Properties ===============
 
    @Override
    public String[] getProperties()
@@ -43,6 +45,8 @@ public class YamlObjectReflector extends Reflector
       Set<String> stringSet = yamlObject.getMap().keySet();
       return stringSet.toArray(new String[stringSet.size()]);
    }
+
+   // =============== Methods ===============
 
    @Override
    public Object newInstance()
@@ -60,5 +64,11 @@ public class YamlObjectReflector extends Reflector
    public Object setValue(Object object, String attribute, Object value, String type)
    {
       return yamlObject.getMap().put(attribute, value);
+   }
+
+   @Override
+   public void removeObject(Object object)
+   {
+      super.removeObject(object);
    }
 }
