@@ -81,7 +81,7 @@ public class ReflectorMap
    {
       if (newObject instanceof YamlObject)
       {
-         return new YamlObjectReflector(newObject);
+         return new YamlObjectReflector((YamlObject) newObject);
       }
 
       final Class<?> objectClass = newObject.getClass();

@@ -6,10 +6,29 @@ public class YamlObjectReflector extends Reflector
 {
    private YamlObject yamlObject;
 
+   /**
+    * Creates a new {@link YamlObjectReflector} instance.
+    *
+    * @param newObject the yaml object (must be a {@link YamlObject} instance)
+    *
+    * @deprecated since 1.2; use {@link #YamlObjectReflector(YamlObject)} instead
+    */
+   @Deprecated
    public YamlObjectReflector(Object newObject)
    {
-      super();
-      yamlObject = (YamlObject) newObject;
+      this((YamlObject) newObject);
+   }
+
+   /**
+    * Creates a new {@link YamlObjectReflector} instance.
+    *
+    * @param yamlObject the yaml object
+    *
+    * @since 1.2
+    */
+   public YamlObjectReflector(YamlObject yamlObject)
+   {
+      this.yamlObject = yamlObject;
    }
 
    @Override
