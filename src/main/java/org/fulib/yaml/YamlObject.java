@@ -2,6 +2,7 @@ package org.fulib.yaml;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class YamlObject
 {
@@ -47,18 +48,29 @@ public class YamlObject
       return this;
    }
 
-   public YamlObject with(String tag, Object value)
+   public YamlObject with(String tag, Object item)
    {
-      ArrayList<Object> list = (ArrayList<Object>) this.map.get(tag);
+      this.map.compute(tag, (k, oldValue) -> {
+         if (oldValue == null) // not yet present
+         {
+            final List<Object> list = new ArrayList<>();
+            list.add(item);
+            return list;
+         }
 
-      if (list == null)
-      {
-         list = new ArrayList<>();
-         this.map.put(tag, list);
-      }
-
-      list.add(value);
-
+         final List<Object> list;
+         if (oldValue instanceof List) // old value was a list
+         {
+            list = (List<Object>) oldValue;
+         }
+         else // old value was an object
+         {
+            list = new ArrayList<>();
+            list.add(oldValue);
+         }
+         list.add(item);
+         return list;
+      });
       return this;
    }
 
