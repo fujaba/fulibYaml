@@ -40,10 +40,15 @@ public class YamlObjectReflector extends Reflector
    // =============== Properties ===============
 
    @Override
-   public String[] getProperties()
+   public Set<String> getOwnProperties()
    {
-      Set<String> stringSet = yamlObject.getMap().keySet();
-      return stringSet.toArray(new String[stringSet.size()]);
+      return this.yamlObject.getMap().keySet();
+   }
+
+   @Override
+   public Set<String> getAllProperties()
+   {
+      return this.getOwnProperties();
    }
 
    // =============== Methods ===============
