@@ -3,6 +3,7 @@ package org.fulib.yaml;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class YamlObject
 {
@@ -30,7 +31,22 @@ public class YamlObject
 
    // =============== Properties ===============
 
+   /**
+    * @return the properties
+    *
+    * @deprecated since 1.2; use {@link #getProperties()} instead
+    */
    public LinkedHashMap<String, Object> getMap()
+   {
+      return this.map;
+   }
+
+   /**
+    * @return the properties
+    *
+    * @since 1.2
+    */
+   public Map<String, Object> getProperties()
    {
       return this.map;
    }

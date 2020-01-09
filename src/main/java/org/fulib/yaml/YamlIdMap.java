@@ -711,7 +711,7 @@ public class YamlIdMap
       if (className.equals(".Map"))
       {
          YamlObject yamlObj = (YamlObject) objIdMap.get(objectId);
-         LinkedHashMap<String, Object> map = yamlObj.getMap();
+         Map<String, Object> map = yamlObj.getProperties();
 
          while ( yamler.getCurrentToken() != null && !yamler.getCurrentToken().equals("-"))
          {
@@ -968,7 +968,7 @@ public class YamlIdMap
          if (className.equals(".Map"))
          {
             obj = new YamlObject();
-            ((YamlObject) obj).getMap().put(".id", objectId);
+            ((YamlObject) obj).put(".id", objectId);
          }
          else
          {
@@ -1315,7 +1315,7 @@ public class YamlIdMap
       if (obj instanceof YamlObject)
       {
          YamlObject yamlObj = (YamlObject) obj;
-         Object mapId = yamlObj.getMap().get(".id");
+         Object mapId = yamlObj.get(".id");
          key = (String) mapId;
       }
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -77,7 +78,7 @@ class TestYamlIdMap
       YamlIdMap idMap = new YamlIdMap("");
 
       YamlObject yamlObj = (YamlObject) idMap.decode(yaml);
-      LinkedHashMap<String, Object> map = yamlObj.getMap();
+      Map<String, Object> map = yamlObj.getProperties();
 
       assertThat(map.get("clazz"), equalTo("Uni"));
       ArrayList<Object> rooms = (ArrayList<Object>) map.get("rooms");

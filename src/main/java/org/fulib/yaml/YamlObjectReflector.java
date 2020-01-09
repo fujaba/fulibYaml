@@ -42,7 +42,7 @@ public class YamlObjectReflector extends Reflector
    @Override
    public Set<String> getOwnProperties()
    {
-      return this.yamlObject.getMap().keySet();
+      return this.yamlObject.getProperties().keySet();
    }
 
    @Override
