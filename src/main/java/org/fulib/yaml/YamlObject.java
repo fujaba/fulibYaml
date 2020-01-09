@@ -23,9 +23,14 @@ public class YamlObject
       // empty
    }
 
-   public YamlObject(String id, String type)
+   public YamlObject(String id)
    {
       this.map.put(ID, id);
+   }
+
+   public YamlObject(String id, String type)
+   {
+      this(id);
       this.map.put(TYPE, type);
    }
 

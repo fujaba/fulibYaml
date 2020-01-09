@@ -967,8 +967,7 @@ public class YamlIdMap
       {
          if (className.equals(".Map"))
          {
-            obj = new YamlObject();
-            ((YamlObject) obj).put(".id", objectId);
+            obj = new YamlObject(objectId);
          }
          else
          {
