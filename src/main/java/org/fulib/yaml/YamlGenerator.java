@@ -22,16 +22,16 @@ public class YamlGenerator
     */
    public static String serialize(Iterable<? extends Map<String, String>> events)
    {
-      final StringWriter writer = new StringWriter();
+      final StringBuilder builder = new StringBuilder();
       try
       {
-         serialize(events, writer);
+         serialize(events, builder);
       }
       catch (IOException e)
       {
          // cannot happen
       }
-      return writer.toString();
+      return builder.toString();
    }
 
    /**
@@ -42,7 +42,7 @@ public class YamlGenerator
     * @param writer
     *    the writer
     */
-   public static void serialize(Iterable<? extends Map<String, String>> events, Writer writer) throws IOException
+   public static void serialize(Iterable<? extends Map<String, String>> events, Appendable writer) throws IOException
    {
       for (final Map<String, String> event : events)
       {
@@ -60,7 +60,7 @@ public class YamlGenerator
     */
    public static String serialize(Map<String, String> event)
    {
-      final StringWriter writer = new StringWriter();
+      final StringBuilder writer = new StringBuilder();
       try
       {
          serialize(event, writer);
@@ -80,19 +80,19 @@ public class YamlGenerator
     * @param writer
     *    the writer
     */
-   public static void serialize(Map<String, String> event, Writer writer) throws IOException
+   public static void serialize(Map<String, String> event, Appendable writer) throws IOException
    {
       String prefix = "- ";
       for (Map.Entry<String, String> keyValuePair : event.entrySet())
       {
-         writer.write(prefix);
-         writer.write(keyValuePair.getKey());
-         writer.write(": ");
-         writer.write(YamlGenerator.encapsulate(keyValuePair.getValue()));
-         writer.write('\n');
+         writer.append(prefix);
+         writer.append(keyValuePair.getKey());
+         writer.append(": ");
+         writer.append(YamlGenerator.encapsulate(keyValuePair.getValue()));
+         writer.append('\n');
          prefix = "  ";
       }
-      writer.write('\n');
+      writer.append('\n');
    }
 
    /**
