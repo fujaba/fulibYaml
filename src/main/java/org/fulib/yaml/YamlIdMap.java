@@ -149,8 +149,12 @@ import java.util.regex.Pattern;
  */
 public class YamlIdMap
 {
+   // =============== Constants ===============
+
    private static final String REMOVE     = "remove";
    private static final String REMOVE_YOU = "removeYou";
+
+   // =============== Fields ===============
 
    private ArrayList<String> packageNames;
    private String            yaml;
@@ -166,20 +170,11 @@ public class YamlIdMap
 
    private HashMap<String, String> attrTimeStamps = new HashMap<>();
 
-   public LinkedHashMap<String, Object> getObjIdMap()
-   {
-      return this.objIdMap;
-   }
+   ReflectorMap reflectorMap;
 
-   public LinkedHashMap<Object, String> getIdObjMap()
-   {
-      return this.idObjMap;
-   }
+   private String yamlChangeText = null;
 
-   public HashMap<String, String> getAttrTimeStamps()
-   {
-      return this.attrTimeStamps;
-   }
+   // =============== Constructors ===============
 
    /**
     * <h3>Storyboard Yaml</h3>
@@ -462,6 +457,43 @@ public class YamlIdMap
       this.reflectorMap = new ReflectorMap(list);
    }
 
+   // =============== Properties ===============
+
+   public LinkedHashMap<String, Object> getObjIdMap()
+   {
+      return this.objIdMap;
+   }
+
+   public LinkedHashMap<Object, String> getIdObjMap()
+   {
+      return this.idObjMap;
+   }
+
+   public HashMap<String, String> getAttrTimeStamps()
+   {
+      return this.attrTimeStamps;
+   }
+
+   public YamlIdMap withUserId(String userId)
+   {
+      this.userId = userId;
+      return this;
+   }
+
+   public boolean isDecodingPropertyChange()
+   {
+      return this.decodingPropertyChange;
+   }
+
+   public void setDecodingPropertyChange(boolean decodingPropertyChange)
+   {
+      this.decodingPropertyChange = decodingPropertyChange;
+   }
+
+   // =============== Methods ===============
+
+   // --------------- CSV ---------------
+
    public Object decodeCSV(String fileName)
    {
       try
@@ -545,6 +577,8 @@ public class YamlIdMap
       return buf.toString();
    }
 
+   // --------------- Decoding ---------------
+
    public Object decode(String yaml, Object root)
    {
       this.getOrCreateKey(root);
@@ -589,6 +623,8 @@ public class YamlIdMap
 
       return root;
    }
+
+   // --------------- Parsing ---------------
 
    private void parseObjectAttrs()
    {
@@ -1016,7 +1052,7 @@ public class YamlIdMap
       return null;
    }
 
-   ReflectorMap reflectorMap;
+   // --------------- Object Access ---------------
 
    public Reflector getReflector(Object obj)
    {
@@ -1027,6 +1063,171 @@ public class YamlIdMap
    {
       return this.objIdMap.get(objId);
    }
+
+   public YamlIdMap putNameObject(String name, Object object)
+   {
+
+      String oldKey = this.idObjMap.get(object);
+      if (oldKey != null)
+      {
+         this.objIdMap.remove(oldKey);
+         this.idObjMap.remove(object);
+      }
+
+      this.collectObjects(object);
+
+      this.objIdMap.put(name, object);
+      this.idObjMap.put(object, name);
+
+      return this;
+   }
+
+   public String getOrCreateKey(Object obj)
+   {
+      String key = this.idObjMap.get(obj);
+
+      if (key == null)
+      {
+         key = this.addToObjIdMap(obj);
+      }
+      return key;
+   }
+
+   private String addToObjIdMap(Object obj)
+   {
+      String className = obj.getClass().getSimpleName();
+
+      String key = null;
+
+      if (obj instanceof YamlObject)
+      {
+         YamlObject yamlObj = (YamlObject) obj;
+         Object mapId = yamlObj.get(".id");
+         key = (String) mapId;
+      }
+
+      if (key == null)
+      {
+         key = className.substring(0, 1).toLowerCase();
+         Class<?> clazz = obj.getClass();
+         try
+         {
+            Method getId = clazz.getMethod("getId");
+            Object id = getId.invoke(obj);
+            if (id != null)
+            {
+               key = id.toString().replaceAll("\\W+", "_");
+            }
+         }
+         catch (Exception e)
+         {
+            try
+            {
+               Method getId = clazz.getMethod("getName");
+               Object id = getId.invoke(obj);
+               if (id != null)
+               {
+                  key = id.toString().replaceAll("\\W+", "_");
+               }
+            }
+            catch (Exception e2)
+            {
+               // go with old key
+            }
+         }
+
+         if (key.length() == 1)
+         {
+            key = key.substring(0, 1).toLowerCase();
+         }
+         else
+         {
+            key = key.substring(0, 1).toLowerCase() + key.substring(1);
+         }
+
+         this.maxUsedIdNum++;
+
+         key += this.maxUsedIdNum;
+
+         if (this.maxUsedIdNum > 1 && this.userId != null)
+         {
+            // all but the first get a userId prefix
+            key = this.userId + "." + key;
+         }
+      }
+      this.objIdMap.put(key, obj);
+      this.idObjMap.put(obj, key);
+
+      return key;
+   }
+
+   public LinkedHashSet<Object> collectObjects(Object... rootObjList)
+   {
+      LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
+
+      LinkedList<Object> simpleList = new LinkedList<>(Arrays.asList(rootObjList));
+
+      // collect objects
+      while (!simpleList.isEmpty())
+      {
+         Object obj = simpleList.get(0);
+         simpleList.remove(0);
+         collectedObjects.add(obj);
+
+         // already known?
+         String key = this.idObjMap.get(obj);
+
+         if (key == null)
+         {
+            // add to map
+            key = this.addToObjIdMap(obj);
+
+            // find neighbors
+            Reflector reflector = this.getReflector(obj);
+
+            for (String prop : reflector.getOwnProperties())
+            {
+               Object value = reflector.getValue(obj, prop);
+
+               if (value == null)
+               {
+                  continue;
+               }
+
+               Class<?> valueClass = value.getClass();
+
+               if (value instanceof Collection)
+               {
+                  for (Object valueObj : (Collection<?>) value)
+                  {
+                     valueClass = valueObj.getClass();
+
+                     if (valueClass.getName().startsWith("java.lang"))
+                     {
+                        break;
+                     }
+
+                     simpleList.add(valueObj);
+                  }
+               }
+               else if (valueClass.getName().startsWith("java.util."))
+               {
+                  // not (yet) supported
+               }
+               else if (valueClass.getName().startsWith("java.lang."))
+               {
+               }
+               else
+               {
+                  simpleList.add(value);
+               }
+            }
+         }
+      } // collect objects
+      return collectedObjects;
+   }
+
+   // --------------- Encoding ---------------
 
    public String encode(Object... rootObjList)
    {
@@ -1108,90 +1309,6 @@ public class YamlIdMap
       }
 
       return buf.toString();
-   }
-
-   public YamlIdMap putNameObject(String name, Object object)
-   {
-
-      String oldKey = this.idObjMap.get(object);
-      if (oldKey != null)
-      {
-         this.objIdMap.remove(oldKey);
-         this.idObjMap.remove(object);
-      }
-
-      this.collectObjects(object);
-
-      this.objIdMap.put(name, object);
-      this.idObjMap.put(object, name);
-
-      return this;
-   }
-
-   public LinkedHashSet<Object> collectObjects(Object... rootObjList)
-   {
-      LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
-
-      LinkedList<Object> simpleList = new LinkedList<>(Arrays.asList(rootObjList));
-
-      // collect objects
-      while (!simpleList.isEmpty())
-      {
-         Object obj = simpleList.get(0);
-         simpleList.remove(0);
-         collectedObjects.add(obj);
-
-         // already known?
-         String key = this.idObjMap.get(obj);
-
-         if (key == null)
-         {
-            // add to map
-            key = this.addToObjIdMap(obj);
-
-            // find neighbors
-            Reflector reflector = this.getReflector(obj);
-
-            for (String prop : reflector.getOwnProperties())
-            {
-               Object value = reflector.getValue(obj, prop);
-
-               if (value == null)
-               {
-                  continue;
-               }
-
-               Class<?> valueClass = value.getClass();
-
-               if (value instanceof Collection)
-               {
-                  for (Object valueObj : (Collection<?>) value)
-                  {
-                     valueClass = valueObj.getClass();
-
-                     if (valueClass.getName().startsWith("java.lang"))
-                     {
-                        break;
-                     }
-
-                     simpleList.add(valueObj);
-                  }
-               }
-               else if (valueClass.getName().startsWith("java.util."))
-               {
-                  // not (yet) supported
-               }
-               else if (valueClass.getName().startsWith("java.lang."))
-               {
-               }
-               else
-               {
-                  simpleList.add(value);
-               }
-            }
-         }
-      } // collect objects
-      return collectedObjects;
    }
 
    private void encodePropertyChange(StringBuilder buf, Object obj)
@@ -1296,102 +1413,7 @@ public class YamlIdMap
       }
    }
 
-   public String getOrCreateKey(Object obj)
-   {
-      String key = this.idObjMap.get(obj);
-
-      if (key == null)
-      {
-         key = this.addToObjIdMap(obj);
-      }
-      return key;
-   }
-
-   private String addToObjIdMap(Object obj)
-   {
-      String className = obj.getClass().getSimpleName();
-
-      String key = null;
-
-      if (obj instanceof YamlObject)
-      {
-         YamlObject yamlObj = (YamlObject) obj;
-         Object mapId = yamlObj.get(".id");
-         key = (String) mapId;
-      }
-
-      if (key == null)
-      {
-         key = className.substring(0, 1).toLowerCase();
-         Class<?> clazz = obj.getClass();
-         try
-         {
-            Method getId = clazz.getMethod("getId");
-            Object id = getId.invoke(obj);
-            if (id != null)
-            {
-               key = id.toString().replaceAll("\\W+", "_");
-            }
-         }
-         catch (Exception e)
-         {
-            try
-            {
-               Method getId = clazz.getMethod("getName");
-               Object id = getId.invoke(obj);
-               if (id != null)
-               {
-                  key = id.toString().replaceAll("\\W+", "_");
-               }
-            }
-            catch (Exception e2)
-            {
-               // go with old key
-            }
-         }
-
-         if (key.length() == 1)
-         {
-            key = key.substring(0, 1).toLowerCase();
-         }
-         else
-         {
-            key = key.substring(0, 1).toLowerCase() + key.substring(1);
-         }
-
-         this.maxUsedIdNum++;
-
-         key += this.maxUsedIdNum;
-
-         if (this.maxUsedIdNum > 1 && this.userId != null)
-         {
-            // all but the first get a userId prefix
-            key = this.userId + "." + key;
-         }
-      }
-      this.objIdMap.put(key, obj);
-      this.idObjMap.put(obj, key);
-
-      return key;
-   }
-
-   public YamlIdMap withUserId(String userId)
-   {
-      this.userId = userId;
-      return this;
-   }
-
-   public boolean isDecodingPropertyChange()
-   {
-      return this.decodingPropertyChange;
-   }
-
-   public void setDecodingPropertyChange(boolean decodingPropertyChange)
-   {
-      this.decodingPropertyChange = decodingPropertyChange;
-   }
-
-   private String yamlChangeText = null;
+   // --------------- Yaml Change ---------------
 
    public String getYamlChange()
    {
@@ -1399,6 +1421,8 @@ public class YamlIdMap
       this.yamlChangeText = "";
       return result;
    }
+
+   // --------------- Time Stamps ---------------
 
    public String getLastTimeStamps()
    {
@@ -1411,22 +1435,6 @@ public class YamlIdMap
       }
 
       return buf.toString();
-   }
-
-   public LinkedHashMap<String, String> getLastTimeStampMap(String lastTimeStamps)
-   {
-      LinkedHashMap<String, String> user2TimeStampMap = new LinkedHashMap<>();
-
-      String[] split = lastTimeStamps.split("\\s+");
-
-      for (String s : split)
-      {
-         int pos = s.lastIndexOf('.');
-         String user = s.substring(pos + 1);
-         user2TimeStampMap.put(user, s);
-      }
-
-      return user2TimeStampMap;
    }
 
    public LinkedHashMap<String, String> getLastTimeStampMap()
@@ -1445,6 +1453,22 @@ public class YamlIdMap
             user2TimeStampMap.put(userName, timeStamp);
          }
       }
+      return user2TimeStampMap;
+   }
+
+   public LinkedHashMap<String, String> getLastTimeStampMap(String lastTimeStamps)
+   {
+      LinkedHashMap<String, String> user2TimeStampMap = new LinkedHashMap<>();
+
+      String[] split = lastTimeStamps.split("\\s+");
+
+      for (String s : split)
+      {
+         int pos = s.lastIndexOf('.');
+         String user = s.substring(pos + 1);
+         user2TimeStampMap.put(user, s);
+      }
+
       return user2TimeStampMap;
    }
 }
