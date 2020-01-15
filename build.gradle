@@ -58,10 +58,6 @@ dependencies {
 
 // --------------- Misc. Settings ---------------
 
-javadoc {
-   failOnError = false
-}
-
 test {
    useJUnitPlatform()
 }

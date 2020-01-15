@@ -45,6 +45,9 @@ public class YamlGenerator
     *    the events
     * @param writer
     *    the writer
+    *
+    * @throws IOException
+    *    when appending to the writer produces an error
     */
    public static void serialize(Iterable<? extends Map<String, String>> events, Appendable writer) throws IOException
    {
@@ -83,6 +86,9 @@ public class YamlGenerator
     *    the event
     * @param writer
     *    the writer
+    *
+    * @throws IOException
+    *    when appending to the writer produces an error
     */
    public static void serialize(Map<String, String> event, Appendable writer) throws IOException
    {
@@ -124,6 +130,9 @@ public class YamlGenerator
     *    the YAML value to encapsulate
     * @param writer
     *    the writer
+    *
+    * @throws IOException
+    *    when appending to the writer produces an error
     */
    public static void encapsulate(String value, Appendable writer) throws IOException
    {

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * <h3>Storyboard Yaml</h3>
- * <h4><a name = 'step_1'>Step 1: Read graph from yaml text:</a></h4>
+ * <h4><a>Step 1: Read graph from yaml text:</a></h4>
  * <pre>- studyRight: University
  *   name:       &quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
  *   students:   karli
@@ -38,16 +38,16 @@ import java.util.regex.Pattern;
  *   examRoom:             exam     0       [sportsRoom artsRoom]
  *   softwareEngineering:  &quot;Software Engineering&quot; 42 [artsRoom examRoom]
  * </pre>
- * <h4><a name = 'step_2'>Step 2: Call YamlIdMap.decode:</a></h4>
- * <pre><code class="java" data-lang="java">
+ * <h4><a>Step 2: Call YamlIdMap.decode:</a></h4>
+ * <pre><code>
  *       YamlIdMap yamlIdMap = new YamlIdMap(&quot;org.sdmlib.test.examples.studyrightWithAssignments.model&quot;);
  *
  *       University studyRight = (University) yamlIdMap.decode(yaml);
  * </code></pre>
- * <h4><a name = 'step_3'>Step 3: Decoded object structure:</a></h4>
+ * <h4><a>Step 3: Decoded object structure:</a></h4>
  * <img src="doc-files/YamlStep5.png" alt="YamlStep5.png" width='869'>
  * <p>Check: root object exists "Study " Right"And"Fast now"</p>
- * <h4><a name = 'step_4'>Step 4: Generate Yaml from model:</a></h4>
+ * <h4><a>Step 4: Generate Yaml from model:</a></h4>
  * <pre>- u1: 	University
  *   name: 	&quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
  *   students: 	s2
@@ -111,10 +111,10 @@ import java.util.regex.Pattern;
  *
  * </pre>
  * <p>Check: yaml starts with - u... true</p>
- * <h4><a name = 'step_5'>Step 5: decoded again:</a></h4>
+ * <h4><a>Step 5: decoded again:</a></h4>
  * <img src="doc-files/YamlStep11.png" alt="YamlStep11.png" width='876'>
- * <h4><a name = 'step_6'>Step 6: now read from excel file</a></h4>
- * <pre><code class="java" data-lang="java">
+ * <h4><a>Step 6: now read from excel file</a></h4>
+ * <pre><code>
  *       byte[] readAllBytes = Files.readAllBytes(Paths.get(&quot;doc&#x2F;StudyRightStartSituation.txt&quot;));
  *       String excelText = new String(readAllBytes);
  *
@@ -177,7 +177,7 @@ public class YamlIdMap
 
    /**
     * <h3>Storyboard Yaml</h3>
-    * <h4><a name = 'step_1'>Step 1: Read graph from yaml text:</a></h4>
+    * <h4><a>Step 1: Read graph from yaml text:</a></h4>
     * <pre>- studyRight: University
     *   name:       &quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
     *   students:   karli
@@ -200,16 +200,16 @@ public class YamlIdMap
     *   examRoom:             exam     0       [sportsRoom artsRoom]
     *   softwareEngineering:  &quot;Software Engineering&quot; 42 [artsRoom examRoom]
     * </pre>
-    * <h4><a name = 'step_2'>Step 2: Call YamlIdMap.decode:</a></h4>
+    * <h4><a>Step 2: Call YamlIdMap.decode:</a></h4>
     * <pre><code class="java" data-lang="java">
     *       YamlIdMap yamlIdMap = new YamlIdMap(&quot;org.sdmlib.test.examples.studyrightWithAssignments.model&quot;);
     *
     *       University studyRight = (University) yamlIdMap.decode(yaml);
     * </code></pre>
-    * <h4><a name = 'step_3'>Step 3: Decoded object structure:</a></h4>
+    * <h4><a>Step 3: Decoded object structure:</a></h4>
     * <img src="doc-files/YamlStep5.png" alt="YamlStep5.png" width='869'>
     * <p>Check: root object exists "Study " Right"And"Fast now"</p>
-    * <h4><a name = 'step_4'>Step 4: Generate Yaml from model:</a></h4>
+    * <h4><a>Step 4: Generate Yaml from model:</a></h4>
     * <pre>- u1: 	University
     *   name: 	&quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
     *   students: 	s2
@@ -273,9 +273,9 @@ public class YamlIdMap
     *
     * </pre>
     * <p>Check: yaml starts with - u... true</p>
-    * <h4><a name = 'step_5'>Step 5: decoded again:</a></h4>
+    * <h4><a>Step 5: decoded again:</a></h4>
     * <img src="doc-files/YamlStep11.png" alt="YamlStep11.png" width='876'>
-    * <h4><a name = 'step_6'>Step 6: now read from excel file</a></h4>
+    * <h4><a>Step 6: now read from excel file</a></h4>
     * <pre><code class="java" data-lang="java">
     *       byte[] readAllBytes = Files.readAllBytes(Paths.get(&quot;doc&#x2F;StudyRightStartSituation.txt&quot;));
     *       String excelText = new String(readAllBytes);
@@ -316,7 +316,7 @@ public class YamlIdMap
 
    /**
     * <h3>Storyboard Yaml</h3>
-    * <h4><a name = 'step_1'>Step 1: Read graph from yaml text:</a></h4>
+    * <h4><a>Step 1: Read graph from yaml text:</a></h4>
     * <pre>- studyRight: University
     *   name:       &quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
     *   students:   karli
@@ -339,16 +339,16 @@ public class YamlIdMap
     *   examRoom:             exam     0       [sportsRoom artsRoom]
     *   softwareEngineering:  &quot;Software Engineering&quot; 42 [artsRoom examRoom]
     * </pre>
-    * <h4><a name = 'step_2'>Step 2: Call YamlIdMap.decode:</a></h4>
-    * <pre><code class="java" data-lang="java">
+    * <h4><a>Step 2: Call YamlIdMap.decode:</a></h4>
+    * <pre><code>
     *       YamlIdMap yamlIdMap = new YamlIdMap(&quot;org.sdmlib.test.examples.studyrightWithAssignments.model&quot;);
     *
     *       University studyRight = (University) yamlIdMap.decode(yaml);
     * </code></pre>
-    * <h4><a name = 'step_3'>Step 3: Decoded object structure:</a></h4>
+    * <h4><a>Step 3: Decoded object structure:</a></h4>
     * <img src="doc-files/YamlStep5.png" alt="YamlStep5.png" width='869'>
     * <p>Check: root object exists "Study " Right"And"Fast now"</p>
-    * <h4><a name = 'step_4'>Step 4: Generate Yaml from model:</a></h4>
+    * <h4><a>Step 4: Generate Yaml from model:</a></h4>
     * <pre>- u1: 	University
     *   name: 	&quot;\&quot;Study \&quot; Right\&quot;And\&quot;Fast now\&quot;&quot;
     *   students: 	s2
@@ -412,10 +412,10 @@ public class YamlIdMap
     *
     * </pre>
     * <p>Check: yaml starts with - u... true</p>
-    * <h4><a name = 'step_5'>Step 5: decoded again:</a></h4>
+    * <h4><a>Step 5: decoded again:</a></h4>
     * <img src="doc-files/YamlStep11.png" alt="YamlStep11.png" width='876'>
-    * <h4><a name = 'step_6'>Step 6: now read from excel file</a></h4>
-    * <pre><code class="java" data-lang="java">
+    * <h4><a>Step 6: now read from excel file</a></h4>
+    * <pre><code>
     *       byte[] readAllBytes = Files.readAllBytes(Paths.get(&quot;doc&#x2F;StudyRightStartSituation.txt&quot;));
     *       String excelText = new String(readAllBytes);
     *
@@ -447,6 +447,9 @@ public class YamlIdMap
     * </pre>
     * <p>result:</p>
     * <img src="doc-files/YamlStep17.png" alt="YamlStep17.png" width='795'>
+    *
+    * @param packageNames
+    *    the names of the packages in which model classes reside
     */
    public YamlIdMap(String... packageNames)
    {
