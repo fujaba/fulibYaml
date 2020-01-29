@@ -70,6 +70,7 @@ public class ReflectorMap
     *
     * @deprecated since 1.2; use {@link #ReflectorMap(Collection)} instead
     */
+   @Deprecated
    public ReflectorMap(ArrayList<String> packageNames)
    {
       this((Collection<String>) packageNames);
