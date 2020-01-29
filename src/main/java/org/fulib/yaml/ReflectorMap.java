@@ -77,6 +77,26 @@ public class ReflectorMap
 
    // =============== Methods ===============
 
+   public boolean canReflect(Object object)
+   {
+      return this.canReflect(object.getClass());
+   }
+
+   public boolean canReflect(Class<?> type)
+   {
+      return this.canReflect(type.getPackage());
+   }
+
+   public boolean canReflect(Package thePackage)
+   {
+      return this.canReflect(thePackage.getName());
+   }
+
+   private boolean canReflect(String packageName)
+   {
+      return this.packageNames.contains(packageName);
+   }
+
    public Reflector getReflector(Object newObject)
    {
       if (newObject instanceof YamlObject)
@@ -145,7 +165,8 @@ public class ReflectorMap
    private RuntimeException unknownClassException(String className)
    {
       StringBuilder message = new StringBuilder();
-      message.append("ReflectorMap could not find class description for ").append(className)
+      message.append("ReflectorMap could not find class description for ")
+             .append(className)
              .append("\nsearching in \n");
 
       for (String name : this.packageNames)
