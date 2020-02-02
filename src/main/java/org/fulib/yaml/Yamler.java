@@ -223,6 +223,7 @@ public class Yamler
     *
     * @deprecated since 1.2; use {@link YamlGenerator#encapsulate(String)} instead
     */
+   @Deprecated
    public static String encapsulate(String value)
    {
       return YamlGenerator.encapsulate(value);

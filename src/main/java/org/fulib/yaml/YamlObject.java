@@ -44,6 +44,7 @@ public class YamlObject
     *
     * @deprecated since 1.2; use {@link #getProperties()} instead
     */
+   @Deprecated
    public LinkedHashMap<String, Object> getMap()
    {
       return this.map;
