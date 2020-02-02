@@ -78,21 +78,33 @@ public class ReflectorMap
 
    // =============== Methods ===============
 
+   /**
+    * @since 1.2
+    */
    public boolean canReflect(Object object)
    {
       return this.canReflect(object.getClass());
    }
 
+   /**
+    * @since 1.2
+    */
    public boolean canReflect(Class<?> type)
    {
       return this.canReflect(type.getPackage());
    }
 
+   /**
+    * @since 1.2
+    */
    public boolean canReflect(Package thePackage)
    {
       return this.canReflect(thePackage.getName());
    }
 
+   /**
+    * @since 1.2
+    */
    private boolean canReflect(String packageName)
    {
       return this.packageNames.contains(packageName);
@@ -108,6 +120,9 @@ public class ReflectorMap
       return this.getReflector(newObject.getClass());
    }
 
+   /**
+    * @since 1.2
+    */
    public Reflector getReflector(Class<?> clazz)
    {
       final String packageName = clazz.getPackage().getName();

@@ -23,6 +23,9 @@ public class YamlObject
       // empty
    }
 
+   /**
+    * @since 1.2
+    */
    public YamlObject(String id)
    {
       this.map.put(ID, id);

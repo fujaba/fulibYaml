@@ -27,11 +27,17 @@ public class EventFiler
 
    // =============== Properties ===============
 
+   /**
+    * @since 1.2
+    */
    public EventSource getEventSource()
    {
       return this.eventSource;
    }
 
+   /**
+    * @since 1.2
+    */
    public String getHistoryFileName()
    {
       return this.historyFileName;
