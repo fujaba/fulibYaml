@@ -83,7 +83,7 @@ public class ReflectorMap
     */
    public boolean canReflect(Object object)
    {
-      return this.canReflect(object.getClass());
+      return object != null && this.canReflect(object.getClass());
    }
 
    /**
