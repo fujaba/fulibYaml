@@ -1158,66 +1158,14 @@ public class YamlIdMap
    public LinkedHashSet<Object> collectObjects(Object... rootObjList)
    {
       LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
-
-      LinkedList<Object> simpleList = new LinkedList<>(Arrays.asList(rootObjList));
-
-      // collect objects
-      while (!simpleList.isEmpty())
+      for (final Object root : rootObjList)
       {
-         Object obj = simpleList.get(0);
-         simpleList.remove(0);
-         collectedObjects.add(obj);
-
-         // already known?
-         String key = this.idObjMap.get(obj);
-
-         if (key == null)
-         {
-            // add to map
-            key = this.addToObjIdMap(obj);
-
-            // find neighbors
-            Reflector reflector = this.getReflector(obj);
-
-            for (String prop : reflector.getOwnProperties())
-            {
-               Object value = reflector.getValue(obj, prop);
-
-               if (value == null)
-               {
-                  continue;
-               }
-
-               Class<?> valueClass = value.getClass();
-
-               if (value instanceof Collection)
-               {
-                  for (Object valueObj : (Collection<?>) value)
-                  {
-                     valueClass = valueObj.getClass();
-
-                     if (valueClass.getName().startsWith("java.lang"))
-                     {
-                        break;
-                     }
-
-                     simpleList.add(valueObj);
-                  }
-               }
-               else if (valueClass.getName().startsWith("java.util."))
-               {
-                  // not (yet) supported
-               }
-               else if (valueClass.getName().startsWith("java.lang."))
-               {
-               }
-               else
-               {
-                  simpleList.add(value);
-               }
-            }
-         }
-      } // collect objects
+         this.reflectorMap.discoverObjects(root, collectedObjects);
+      }
+      for (final Object collectedObject : collectedObjects)
+      {
+         this.addToObjIdMap(collectedObject);
+      }
       return collectedObjects;
    }
 

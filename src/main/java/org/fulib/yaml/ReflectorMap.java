@@ -81,6 +81,58 @@ public class ReflectorMap
    /**
     * @since 1.2
     */
+   public Set<Object> discoverObjects(Object root)
+   {
+      final Set<Object> neighbors = new HashSet<>();
+      this.discoverObjects(root, neighbors);
+      return neighbors;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public Set<Object> discoverObjects(Object... roots)
+   {
+      final Set<Object> neighbors = new HashSet<>();
+      for (final Object root : roots)
+      {
+         this.discoverObjects(root, neighbors);
+      }
+      return neighbors;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void discoverObjects(Object root, Set<Object> out)
+   {
+      if (root == null || !this.canReflect(root) || !out.add(root))
+      {
+         return;
+      }
+
+      final Reflector reflector = this.getReflector(root);
+
+      for (final String property : reflector.getAllProperties())
+      {
+         final Object value = reflector.getValue(root, property);
+         if (value instanceof Collection)
+         {
+            for (Object item : (Collection<?>) value)
+            {
+               this.discoverObjects(item, out);
+            }
+         }
+         else
+         {
+            this.discoverObjects(value, out);
+         }
+      }
+   }
+
+   /**
+    * @since 1.2
+    */
    public boolean canReflect(Object object)
    {
       return object != null && this.canReflect(object.getClass());
