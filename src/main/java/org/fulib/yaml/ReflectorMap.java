@@ -143,7 +143,7 @@ public class ReflectorMap
     */
    public boolean canReflect(Class<?> type)
    {
-      return this.canReflect(type.getPackage());
+      return this.canReflect(type.getPackage()) || YamlObject.class.isAssignableFrom(type);
    }
 
    /**
@@ -151,7 +151,7 @@ public class ReflectorMap
     */
    public boolean canReflect(Package thePackage)
    {
-      return this.canReflect(thePackage.getName());
+      return thePackage != null && this.canReflect(thePackage.getName());
    }
 
    /**
