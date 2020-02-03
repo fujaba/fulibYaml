@@ -10,42 +10,46 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class TestExternalReferences {
+class TestExternalReferences
+{
+   @Test
+   void ensureTestModelIntegrity()
+   {
+      boolean containsColorSetter = false;
+      boolean containsColorGetter = false;
 
-    @Test
-    void ensureTestModelIntegrity() {
+      for (Method method : Student.class.getMethods())
+      {
+         if ("getUniversity".equals(method.getName()))
+         {
+            containsColorGetter = true;
+         }
+         else if ("setUniversity".equals(method.getName()))
+         {
+            containsColorSetter = true;
+         }
+      }
 
-        boolean containsColorSetter = false;
-        boolean containsColorGetter = false;
+      assertThat(containsColorGetter, is(true));
+      assertThat(containsColorSetter, is(true));
+   }
 
-        for (Method method : Student.class.getMethods()) {
-            if (method.getName().equals("getUniversity")) {
-                containsColorGetter = true;
-            } else if (method.getName().equals("setUniversity")) {
-                containsColorSetter = true;
-            }
-        }
+   @Test
+   void testExternalReference()
+   {
+      Student student = new Student().setUniversity(new University());
 
-        assertThat(containsColorGetter, is(true));
-        assertThat(containsColorSetter, is(true));
-    }
+      YamlIdMap yim = new YamlIdMap(student.getClass().getPackage().getName());
 
-    @Test
-    void testExternalReference() {
+      RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> yim.encode(student));
 
-        Student student = new Student().setUniversity(new University());
+      assertThat(runtimeException.getMessage(), containsString("ReflectorMap could not find"));
 
-        YamlIdMap yim = new YamlIdMap(student.getClass().getPackage().getName());
+      YamlIdMap idMap = new YamlIdMap(student.getClass().getPackage().getName(),
+                                      University.class.getPackage().getName());
 
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> yim.encode(student));
+      String yaml = idMap.encode(student);
 
-        assertThat(runtimeException.getMessage(), containsString("ReflectorMap could not find"));
-
-        YamlIdMap idMap = new YamlIdMap(student.getClass().getPackage().getName(),
-              University.class.getPackage().getName());
-
-        String yaml = idMap.encode(student);
-
-        assertThat(yaml, notNullValue());
-    }
+      assertThat(yaml, notNullValue());
+   }
 }
