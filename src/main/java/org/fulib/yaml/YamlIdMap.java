@@ -151,14 +151,14 @@ public class YamlIdMap
 {
    // =============== Constants ===============
 
-   private static final String REMOVE     = "remove";
+   private static final String REMOVE = "remove";
    private static final String REMOVE_YOU = "removeYou";
 
    // =============== Fields ===============
 
-   private String            yaml;
-   private String            userId = null;
-   private boolean           decodingPropertyChange;
+   private String yaml;
+   private String userId = null;
+   private boolean decodingPropertyChange;
 
    private LinkedHashMap<String, Object> objIdMap = new LinkedHashMap<>();
    private LinkedHashMap<Object, String> idObjMap = new LinkedHashMap<>();
@@ -660,8 +660,8 @@ public class YamlIdMap
 
       ArrayList<String> colNameList = new ArrayList<>();
 
-      while (this.yamler.getCurrentToken() != null && this.yamler.getLookAheadToken() != null && this.yamler
-         .getLookAheadToken().endsWith(":"))
+      while (this.yamler.getCurrentToken() != null && this.yamler.getLookAheadToken() != null
+             && this.yamler.getLookAheadToken().endsWith(":"))
       {
          String colName = this.yamler.stripColon(this.yamler.getCurrentToken());
          colNameList.add(colName);
@@ -677,8 +677,8 @@ public class YamlIdMap
 
          // column values
          int colNum = 0;
-         while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-            .equals(this.yamler.getCurrentToken()))
+         while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-".equals(
+            this.yamler.getCurrentToken()))
          {
             String attrName = colNameList.get(colNum);
 
@@ -747,8 +747,8 @@ public class YamlIdMap
             {
                // no object created by parseObjectIds. Object has been removed.
                // ignore attr changes
-               while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-                  .equals(this.yamler.getCurrentToken()))
+               while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":")
+                      && !"-".equals(this.yamler.getCurrentToken()))
                {
                   this.yamler.nextToken();
                }
@@ -757,8 +757,8 @@ public class YamlIdMap
 
             // many values
             ArrayList<Object> previousValue = null;
-            while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-               .equals(this.yamler.getCurrentToken()))
+            while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-".equals(
+               this.yamler.getCurrentToken()))
             {
                String attrValue = this.yamler.getCurrentToken();
 
@@ -813,8 +813,8 @@ public class YamlIdMap
             {
                // no object created by parseObjectIds. Object has been removed.
                // ignore attr changes
-               while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-                  .equals(this.yamler.getCurrentToken()))
+               while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":")
+                      && !"-".equals(this.yamler.getCurrentToken()))
                {
                   this.yamler.nextToken();
                }
@@ -822,8 +822,8 @@ public class YamlIdMap
             }
 
             // many values
-            while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-               .equals(this.yamler.getCurrentToken()))
+            while (this.yamler.getCurrentToken() != null && !this.yamler.getCurrentToken().endsWith(":") && !"-".equals(
+               this.yamler.getCurrentToken()))
             {
                String attrValue = this.yamler.getCurrentToken();
 
@@ -1036,8 +1036,8 @@ public class YamlIdMap
          }
 
          // skip column values
-         while (!"".equals(this.yamler.getCurrentToken()) && !this.yamler.getCurrentToken().endsWith(":") && !"-"
-            .equals(this.yamler.getCurrentToken()))
+         while (!"".equals(this.yamler.getCurrentToken()) && !this.yamler.getCurrentToken().endsWith(":")
+                && !"-".equals(this.yamler.getCurrentToken()))
          {
             this.yamler.nextToken();
          }
@@ -1306,7 +1306,10 @@ public class YamlIdMap
 
       if (valueClass.getName().startsWith("java.lang.") || valueClass == String.class)
       {
-         buf.append("  ").append(propertyName).append(": \t").append(YamlGenerator.encapsulate(value.toString()))
+         buf.append("  ")
+            .append(propertyName)
+            .append(": \t")
+            .append(YamlGenerator.encapsulate(value.toString()))
             .append("\n");
          if (this.userId != null)
          {
@@ -1337,7 +1340,12 @@ public class YamlIdMap
             String now = LocalDateTime.now() + "." + this.userId;
             if (fieldValue instanceof Collection)
             {
-               buf.append("  ").append(propertyName).append('.').append(valueKey).append(".time: \t").append(now)
+               buf.append("  ")
+                  .append(propertyName)
+                  .append('.')
+                  .append(valueKey)
+                  .append(".time: \t")
+                  .append(now)
                   .append("\n");
                this.attrTimeStamps.put(key + "." + propertyName + "." + valueKey, now);
             }
