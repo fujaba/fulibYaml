@@ -3,6 +3,8 @@ package org.fulib.yaml;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * <p>Storyboard <a href='.././src/test/java/org/sdmlib/test/doc/TestJavaDocStories.java'>GenJavaDocStory</a></p>
@@ -22,17 +24,17 @@ public class Yamler
 {
    // =============== Constants ===============
 
-   private static final int LEADING_CONTEXT_CHARS  = 10;
+   private static final int LEADING_CONTEXT_CHARS = 10;
    private static final int TRAILING_CONTEXT_CHARS = 20;
 
    // =============== Fields ===============
 
-   private String          yaml;
+   private String yaml;
    private StringTokenizer tokenizer;
-   private String          lookAheadToken;
-   private String          currentToken;
-   private int             currentPos;
-   private int             lookAheadPos;
+   private String lookAheadToken;
+   private String currentToken;
+   private int currentPos;
+   private int lookAheadPos;
 
    // =============== Constructors ===============
 
@@ -104,13 +106,21 @@ public class Yamler
     */
    public LinkedHashMap<String, String> decode(String yaml)
    {
-      this.setInput(yaml);
-
       LinkedHashMap<String, String> result = new LinkedHashMap<>();
+      this.decode(yaml, result::put);
+      return result;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void decode(String yaml, BiConsumer<String, String> consumer)
+   {
+      this.setInput(yaml);
 
       while (this.currentToken != null && this.currentToken.endsWith(":"))
       {
-         String attrName = this.stripColon(this.currentToken);
+         String key = this.stripColon(this.currentToken);
 
          this.nextToken();
 
@@ -125,22 +135,30 @@ public class Yamler
             this.nextToken();
          }
 
-         result.put(attrName, value);
+         consumer.accept(key, value);
       }
-
-      return result;
    }
 
    public ArrayList<LinkedHashMap<String, String>> decodeList(String yaml)
    {
-      this.setInput(yaml);
-
       ArrayList<LinkedHashMap<String, String>> result = new ArrayList<>();
-
-      while ("-".equals(this.currentToken))
-      {
+      this.decodeList(yaml, () -> {
          LinkedHashMap<String, String> map = new LinkedHashMap<>();
          result.add(map);
+         return map::put;
+      });
+      return result;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void decodeList(String yaml, Supplier<? extends BiConsumer<String, String>> supplier)
+   {
+      this.setInput(yaml);
+      while ("-".equals(this.currentToken))
+      {
+         final BiConsumer<String, String> consumer = supplier.get();
          this.nextToken();
          while (this.currentToken != null && this.currentToken.endsWith(":"))
          {
@@ -148,11 +166,9 @@ public class Yamler
             this.nextToken();
             String value = this.currentToken;
             this.nextToken();
-            map.put(key, value);
+            consumer.accept(key, value);
          }
       }
-
-      return result;
    }
 
    public String nextToken()
@@ -243,8 +259,9 @@ public class Yamler
          endPos = this.yaml.length();
       }
 
-      final String info = this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml
-         .substring(this.currentPos, endPos);
+      final String info =
+         this.yaml.substring(startPos, this.currentPos) + "<--" + msg + "-->" + this.yaml.substring(this.currentPos,
+                                                                                                    endPos);
       System.err.println(info);
    }
 }
