@@ -94,10 +94,17 @@ public class ReflectorMap
    public Set<Object> discoverObjects(Object... roots)
    {
       final Set<Object> neighbors = new HashSet<>();
-      for (final Object root : roots)
-      {
-         this.discoverObjects(root, neighbors);
-      }
+      this.discoverObjects(roots, neighbors);
+      return neighbors;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public Set<Object> discoverObjects(Collection<?> roots)
+   {
+      final Set<Object> neighbors = new HashSet<>();
+      this.discoverObjects(roots, neighbors);
       return neighbors;
    }
 
@@ -106,7 +113,23 @@ public class ReflectorMap
     */
    public void discoverObjects(Object root, Set<Object> out)
    {
-      if (root == null || !this.canReflect(root) || !out.add(root))
+      if (root == null)
+      {
+         return;
+      }
+
+      if (root instanceof Collection)
+      {
+         this.discoverObjects((Collection<?>) root, out);
+         return;
+      }
+      else if (root instanceof Object[])
+      {
+         this.discoverObjects((Object[]) root);
+         return;
+      }
+
+      if (!this.canReflect(root) || !out.add(root))
       {
          return;
       }
@@ -116,17 +139,29 @@ public class ReflectorMap
       for (final String property : reflector.getAllProperties())
       {
          final Object value = reflector.getValue(root, property);
-         if (value instanceof Collection)
-         {
-            for (Object item : (Collection<?>) value)
-            {
-               this.discoverObjects(item, out);
-            }
-         }
-         else
-         {
-            this.discoverObjects(value, out);
-         }
+         this.discoverObjects(value, out);
+      }
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void discoverObjects(Object[] roots, Set<Object> out)
+   {
+      for (final Object root : roots)
+      {
+         this.discoverObjects(root, out);
+      }
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void discoverObjects(Collection<?> root, Set<Object> out)
+   {
+      for (final Object item : root)
+      {
+         this.discoverObjects(item, out);
       }
    }
 

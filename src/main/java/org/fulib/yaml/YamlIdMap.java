@@ -899,11 +899,8 @@ public class YamlIdMap
 
    public LinkedHashSet<Object> collectObjects(Object... rootObjList)
    {
-      LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
-      for (final Object root : rootObjList)
-      {
-         this.reflectorMap.discoverObjects(root, collectedObjects);
-      }
+      final LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
+      this.reflectorMap.discoverObjects(rootObjList, collectedObjects);
       for (final Object collectedObject : collectedObjects)
       {
          this.addToObjIdMap(collectedObject);
