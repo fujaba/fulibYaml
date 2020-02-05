@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.equalTo;
 
 class TestExternalReferences
 {
@@ -37,19 +37,17 @@ class TestExternalReferences
    @Test
    void testExternalReference()
    {
-      Student student = new Student().setUniversity(new University());
+      final University university = new University();
+      final Student student = new Student().setUniversity(university);
 
-      YamlIdMap yim = new YamlIdMap(student.getClass().getPackage().getName());
+      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentYaml = studentIdMap.encode(student);
+      assertThat(studentYaml, equalTo("- s1: \tStudent\n" + "  university: \t" + university.toString() + "\n\n"));
 
-      RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> yim.encode(student));
-
-      assertThat(runtimeException.getMessage(), containsString("ReflectorMap could not find"));
-
-      YamlIdMap idMap = new YamlIdMap(student.getClass().getPackage().getName(),
-                                      University.class.getPackage().getName());
-
-      String yaml = idMap.encode(student);
-
-      assertThat(yaml, notNullValue());
+      final YamlIdMap studentUniIdMap = new YamlIdMap(student.getClass().getPackage().getName(),
+                                                      University.class.getPackage().getName());
+      final String studentUniYaml = studentUniIdMap.encode(student);
+      assertThat(studentUniYaml,
+                 equalTo("- s1: \tStudent\n" + "  university: \tu2\n" + "\n" + "- u2: \tUniversity\n" + "\n"));
    }
 }
