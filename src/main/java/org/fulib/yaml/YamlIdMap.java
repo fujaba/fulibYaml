@@ -181,6 +181,17 @@ public class YamlIdMap
    }
 
    /**
+    * @param packageName
+    *    the names of the package in which model classes reside
+    *
+    * @since 1.2
+    */
+   public YamlIdMap(String packageName)
+   {
+      this.reflectorMap = new ReflectorMap(packageName);
+   }
+
+   /**
     * @param packageNames
     *    the names of the packages in which model classes reside
     */
@@ -192,6 +203,8 @@ public class YamlIdMap
    /**
     * @param packageNames
     *    the names of the packages in which model classes reside
+    *
+    * @since 1.2
     */
    public YamlIdMap(Collection<String> packageNames)
    {
