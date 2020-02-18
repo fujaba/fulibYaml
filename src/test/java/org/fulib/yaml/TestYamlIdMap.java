@@ -107,8 +107,8 @@ class TestYamlIdMap
 
       YamlIdMap idMap = new YamlIdMap(uni.getClass().getPackage().getName());
       String encode = idMap.encode(uni);
-      assertThat(idMap.getIdObjMap().get(math), is("math"));
-      assertThat(idMap.getIdObjMap().get(other), is("other"));
-      assertThat(idMap.getIdObjMap().get(other2), is("other2"));
+      assertThat(idMap.getId(math), is("math"));
+      assertThat(idMap.getId(other), is("other"));
+      assertThat(idMap.getId(other2), is("other2"));
    }
 }

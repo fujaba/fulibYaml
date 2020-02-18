@@ -213,11 +213,19 @@ public class YamlIdMap
 
    // =============== Properties ===============
 
+   /**
+    * @deprecated since 1.2; use {@link #getObject(String)} instead
+    */
+   @Deprecated
    public LinkedHashMap<String, Object> getObjIdMap()
    {
       return this.objIdMap;
    }
 
+   /**
+    * @deprecated since 1.2; use {@link #getId(Object)} instead
+    */
+   @Deprecated
    public LinkedHashMap<Object, String> getIdObjMap()
    {
       return this.idObjMap;
