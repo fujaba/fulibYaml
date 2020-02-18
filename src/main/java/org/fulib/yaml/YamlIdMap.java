@@ -808,6 +808,14 @@ public class YamlIdMap
       return this.reflectorMap.getReflector(obj);
    }
 
+   /**
+    * @since 1.2
+    */
+   public String getId(Object object)
+   {
+      return this.idObjMap.get(object);
+   }
+
    public Object getObject(String objId)
    {
       return this.objIdMap.get(objId);
