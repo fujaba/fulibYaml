@@ -1067,6 +1067,10 @@ public class YamlIdMap
       this.encodeAttrValue(buf, obj, propertyName, value);
    }
 
+   /**
+    * @deprecated since 1.2; for internal use only
+    */
+   @Deprecated
    public void encodeAttrValue(StringBuilder buf, Object obj, String propertyName, Object value)
    {
       // already known?
