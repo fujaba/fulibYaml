@@ -32,24 +32,24 @@ public class DataManager
 
    public DataManager attach(Object rootObject, String logDirName)
    {
-      getOrCreateLogDir(logDirName);
+      this.getOrCreateLogDir(logDirName);
 
       this.logFileName = "logFile.yaml";
 
       String packageName = rootObject.getClass().getPackage().getName();
-      yamlIdMap = new YamlIdMap(packageName);
-      eventYamler = new EventYamler(packageName).setYamlIdMap(yamlIdMap);
-      reflectorMap = new ReflectorMap(packageName);
+      this.yamlIdMap = new YamlIdMap(packageName);
+      this.eventYamler = new EventYamler(packageName).setYamlIdMap(this.yamlIdMap);
+      this.reflectorMap = new ReflectorMap(packageName);
 
-      loadModel(rootObject);
+      this.loadModel(rootObject);
 
-      loadEvents(rootObject);
+      this.loadEvents(rootObject);
 
-      storeModel(rootObject);
+      this.storeModel(rootObject);
 
-      removeLogFile();
+      this.removeLogFile();
 
-      new ModelListener(rootObject, e -> handleEvent(e));
+      new ModelListener(rootObject, e -> this.handleEvent(e));
 
       return this;
    }
@@ -58,7 +58,7 @@ public class DataManager
    {
       try
       {
-         File logFile = new File(logDirName + "/" + logFileName);
+         File logFile = new File(this.logDirName + "/" + this.logFileName);
          if (logFile.exists())
          {
             logFile.delete();
@@ -108,35 +108,35 @@ public class DataManager
 
    private void handleEvent(PropertyChangeEvent e)
    {
-      String buf = eventYamler.encode(e);
+      String buf = this.eventYamler.encode(e);
 
       try
       {
-         File logDirFile = new File(logDirName);
+         File logDirFile = new File(this.logDirName);
          try
          {
             boolean mkdirs = logDirFile.mkdirs();
-            logFilePath = new File(logDirName +"/" + logFileName);
-            if ( ! logFilePath.exists())
+            this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
+            if ( !this.logFilePath.exists())
             {
-               logFilePath.createNewFile();
+               this.logFilePath.createNewFile();
             }
-            FileWriter fileWriter = new FileWriter(logFilePath, true);
-            fileWriter.write(buf.toString());
+            FileWriter fileWriter = new FileWriter(this.logFilePath, true);
+            fileWriter.write(buf);
             fileWriter.flush();
             fileWriter.close();
          }
          catch (Exception e2)
          {
-            logDirName = "/sdcard/" + logDirName;
-            logDirFile = new File(logDirName);
+            this.logDirName = "/sdcard/" + this.logDirName;
+            logDirFile = new File(this.logDirName);
             logDirFile.mkdirs();
-            logFilePath = new File(logDirName +"/" + logFileName);
-            if ( ! logFilePath.exists())
+            this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
+            if ( !this.logFilePath.exists())
             {
-               logFilePath.createNewFile();
+               this.logFilePath.createNewFile();
             }
-            FileWriter fileWriter = new FileWriter(logFilePath, true);
+            FileWriter fileWriter = new FileWriter(this.logFilePath, true);
             fileWriter.write(buf);
             fileWriter.flush();
             fileWriter.close();
@@ -145,7 +145,7 @@ public class DataManager
       catch (IOException e1)
       {
          e1.printStackTrace();
-         Logger.getGlobal().log(Level.SEVERE, "could not write log to " + logFilePath, e);
+         Logger.getGlobal().log(Level.SEVERE, "could not write log to " + this.logFilePath, e);
       }
    }
 
@@ -156,16 +156,16 @@ public class DataManager
    {
       try
       {
-         modelFile = new File(logDirName + "/model.yaml");
+         this.modelFile = new File(this.logDirName + "/model.yaml");
 
-         if ( ! modelFile.exists())
+         if ( !this.modelFile.exists())
          {
-            modelFile.createNewFile();
+            this.modelFile.createNewFile();
          }
 
-         String yamlText = yamlIdMap.encode(rootObject);
+         String yamlText = this.yamlIdMap.encode(rootObject);
 
-         FileWriter fileWriter = new FileWriter(logDirName + "/model.yaml");
+         FileWriter fileWriter = new FileWriter(this.logDirName + "/model.yaml");
          fileWriter.write(yamlText);
          fileWriter.flush();
          fileWriter.close();
@@ -185,20 +185,20 @@ public class DataManager
    {
       try
       {
-         modelFile = new File(logDirName + "/model.yaml");
+         this.modelFile = new File(this.logDirName + "/model.yaml");
 
-         if ( ! modelFile.exists())
+         if ( !this.modelFile.exists())
          {
            return;
          }
 
-         byte[] bytes = read(modelFile);
+         byte[] bytes = this.read(this.modelFile);
 
          if (bytes == null) return;
 
          String content = new String(bytes);
 
-         yamlIdMap.decode(content, rootObject);
+         this.yamlIdMap.decode(content, rootObject);
 
       }
       catch (Exception e)
@@ -215,38 +215,41 @@ public class DataManager
 
       try
       {
-         File logDirFile = new File(logDirName);
+         File logDirFile = new File(this.logDirName);
          if (logDirFile.exists())
          {
-            logFilePath = new File(logDirName + "/" + logFileName);
+            this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
          }
          else
          {
-            logDirFile = new File("/sdcard/" + logDirName);
-            logFilePath = new File(logDirName + "/" + logFileName);
+            logDirFile = new File("/sdcard/" + this.logDirName);
+            this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
          }
       }
       catch (Exception e)
       {
-         Logger.getGlobal().log(Level.SEVERE, "could not create log dir " + logDirName);
+         Logger.getGlobal().log(Level.SEVERE, "could not create log dir " + this.logDirName);
          return;
       }
 
-      if (logFilePath == null) return;
-      if ( ! logFilePath.exists()) return;
+      if (this.logFilePath == null) return;
+      if ( !this.logFilePath.exists()) return;
 
       byte[] bytes = new byte[0];
-      bytes = read(logFilePath);
+      bytes = this.read(this.logFilePath);
 
       if (bytes == null) return;
 
       String content = new String(bytes);
 
       String packageName = rootObject.getClass().getPackage().getName();
-      eventYamler.decode(rootObject, content);
+      this.eventYamler.decode(rootObject, content);
    }
 
-
+   /**
+    * @deprecated since 1.2; for internal use only
+    */
+   @Deprecated
    public byte[] read(File file) {
       byte[] buffer = new byte[(int) file.length()];
       InputStream ios = null;
