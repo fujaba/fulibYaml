@@ -881,9 +881,12 @@ public class YamlIdMap
             key = key.substring(0, 1).toLowerCase() + key.substring(1);
          }
 
-         this.maxUsedIdNum++;
-
-         key += this.maxUsedIdNum;
+         if (this.objIdMap.get(key) != null)
+         {
+            // key is already in use
+            this.maxUsedIdNum++;
+            key += this.maxUsedIdNum;
+         }
 
          if (this.maxUsedIdNum > 1 && this.userId != null)
          {

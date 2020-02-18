@@ -1,6 +1,8 @@
 
 package org.fulib.yaml;
 
+import org.fulib.yaml.testmodel.subpackage.Room;
+import org.fulib.yaml.testmodel.subpackage.University;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -88,6 +90,25 @@ class TestYamlIdMap
       LinkedHashSet<Object> list = dumpMap.collectObjects(yamlObj);
 
       assertThat(list.size(), equalTo(3));
+   }
 
+   @Test
+   public void testUserObjectIds()
+   {
+      University uni = new University();
+      uni.setName("studyright");
+
+      Room math = new Room().setId("math");
+      Room arts = new Room().setId("arts");
+      Room other = new Room().setId("other");
+      Room other2 = new Room().setId("other");
+
+      uni.withRooms(math).withRooms(arts).withRooms(other).withRooms(other2);
+
+      YamlIdMap idMap = new YamlIdMap(uni.getClass().getPackage().getName());
+      String encode = idMap.encode(uni);
+      assertThat(idMap.getIdObjMap().get(math), is("math"));
+      assertThat(idMap.getIdObjMap().get(other), is("other"));
+      assertThat(idMap.getIdObjMap().get(other2), is("other2"));
    }
 }
