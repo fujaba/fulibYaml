@@ -13,6 +13,8 @@
 # fulibYaml v1.2.0
 
 + Added a few new convenience API methods.
+* Fixed an exception when `YamlIdMap` discovers objects of unknown types. #15
+* `YamlIdMap` no longer appends auto-incremented numbers to IDs if not necessary. #16
 * Transitioned many APIs from concrete implementation types like `ArrayList` or `LinkedHashMap` to their respective 
   interfaces like `List` or `Map`.
   > In places where this could not be done in-place, new APIs were added and the old ones deprecated.
