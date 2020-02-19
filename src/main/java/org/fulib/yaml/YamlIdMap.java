@@ -842,11 +842,16 @@ public class YamlIdMap extends IdMap
    public String encode(Object... rootObjList)
    {
       Objects.requireNonNull(rootObjList);
-
-      StringBuilder buf = new StringBuilder();
-
       this.collectObjects(rootObjList);
+      return this.encode();
+   }
 
+   /**
+    * @since 1.2
+    */
+   public String encode()
+   {
+      StringBuilder buf = new StringBuilder();
       for (Entry<String, Object> entry : this.objIdMap.entrySet())
       {
          String key = entry.getKey();
