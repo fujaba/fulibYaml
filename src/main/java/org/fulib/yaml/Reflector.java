@@ -12,9 +12,9 @@ public class Reflector
 {
    // =============== Fields ===============
 
-   private String   className = "";
-   private Method   emfCreateMethod;
-   private Object   emfFactory;
+   private String className = "";
+   private Method emfCreateMethod;
+   private Object emfFactory;
    private Class<?> eObjectClass;
    private Class<?> clazz;
 
@@ -56,6 +56,12 @@ public class Reflector
       return this;
    }
 
+   /**
+    * Signifies to this reflector that the underlying {@linkplain #getClazz() class} uses EMF.
+    * As such, semantics of the various methods provided by this class change in accordance to the EMF conventions.
+    *
+    * @return this instance, to allow method chaining
+    */
    public Reflector setUseEMF()
    {
       String packageName = this.className;
@@ -90,6 +96,8 @@ public class Reflector
    }
 
    /**
+    * Equivalent to {@link #getOwnProperties()}{@code .toArray(new String[0])}.
+    *
     * @return a sorted array of names of properties the underlying {@link #getClazz() clazz} has.
     *
     * @deprecated since 1.2; use {@link #getOwnProperties()} instead
@@ -101,7 +109,7 @@ public class Reflector
    }
 
    /**
-    * @return a sorted set of names of properties the underlying {@link #getClazz() clazz} has.
+    * @return a sorted set of names of properties of the underlying {@linkplain #getClazz() class}.
     *
     * @since 1.2
     */
@@ -118,8 +126,8 @@ public class Reflector
    }
 
    /**
-    * @return a sorted set of names of properties the underlying {@link #getClazz() clazz} and it's super class and
-    * interfaces have.
+    * @return a sorted set of names of properties the underlying {@linkplain #getClazz() class}, it's super class and
+    * it's interfaces provide.
     *
     * @since 1.2
     */
@@ -170,6 +178,14 @@ public class Reflector
 
    // =============== Methods ===============
 
+   /**
+    * Creates a new instance of the underlying {@linkplain #getClazz() class}.
+    * If this reflector {@linkplain #setUseEMF() uses EMF}, the EMF create method is called.
+    * Otherwise, the default (no-arg) constructor of the underlying class is invoked.
+    * Any exception raised by either operation is ignored; in this case {@code null} is returned
+    *
+    * @return a new instance of the underlying class, or {@code null} if that fails
+    */
    public Object newInstance()
    {
       try
@@ -386,6 +402,14 @@ public class Reflector
       return null;
    }
 
+   /**
+    * Removes all associations from the object by calling it's {@code removeYou()} method.
+    * If that method is not available, no action is taken.
+    * In particular, no exception is thrown in that case.
+    *
+    * @param object
+    *    the object to remove
+    */
    public void removeObject(Object object)
    {
       // call removeYou if possible
