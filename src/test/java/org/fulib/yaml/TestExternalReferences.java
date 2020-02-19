@@ -42,12 +42,12 @@ class TestExternalReferences
 
       final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
       final String studentYaml = studentIdMap.encode(student);
-      assertThat(studentYaml, equalTo("- s1: \tStudent\n" + "  university: \t" + university.toString() + "\n\n"));
+      assertThat(studentYaml, equalTo("- s: \tStudent\n" + "  university: \t" + university.toString() + "\n\n"));
 
       final YamlIdMap studentUniIdMap = new YamlIdMap(student.getClass().getPackage().getName(),
                                                       University.class.getPackage().getName());
       final String studentUniYaml = studentUniIdMap.encode(student);
       assertThat(studentUniYaml,
-                 equalTo("- s1: \tStudent\n" + "  university: \tu2\n" + "\n" + "- u2: \tUniversity\n" + "\n"));
+                 equalTo("- s: \tStudent\n" + "  university: \tu\n" + "\n" + "- u: \tUniversity\n" + "\n"));
    }
 }

@@ -109,6 +109,6 @@ class TestYamlIdMap
       String encode = idMap.encode(uni);
       assertThat(idMap.getId(math), is("math"));
       assertThat(idMap.getId(other), is("other"));
-      assertThat(idMap.getId(other2), is("other2"));
+      assertThat(idMap.getId(other2), is("other1"));
    }
 }
