@@ -800,14 +800,37 @@ public class YamlIdMap extends IdMap
 
    // --------------- Object Access ---------------
 
-   public YamlIdMap putNameObject(String name, Object object)
+   /**
+    * Puts the {@code object} in this IdMap with the specified {@code id}.
+    * The call
+    *
+    * <pre><code>
+    *     idMap.putNameObject("foo", bar);
+    * </code></pre>
+    * <p>
+    * is equivalent to
+    *
+    * <pre><code>
+    *     idMap.putObject("foo", bar);
+    *     idMap.discoverObjects(bar);
+    * </code></pre>
+    * <p>
+    * and the latter should be used for clarity.
+    *
+    * @param id
+    * 	the id
+    * @param object
+    * 	the object
+    *
+    * @return this instance, to allow method chaining
+    *
+    * @deprecated since 1.2; use {@link #putObject(String, Object)} and {@link #discoverObjects(Object)} instead
+    */
+   @Deprecated
+   public YamlIdMap putNameObject(String id, Object object)
    {
-      this.putObject(name, object);
-      for (final Object discoveredObject : this.reflectorMap.discoverObjects(object))
-      {
-         this.putObject(discoveredObject);
-      }
-
+      this.putObject(id, object);
+      this.discoverObjects(object);
       return this;
    }
 
