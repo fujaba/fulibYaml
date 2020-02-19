@@ -175,11 +175,6 @@ public class YamlIdMap
 
    // =============== Constructors ===============
 
-   private YamlIdMap()
-   {
-      // always pass package to constructor
-   }
-
    /**
     * @param packageName
     *    the names of the package in which model classes reside
