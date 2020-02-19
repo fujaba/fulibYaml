@@ -865,7 +865,9 @@ public class YamlIdMap extends IdMap
     * @param roots
     *    the root objects
     *
-    * @return a set of all {@link ReflectorMap#discoverObjects(Object) discovered} objects
+    * @return a set of all discovered objects
+    *
+    * @see #discoverObjects(Object...)
     *
     * @deprecated since 1.2; use {@link #discoverObjects(Object...)} instead (unless the resulting set is needed)
     */
