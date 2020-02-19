@@ -5,6 +5,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 /**
+ * The IdMap maintains an one-to-one mapping from objects to IDs.
+ * IDs are either automatically generated based on {@code id} or {@code name} properties or class names (see {@link
+ * #putObject(Object)}, or explicitly definied (with {@link #putObject(Object)}.
+ * Auto-generated IDs are suffixed with a running number if necessary.
+ *
  * @since 1.2
  */
 public class IdMap
@@ -40,21 +45,67 @@ public class IdMap
 
    // =============== Methods ===============
 
-   public Reflector getReflector(Object obj)
+   /**
+    * @param object
+    *    the object
+    *
+    * @return a reflector corresponding to the given object's class,
+    * as given by {@link ReflectorMap#getReflector(Object)}
+    */
+   public Reflector getReflector(Object object)
    {
-      return this.reflectorMap.getReflector(obj);
+      return this.reflectorMap.getReflector(object);
    }
 
+   /**
+    * @param object
+    *    the object
+    *
+    * @return the id of the given {@code object}, or {@code null} if not found
+    */
    public String getId(Object object)
    {
       return this.idObjMap.get(object);
    }
 
-   public Object getObject(String objId)
+   /**
+    * @param id
+    *    the id
+    *
+    * @return the object with the given id, or {@code null} if not found
+    */
+   public Object getObject(String id)
    {
-      return this.objIdMap.get(objId);
+      return this.objIdMap.get(id);
    }
 
+   /**
+    * Adds the object with an automatically generated ID.
+    * It is generated as follows:
+    *
+    * <ol>
+    *    <li>If the object has a {@code getId()} method, we use that as the base ID
+    *    by replacing any non-word characters (regex {@code \W}) with {@code _}.</li>
+    *    <li>If the object has no {@code getId()} method but a {@code getName()} method,
+    *    the base ID becomes the result of that with the same replacement applied</li>
+    *    <li>Otherwise, the base ID is the first character of the {@linkplain Class#getSimpleName() simple name}
+    *    of the object's class</li>
+    * </ol>
+    * <p>
+    * Then,
+    *
+    * <ol>
+    *    <li>the base ID's first character is converted to lowercase</li>
+    *    <li>if an object is already present under the base ID, a running number is appended</li>
+    *    <li>if a {@linkplain #getUserId() user ID} is specified and the object is not the first to be added,
+    *    the user ID followed by a period are prepended to the base ID</li>
+    * </ol>
+    *
+    * @param object
+    *    the object to add
+    *
+    * @return the auto-generated ID
+    */
    public String putObject(Object object)
    {
       String key = this.idObjMap.get(object);
@@ -66,6 +117,15 @@ public class IdMap
       return key;
    }
 
+   /**
+    * Adds the {@code object} with the given {@code id}.
+    * If there is already an object with that id, the old object is removed.
+    *
+    * @param id
+    *    the id
+    * @param object
+    *    the object
+    */
    public void putObject(String id, Object object)
    {
       String oldKey = this.idObjMap.get(object);
@@ -79,16 +139,43 @@ public class IdMap
       this.idObjMap.put(object, id);
    }
 
+   /**
+    * Discovers all objects reachable from the {@code root} and within the packages managed by the {@link ReflectorMap}
+    * that was given in the constructor, and adds them via {@link #putObject(Object)}.
+    *
+    * @param root
+    *    the root object
+    *
+    * @see ReflectorMap#discoverObjects(Object)
+    */
    public void discoverObjects(Object root)
    {
       this.reflectorMap.discoverObjects(root).forEach(this::putObject);
    }
 
+   /**
+    * Discovers all objects reachable from the {@code roots} and within the packages managed by the {@link ReflectorMap}
+    * that was given in the constructor, and adds them via {@link #putObject(Object)}.
+    *
+    * @param roots
+    *    the root objects
+    *
+    * @see ReflectorMap#discoverObjects(Object...)
+    */
    public void discoverObjects(Object... roots)
    {
       this.reflectorMap.discoverObjects(roots).forEach(this::putObject);
    }
 
+   /**
+    * Discovers all objects reachable from the {@code roots} and within the packages managed by the {@link ReflectorMap}
+    * that was given in the constructor, and adds them via {@link #putObject(Object)}.
+    *
+    * @param roots
+    *    the root objects
+    *
+    * @see ReflectorMap#discoverObjects(Collection)
+    */
    public void discoverObjects(Collection<?> roots)
    {
       this.reflectorMap.discoverObjects(roots).forEach(this::putObject);
