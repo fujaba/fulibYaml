@@ -21,12 +21,10 @@ public class EventYamler
    public static final String NEW_VALUE_TYPE = NEW_VALUE + "Type";
    public static final String HISTORY_KEY = "historyKey";
 
-   private ReflectorMap reflectorMap;
    private YamlIdMap yamlIdMap;
 
    public EventYamler(String packageName)
    {
-      this.reflectorMap = new ReflectorMap(packageName);
       this.yamlIdMap = new YamlIdMap(packageName);
    }
 
@@ -104,7 +102,7 @@ public class EventYamler
             String valueKey = this.yamlIdMap.getOrCreateKey(newValue);
             buf.append("  " + NEW_VALUE + ": ").append(valueKey).append("\n");
 
-            Reflector reflector = this.reflectorMap.getReflector(className);
+            Reflector reflector = this.yamlIdMap.getReflector(className);
             Object attrValue = reflector.getValue(source, prop);
             if (attrValue != null && Collection.class.isAssignableFrom(attrValue.getClass()))
             {
@@ -144,7 +142,7 @@ public class EventYamler
 
          Object sourceObject = this.yamlIdMap.getObject(sourceKey);
          String className = map.get(DataManager.SOURCE_TYPE);
-         Reflector reflector = this.reflectorMap.getReflector(className);
+         Reflector reflector = this.yamlIdMap.getReflector(className);
 
          if (sourceObject == null)
          {
@@ -165,7 +163,7 @@ public class EventYamler
             Object newValueObject = this.yamlIdMap.getObject(newValue);
             if (newValueObject == null)
             {
-               Reflector newValueReflector = this.reflectorMap.getReflector(newValueType);
+               Reflector newValueReflector = this.yamlIdMap.getReflector(newValueType);
                newValueObject = newValueReflector.newInstance();
                this.yamlIdMap.putNameObject(newValue, newValueObject);
             }
