@@ -2,13 +2,13 @@ package org.fulib.yaml.testmodel.subpackage;
 
 import java.util.ArrayList;
 
-public class University {
-
+public class University
+{
    private String name;
 
    public String getName()
    {
-      return name;
+      return this.name;
    }
 
    public void setName(String name)
@@ -20,10 +20,11 @@ public class University {
 
    public ArrayList<Room> getRooms()
    {
-      return rooms;
+      return this.rooms;
    }
 
-   public University withRooms(Room newRoom) {
+   public University withRooms(Room newRoom)
+   {
       this.rooms.add(newRoom);
       return this;
    }
