@@ -17,6 +17,7 @@
 + Added the `ReflectorMap.canReflect` and `.discoverObjects` methods.
 + Added the `Reflector.getOwnProperties` and `.getAllProperties` methods.
 + Added the `YamlGenerator` class, a more streamlined API for converting events to YAML.
++ Added the `IdMap` class.
 
 ## Bugfixes
 
