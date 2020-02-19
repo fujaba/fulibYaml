@@ -144,7 +144,7 @@ public class EventYamler
       for (LinkedHashMap<String, String> map : list)
       {
          // execute change
-         String sourceKey = map.get(DataManager.SOURCE);
+         String sourceKey = map.get(SOURCE);
 
          if (firstKey == null)
          {
@@ -157,7 +157,7 @@ public class EventYamler
          }
 
          Object sourceObject = this.yamlIdMap.getObject(sourceKey);
-         String className = map.get(DataManager.SOURCE_TYPE);
+         String className = map.get(SOURCE_TYPE);
          Reflector reflector = this.yamlIdMap.getReflector(className);
 
          if (sourceObject == null)
@@ -166,9 +166,9 @@ public class EventYamler
             this.yamlIdMap.putNameObject(sourceKey, sourceObject);
          }
 
-         String property = map.get(DataManager.PROPERTY);
-         String newValue = map.get(DataManager.NEW_VALUE);
-         String newValueType = map.get(DataManager.NEW_VALUE_TYPE);
+         String property = map.get(PROPERTY);
+         String newValue = map.get(NEW_VALUE);
+         String newValueType = map.get(NEW_VALUE_TYPE);
 
          if (newValueType == null)
          {
