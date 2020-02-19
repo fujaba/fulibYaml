@@ -14,8 +14,6 @@ public class ModelListener implements PropertyChangeListener
 
    private PropertyChangeListener elementListener;
 
-   private Set<Object> componentElements = new LinkedHashSet<>();
-
    private ReflectorMap creatorMap;
    private boolean closed = false;
 
@@ -33,7 +31,7 @@ public class ModelListener implements PropertyChangeListener
 
       for (Object obj : this.supervisedObjects)
       {
-         Class clazz = obj.getClass();
+         Class<?> clazz = obj.getClass();
          try
          {
             Method removePropertyChangeListener = clazz.getMethod("removePropertyChangeListener",
@@ -54,7 +52,7 @@ public class ModelListener implements PropertyChangeListener
          return;
       }
 
-      Class clazz = newObject.getClass();
+      Class<?> clazz = newObject.getClass();
       try
       {
          Method addPropertyChangeListener = clazz.getMethod("addPropertyChangeListener", PropertyChangeListener.class);
@@ -80,13 +78,11 @@ public class ModelListener implements PropertyChangeListener
 
          if (newValue instanceof Collection)
          {
-            Collection newCollection = (Collection) newValue;
+            Collection<?> newCollection = (Collection<?>) newValue;
 
             for (Object obj : newCollection)
             {
-               Object newEntity = obj;
-
-               PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, newEntity);
+               PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, obj);
 
                this.propertyChange(event);
             }
