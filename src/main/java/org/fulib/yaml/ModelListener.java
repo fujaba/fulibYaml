@@ -93,15 +93,10 @@ public class ModelListener implements PropertyChangeListener
          return;
       }
 
-      // just forward
-      if (evt.getNewValue() != null)
+      final Object newValue = evt.getNewValue();
+      if (newValue != null)
       {
-         Object newValue = evt.getNewValue();
-
-         if (!this.supervisedObjects.contains(newValue))
-         {
-            this.subscribeTo(newValue);
-         }
+         this.subscribeTo(newValue);
       }
 
       this.elementListener.propertyChange(evt);
