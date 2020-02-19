@@ -20,16 +20,40 @@ public class DataManager
    private YamlIdMap yamlIdMap;
    private EventYamler eventYamler;
    private ReflectorMap reflectorMap;
-   private File logFilePath = null;
-   private File modelFile = null;
+   private File logFilePath;
+   private File modelFile;
    private String logDirName = "tmp";
    private String logFileName;
 
+   /**
+    * @deprecated since 1.2; use {@link #DataManager(Object, String)} instead
+    */
+   @Deprecated
+   public DataManager()
+   {
+   }
+
+   /**
+    * @since 1.2
+    */
+   public DataManager(Object root, String logDirName)
+   {
+      this.attach(root, logDirName);
+   }
+
+   /**
+    * @deprecated since 1.2; use {@link #DataManager()} instead
+    */
+   @Deprecated
    public static DataManager get()
    {
       return new DataManager();
    }
 
+   /**
+    * @deprecated since 1.2; use {@link #DataManager(Object, String)} instead
+    */
+   @Deprecated
    public DataManager attach(Object rootObject, String logDirName)
    {
       this.getOrCreateLogDir(logDirName);
