@@ -31,17 +31,7 @@ public class ModelListener implements PropertyChangeListener
 
       for (Object obj : this.supervisedObjects)
       {
-         Class<?> clazz = obj.getClass();
-         try
-         {
-            Method removePropertyChangeListener = clazz.getMethod("removePropertyChangeListener",
-                                                                  PropertyChangeListener.class);
-            removePropertyChangeListener.invoke(obj, this);
-         }
-         catch (Exception e)
-         {
-            // just skip it
-         }
+         this.callChangeListenerMethod(obj, "removePropertyChangeListener");
       }
    }
 
@@ -52,16 +42,7 @@ public class ModelListener implements PropertyChangeListener
          return;
       }
 
-      Class<?> clazz = newObject.getClass();
-      try
-      {
-         Method addPropertyChangeListener = clazz.getMethod("addPropertyChangeListener", PropertyChangeListener.class);
-         addPropertyChangeListener.invoke(newObject, this);
-      }
-      catch (Exception e)
-      {
-         // just skip it
-      }
+      this.callChangeListenerMethod(newObject, "addPropertyChangeListener");
       this.supervisedObjects.add(newObject);
 
       if (!this.creatorMap.canReflect(newObject))
@@ -87,6 +68,20 @@ public class ModelListener implements PropertyChangeListener
          {
             this.propertyChange(new PropertyChangeEvent(newObject, prop, null, propertyValue));
          }
+      }
+   }
+
+   private void callChangeListenerMethod(Object receiver, String methodName)
+   {
+      Class<?> clazz = receiver.getClass();
+      try
+      {
+         Method addPropertyChangeListener = clazz.getMethod(methodName, PropertyChangeListener.class);
+         addPropertyChangeListener.invoke(receiver, this);
+      }
+      catch (Exception e)
+      {
+         // just skip it
       }
    }
 
