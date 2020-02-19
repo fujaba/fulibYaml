@@ -1,8 +1,6 @@
 package org.fulib.yaml;
 
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -826,10 +824,21 @@ public class YamlIdMap extends IdMap
 
    // --------------- Object Collection ---------------
 
-   public LinkedHashSet<Object> collectObjects(Object... rootObjList)
+   /**
+    * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
+    *
+    * @param roots
+    * 	the root objects
+    *
+    * @return a set of all {@link ReflectorMap#discoverObjects(Object) discovered} objects
+    *
+    * @deprecated since 1.2; use {@link #discoverObjects(Object...)} instead (unless the resulting set is needed)
+    */
+   @Deprecated
+   public LinkedHashSet<Object> collectObjects(Object... roots)
    {
       final LinkedHashSet<Object> collectedObjects = new LinkedHashSet<>();
-      this.reflectorMap.discoverObjects(rootObjList, collectedObjects);
+      this.reflectorMap.discoverObjects(roots, collectedObjects);
       for (final Object collectedObject : collectedObjects)
       {
          this.putObject(collectedObject);
@@ -841,7 +850,7 @@ public class YamlIdMap extends IdMap
 
    /**
     * Encodes this IdMap to a Yaml string.
-    * This method is merely a shorthand for calling {@link #collectObjects(Object...)} and {@link #encode()}.
+    * This method is merely a shorthand for calling {@link #discoverObjects(Object...)} and {@link #encode()}.
     * I.e.,
     *
     * <pre><code>
@@ -851,7 +860,7 @@ public class YamlIdMap extends IdMap
     * is equivalent to
     *
     * <pre><code>
-    *    idMap.collectObjects(foo, bar, baz);
+    *    idMap.discoverObjects(foo, bar, baz);
     *    String yaml = idMap.encode();
     * </code></pre>
     *
