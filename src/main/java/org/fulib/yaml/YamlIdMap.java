@@ -16,7 +16,6 @@ public class YamlIdMap extends IdMap
    // =============== Constants ===============
 
    private static final String REMOVE = "remove";
-   private static final String REMOVE_YOU = "removeYou";
 
    // =============== Fields ===============
 
