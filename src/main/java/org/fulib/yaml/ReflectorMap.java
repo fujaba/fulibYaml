@@ -17,8 +17,6 @@ public class ReflectorMap
    // =============== Constructors ===============
 
    /**
-    * Creates a new {@link ReflectorMap}.
-    *
     * @param packageName
     *    the package name to search for classes
     */
@@ -28,8 +26,6 @@ public class ReflectorMap
    }
 
    /**
-    * Creates a new {@link ReflectorMap}.
-    *
     * @param packageNames
     *    the package names to search for classes
     *
@@ -41,8 +37,6 @@ public class ReflectorMap
    }
 
    /**
-    * Creates a new {@link ReflectorMap}.
-    *
     * @param packageNames
     *    the package names to search for classes
     *
@@ -63,8 +57,6 @@ public class ReflectorMap
    }
 
    /**
-    * Creates a new {@link ReflectorMap}.
-    *
     * @param packageNames
     *    the package names to search for classes
     *
@@ -79,6 +71,14 @@ public class ReflectorMap
    // =============== Methods ===============
 
    /**
+    * Discovers all objects reachable from the {@code root} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param root
+    *    the root object
+    *
+    * @return the set of all discovered objects
+    *
     * @since 1.2
     */
    public Set<Object> discoverObjects(Object root)
@@ -89,6 +89,14 @@ public class ReflectorMap
    }
 
    /**
+    * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param roots
+    *    the root objects
+    *
+    * @return the set of all discovered objects
+    *
     * @since 1.2
     */
    public Set<Object> discoverObjects(Object... roots)
@@ -99,6 +107,14 @@ public class ReflectorMap
    }
 
    /**
+    * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param roots
+    *    the root objects
+    *
+    * @return the set of all discovered objects
+    *
     * @since 1.2
     */
    public Set<Object> discoverObjects(Collection<?> roots)
@@ -109,6 +125,14 @@ public class ReflectorMap
    }
 
    /**
+    * Discovers all objects reachable from the {@code root} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param root
+    *    the root object
+    * @param out
+    *    the set to which results are added
+    *
     * @since 1.2
     */
    public void discoverObjects(Object root, Set<Object> out)
@@ -144,6 +168,14 @@ public class ReflectorMap
    }
 
    /**
+    * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param roots
+    *    the root objects
+    * @param out
+    *    the set to which results are added
+    *
     * @since 1.2
     */
    public void discoverObjects(Object[] roots, Set<Object> out)
@@ -155,17 +187,32 @@ public class ReflectorMap
    }
 
    /**
+    * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
+    * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
+    *
+    * @param roots
+    *    the root objects
+    * @param out
+    *    the set to which results are added
+    *
     * @since 1.2
     */
-   public void discoverObjects(Collection<?> root, Set<Object> out)
+   public void discoverObjects(Collection<?> roots, Set<Object> out)
    {
-      for (final Object item : root)
+      for (final Object item : roots)
       {
          this.discoverObjects(item, out);
       }
    }
 
    /**
+    * @return {@code true} if the given object is not {@code null} and can be handled by this reflector map,
+    * i.e. whether it's package name is part of the package names specified in the constructor,
+    * and {@code false} otherwise.
+    *
+    * @see #canReflect(Class)
+    * @see #canReflect(Package)
+    * @see #canReflect(String)
     * @since 1.2
     */
    public boolean canReflect(Object object)
@@ -174,6 +221,12 @@ public class ReflectorMap
    }
 
    /**
+    * @return {@code true} if the given class can be handled by this reflector map,
+    * i.e. whether it's package name is part of the package names specified in the constructor,
+    * and {@code false} otherwise.
+    *
+    * @see #canReflect(Package)
+    * @see #canReflect(String)
     * @since 1.2
     */
    public boolean canReflect(Class<?> type)
@@ -182,6 +235,11 @@ public class ReflectorMap
    }
 
    /**
+    * @return {@code true} if the given package can be handled by this reflector map,
+    * i.e. whether it's name is part of the package names specified in the constructor,
+    * and {@code false} otherwise.
+    *
+    * @see #canReflect(String)
     * @since 1.2
     */
    public boolean canReflect(Package thePackage)
@@ -190,6 +248,10 @@ public class ReflectorMap
    }
 
    /**
+    * @return {@code true} if the given package name can be handled by this reflector map,
+    * i.e. whether it is part of the package names specified in the constructor,
+    * and {@code false} otherwise.
+    *
     * @since 1.2
     */
    private boolean canReflect(String packageName)
@@ -197,17 +259,37 @@ public class ReflectorMap
       return this.packageNames.contains(packageName);
    }
 
-   public Reflector getReflector(Object newObject)
+   /**
+    * @param object
+    *    the object whose class should be reflected
+    *
+    * @return a {@link Reflector} corresponding to the class of the given {@code object},
+    * or a {@link YamlObjectReflector} if the {@code object} is a {@link YamlObject}.
+    *
+    * @throws NullPointerException
+    *    if {@code object == null}
+    * @throws RuntimeException
+    *    if the given {@code object} {@linkplain #canReflect(Object) cannot be handled} by this reflector
+    * @since 1.2
+    */
+   public Reflector getReflector(Object object)
    {
-      if (newObject instanceof YamlObject)
+      if (object instanceof YamlObject)
       {
-         return new YamlObjectReflector((YamlObject) newObject);
+         return new YamlObjectReflector((YamlObject) object);
       }
 
-      return this.getReflector(newObject.getClass());
+      return this.getReflector(object.getClass());
    }
 
    /**
+    * @param clazz
+    *    the class to be reflected
+    *
+    * @return a {@link Reflector} corresponding to the given {@code clazz}
+    *
+    * @throws RuntimeException
+    *    if the given {@code clazz} {@linkplain #canReflect(Class) cannot be handled} by this reflector
     * @since 1.2
     */
    public Reflector getReflector(Class<?> clazz)
@@ -226,16 +308,26 @@ public class ReflectorMap
       return this.reflectorMap.computeIfAbsent(simpleName, k -> new Reflector().setClassName(fullName).setClazz(clazz));
    }
 
-   public Reflector getReflector(String clazzName)
+   /**
+    * @param simpleName
+    *    the {@linkplain Class#getSimpleName() simple name} of the class to be reflected
+    *
+    * @return a {@link Reflector} corresponding to the given Class with the given {@code simpleName}
+    *
+    * @throws RuntimeException
+    *    if the no class with the given {@code simpleName} can be found in the packages specified in the constructor
+    * @since 1.2
+    */
+   public Reflector getReflector(String simpleName)
    {
-      return this.reflectorMap.computeIfAbsent(clazzName, this::createReflector);
+      return this.reflectorMap.computeIfAbsent(simpleName, this::createReflector);
    }
 
-   private Reflector createReflector(String clazzName)
+   private Reflector createReflector(String simpleName)
    {
       for (String packageName : this.packageNames)
       {
-         String fullClassName = packageName + "." + clazzName;
+         String fullClassName = packageName + "." + simpleName;
 
          try
          {
@@ -253,7 +345,7 @@ public class ReflectorMap
 
          try
          {
-            final String implClassName = packageName + ".impl." + clazzName;
+            final String implClassName = packageName + ".impl." + simpleName;
             final Class<?> implClass = Class.forName(implClassName);
             return new Reflector().setClassName(implClassName).setClazz(implClass).setUseEMF();
          }
@@ -262,7 +354,7 @@ public class ReflectorMap
          }
       }
 
-      throw this.unknownClassException(clazzName);
+      throw this.unknownClassException(simpleName);
    }
 
    private RuntimeException unknownClassException(String className)
