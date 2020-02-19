@@ -896,14 +896,24 @@ public class YamlIdMap
       }
 
       key = StrUtil.downFirstChar(key);
+      key = this.makeUnique(key);
+      key = this.addUserId(key);
+      return key;
+   }
 
+   private String makeUnique(String key)
+   {
       if (this.objIdMap.get(key) != null)
       {
          // key is already in use
          this.maxUsedIdNum++;
          key += this.maxUsedIdNum;
       }
+      return key;
+   }
 
+   private String addUserId(String key)
+   {
       if (this.maxUsedIdNum > 1 && this.userId != null)
       {
          // all but the first get a userId prefix
