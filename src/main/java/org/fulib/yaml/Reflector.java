@@ -328,8 +328,7 @@ public class Reflector
       {
          int intValue = Integer.parseInt((String) value);
          Method method = clazz.getMethod(setterName, int.class);
-         method.invoke(object, intValue);
-         return true;
+         return method.invoke(object, intValue);
       }
       catch (Exception ignored)
       {
@@ -340,8 +339,7 @@ public class Reflector
       {
          long longValue = Long.parseLong((String) value);
          Method method = clazz.getMethod(setterName, long.class);
-         method.invoke(object, longValue);
-         return true;
+         return method.invoke(object, longValue);
       }
       catch (Exception ignored)
       {
@@ -352,8 +350,7 @@ public class Reflector
       {
          double doubleValue = Double.parseDouble((String) value);
          Method method = clazz.getMethod(setterName, double.class);
-         method.invoke(object, doubleValue);
-         return true;
+         return method.invoke(object, doubleValue);
       }
       catch (Exception ignored)
       {
@@ -364,8 +361,7 @@ public class Reflector
       {
          float floatValue = Float.parseFloat((String) value);
          Method method = clazz.getMethod(setterName, float.class);
-         method.invoke(object, floatValue);
-         return true;
+         return method.invoke(object, floatValue);
       }
       catch (Exception ignored)
       {
@@ -375,8 +371,7 @@ public class Reflector
       try
       {
          Method method = clazz.getMethod("with" + capName, Object[].class);
-         method.invoke(object, new Object[] { new Object[] { value } });
-         return true;
+         return method.invoke(object, new Object[] { new Object[] { value } });
       }
       catch (Exception ignored)
       {
@@ -390,8 +385,7 @@ public class Reflector
             Method getMethod = clazz.getMethod("get" + capName);
             Object collection = getMethod.invoke(object);
             Method addMethod = collection.getClass().getMethod("add", Object.class);
-            addMethod.invoke(collection, value);
-            return true;
+            return addMethod.invoke(collection, value);
          }
          catch (Exception ignored)
          {
