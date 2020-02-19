@@ -146,11 +146,6 @@ public class EventYamler
          String className = map.get(DataManager.SOURCE_TYPE);
          Reflector reflector = this.reflectorMap.getReflector(className);
 
-         if (reflector == null)
-         {
-            Logger.getGlobal().log(Level.SEVERE, "did not find a reflector for " + className);
-         }
-
          if (sourceObject == null)
          {
             sourceObject = reflector.newInstance();
