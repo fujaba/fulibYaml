@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 public class Reflector
 {
+   private static Object NOT_FOUND = new Object();
+
    // =============== Fields ===============
 
    private String className = "";
@@ -230,8 +232,7 @@ public class Reflector
       // e.g. foo.getName(); default bean getter naming convention
       try
       {
-         Method method = clazz.getMethod("get" + capName);
-         return method.invoke(object);
+         return clazz.getMethod("get" + capName).invoke(object);
       }
       catch (Exception ignored)
       {
@@ -240,8 +241,7 @@ public class Reflector
       // e.g. foo.name(); used by some code styles and Scala
       try
       {
-         Method method = clazz.getMethod(attribute);
-         return method.invoke(object);
+         return clazz.getMethod(attribute).invoke(object);
       }
       catch (Exception ignored)
       {
@@ -250,8 +250,7 @@ public class Reflector
       // e.g. foo.isValid(); for booleans
       try
       {
-         Method method = clazz.getMethod("is" + capName);
-         return method.invoke(object);
+         return clazz.getMethod("is" + capName).invoke(object);
       }
       catch (Exception ignored)
       {
