@@ -877,29 +877,17 @@ public class YamlIdMap
 
       String key = className.substring(0, 1).toLowerCase();
       Class<?> clazz = obj.getClass();
-      try
+      final String id = getKeyFromProperty(obj, clazz, "getId");
+      if (id != null)
       {
-         Method getId = clazz.getMethod("getId");
-         Object id = getId.invoke(obj);
-         if (id != null)
-         {
-            key = id.toString().replaceAll("\\W+", "_");
-         }
+         key = id;
       }
-      catch (Exception e)
+      else
       {
-         try
+         final String name = getKeyFromProperty(obj, clazz, "getName");
+         if (name != null)
          {
-            Method getId = clazz.getMethod("getName");
-            Object id = getId.invoke(obj);
-            if (id != null)
-            {
-               key = id.toString().replaceAll("\\W+", "_");
-            }
-         }
-         catch (Exception e2)
-         {
-            // go with old key
+            key = name;
          }
       }
 
@@ -925,6 +913,24 @@ public class YamlIdMap
          key = this.userId + "." + key;
       }
       return key;
+   }
+
+   private static String getKeyFromProperty(Object obj, Class<?> clazz, String getterName)
+   {
+      try
+      {
+         Method getter = clazz.getMethod(getterName);
+         Object result = getter.invoke(obj);
+         if (result != null)
+         {
+            return result.toString().replaceAll("\\W+", "_");
+         }
+      }
+      catch (Exception ignored)
+      {
+         // go with old key
+      }
+      return null;
    }
 
    public LinkedHashSet<Object> collectObjects(Object... rootObjList)
