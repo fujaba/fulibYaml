@@ -866,8 +866,7 @@ public class YamlIdMap
       if (obj instanceof YamlObject)
       {
          YamlObject yamlObj = (YamlObject) obj;
-         Object mapId = yamlObj.get(".id");
-         key = (String) mapId;
+         key = yamlObj.getId();
       }
 
       if (key == null)
