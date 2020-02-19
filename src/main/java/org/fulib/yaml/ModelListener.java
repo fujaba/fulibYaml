@@ -74,24 +74,18 @@ public class ModelListener implements PropertyChangeListener
 
       for (String prop : reflector.getAllProperties())
       {
-         Object newValue = reflector.getValue(newObject, prop);
+         Object propertyValue = reflector.getValue(newObject, prop);
 
-         if (newValue instanceof Collection)
+         if (propertyValue instanceof Collection)
          {
-            Collection<?> newCollection = (Collection<?>) newValue;
-
-            for (Object obj : newCollection)
+            for (Object obj : (Collection<?>) propertyValue)
             {
-               PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, obj);
-
-               this.propertyChange(event);
+               this.propertyChange(new PropertyChangeEvent(newObject, prop, null, obj));
             }
          }
          else
          {
-            PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, newValue);
-
-            this.propertyChange(event);
+            this.propertyChange(new PropertyChangeEvent(newObject, prop, null, propertyValue));
          }
       }
    }
