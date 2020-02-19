@@ -25,7 +25,23 @@ public class EventYamler
 
    public EventYamler(String packageName)
    {
-      this.yamlIdMap = new YamlIdMap(packageName);
+      this(new YamlIdMap(packageName));
+   }
+
+   /**
+    * @since 1.2
+    */
+   public EventYamler(YamlIdMap idMap)
+   {
+      this.yamlIdMap = idMap;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public YamlIdMap getYamlIdMap()
+   {
+      return this.yamlIdMap;
    }
 
    public EventYamler setYamlIdMap(YamlIdMap yamlIdMap)
