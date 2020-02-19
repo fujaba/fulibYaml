@@ -891,14 +891,7 @@ public class YamlIdMap
          }
       }
 
-      if (key.length() == 1)
-      {
-         key = key.substring(0, 1).toLowerCase();
-      }
-      else
-      {
-         key = key.substring(0, 1).toLowerCase() + key.substring(1);
-      }
+      key = StrUtil.downFirstChar(key);
 
       if (this.objIdMap.get(key) != null)
       {
