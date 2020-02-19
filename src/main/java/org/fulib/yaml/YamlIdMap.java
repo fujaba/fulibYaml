@@ -859,13 +859,13 @@ public class YamlIdMap
 
    private String addToObjIdMap(Object obj)
    {
-      final String key = this.getKey(obj);
+      final String key = this.generateUniqueKey(obj);
       this.objIdMap.put(key, obj);
       this.idObjMap.put(obj, key);
       return key;
    }
 
-   private String getKey(Object obj)
+   private String generateUniqueKey(Object obj)
    {
       String className = obj.getClass().getSimpleName();
 
