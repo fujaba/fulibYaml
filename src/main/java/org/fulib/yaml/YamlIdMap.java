@@ -875,7 +875,7 @@ public class YamlIdMap
          return yamlObj.getId();
       }
 
-      String key = className.substring(0, 1).toLowerCase();
+      String key;
       Class<?> clazz = obj.getClass();
       final String id = getKeyFromProperty(obj, clazz, "getId");
       if (id != null)
@@ -888,6 +888,10 @@ public class YamlIdMap
          if (name != null)
          {
             key = name;
+         }
+         else
+         {
+            key = className.substring(0, 1);
          }
       }
 
