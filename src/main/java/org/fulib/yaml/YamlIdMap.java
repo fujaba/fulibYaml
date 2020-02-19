@@ -334,7 +334,7 @@ public class YamlIdMap extends IdMap
 
    public Object decode(String yaml, Object root)
    {
-      this.getOrCreateKey(root);
+      this.putObject(root);
       Object decodedRoot = this.decode(yaml);
 
       if (decodedRoot != root)
@@ -822,6 +822,10 @@ public class YamlIdMap extends IdMap
 
    // --------------- Keys ---------------
 
+   /**
+    * @deprecated since 1.2; use {@link #putObject(Object)} instead
+    */
+   @Deprecated
    public String getOrCreateKey(Object obj)
    {
       return this.putObject(obj);
@@ -937,7 +941,7 @@ public class YamlIdMap extends IdMap
          // send - o42: C1.remove
          //        remove.time: 2018-03-11T22:11:02.123+01:00
          value = event.getOldValue();
-         String valueKey = this.getOrCreateKey(value);
+         String valueKey = this.putObject(value);
          buf.append("- ").append(valueKey).append(": \t").append(className).append(".remove\n");
 
          if (this.userId != null)
@@ -974,7 +978,7 @@ public class YamlIdMap extends IdMap
    public void encodeAttrValue(StringBuilder buf, Object obj, String propertyName, Object value)
    {
       // already known?
-      String key = this.getOrCreateKey(obj);
+      String key = this.putObject(obj);
       String className = obj.getClass().getSimpleName();
       buf.append("- ").append(key).append(": \t").append(className).append("\n");
       Class<?> valueClass = value.getClass();
@@ -996,7 +1000,7 @@ public class YamlIdMap extends IdMap
       else
       {
          // value is an object
-         String valueKey = this.getOrCreateKey(value);
+         String valueKey = this.putObject(value);
 
          buf.append("  ").append(propertyName).append(": \t").append(valueKey).append("\n");
          if (this.userId != null)

@@ -62,7 +62,7 @@ public class EventYamler
       String timeString = dateFormat.format(date);
       buf.append(TIME + ": ").append(timeString).append("\n");
 
-      String sourceKey = this.yamlIdMap.getOrCreateKey(source);
+      String sourceKey = this.yamlIdMap.putObject(source);
       buf.append("  " + SOURCE + ": ").append(sourceKey).append("\n");
 
       String className = source.getClass().getSimpleName();
@@ -89,7 +89,7 @@ public class EventYamler
          }
          else
          {
-            String valueKey = this.yamlIdMap.getOrCreateKey(oldValue);
+            String valueKey = this.yamlIdMap.putObject(oldValue);
             buf.append("  " + OLD_VALUE + ": ").append(valueKey).append("\n");
 
             historyKey += "/" + valueKey;
@@ -115,7 +115,7 @@ public class EventYamler
          }
          else
          {
-            String valueKey = this.yamlIdMap.getOrCreateKey(newValue);
+            String valueKey = this.yamlIdMap.putObject(newValue);
             buf.append("  " + NEW_VALUE + ": ").append(valueKey).append("\n");
 
             Reflector reflector = this.yamlIdMap.getReflector(className);
