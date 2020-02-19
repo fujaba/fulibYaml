@@ -846,6 +846,8 @@ public class YamlIdMap
       return this;
    }
 
+   // --------------- Keys ---------------
+
    public String getOrCreateKey(Object obj)
    {
       String key = this.idObjMap.get(obj);
@@ -936,6 +938,8 @@ public class YamlIdMap
       }
       return null;
    }
+
+   // --------------- Object Collection ---------------
 
    public LinkedHashSet<Object> collectObjects(Object... rootObjList)
    {
