@@ -7,14 +7,32 @@ import java.util.logging.Logger;
 
 public class DataManager
 {
+   /** @deprecated since 1.2; use {@link EventYamler#TIME} instead */
+   @Deprecated
    public static final String TIME = "time";
+   /** @deprecated since 1.2; use {@link EventYamler#SOURCE} instead */
+   @Deprecated
    public static final String SOURCE = "source";
+   /** @deprecated since 1.2; use {@link EventYamler#SOURCE_TYPE} instead */
+   @Deprecated
    public static final String SOURCE_TYPE = "sourceType";
+   /** @deprecated since 1.2; use {@link EventYamler#PROPERTY} instead */
+   @Deprecated
    public static final String PROPERTY = "property";
+   /** @deprecated since 1.2; use {@link EventYamler#OLD_VALUE} instead */
+   @Deprecated
    public static final String OLD_VALUE = "oldValue";
+   /** @deprecated since 1.2; use {@link EventYamler#OLD_VALUE_TYPE} instead */
+   @Deprecated
    public static final String OLD_VALUE_TYPE = OLD_VALUE + "Type";
+   /** @deprecated since 1.2; use {@link EventYamler#NEW_VALUE} instead */
+   @Deprecated
    public static final String NEW_VALUE = "newValue";
+   /** @deprecated since 1.2; use {@link EventYamler#NEW_VALUE_TYPE} instead */
+   @Deprecated
    public static final String NEW_VALUE_TYPE = NEW_VALUE + "Type";
+   /** @deprecated since 1.2; use {@link EventYamler#HISTORY_KEY} instead */
+   @Deprecated
    public static final String HISTORY_KEY = "historyKey";
 
    private YamlIdMap yamlIdMap;
