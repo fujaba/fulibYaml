@@ -157,7 +157,7 @@ public class YamlIdMap
    // =============== Fields ===============
 
    private String yaml;
-   private String userId = null;
+   private String userId;
    private boolean decodingPropertyChange;
 
    private LinkedHashMap<String, Object> objIdMap = new LinkedHashMap<>();
@@ -171,7 +171,7 @@ public class YamlIdMap
 
    ReflectorMap reflectorMap;
 
-   private String yamlChangeText = null;
+   private String yamlChangeText;
 
    // =============== Constructors ===============
 
@@ -231,6 +231,10 @@ public class YamlIdMap
       return this.idObjMap;
    }
 
+   /**
+    * @deprecated since 1.2; use {@link #getAttributeTimeStamp(String)} instead
+    */
+   @Deprecated
    public HashMap<String, String> getAttrTimeStamps()
    {
       return this.attrTimeStamps;
@@ -1160,6 +1164,14 @@ public class YamlIdMap
       }
 
       return buf.toString();
+   }
+
+   /**
+    * @since 1.2
+    */
+   public String getAttributeTimeStamp(String attribute)
+   {
+      return this.attrTimeStamps.get(attribute);
    }
 
    public LinkedHashMap<String, String> getLastTimeStampMap()
