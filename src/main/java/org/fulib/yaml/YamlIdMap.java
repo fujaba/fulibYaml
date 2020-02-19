@@ -1153,6 +1153,10 @@ public class YamlIdMap
 
    // --------------- Time Stamps ---------------
 
+   /**
+    * @deprecated since 1.2; unused
+    */
+   @Deprecated
    public String getLastTimeStamps()
    {
       LinkedHashMap<String, String> user2TimeStampMap = this.getLastTimeStampMap();
@@ -1174,6 +1178,10 @@ public class YamlIdMap
       return this.attrTimeStamps.get(attribute);
    }
 
+   /**
+    * @deprecated since 1.2; unused
+    */
+   @Deprecated
    public LinkedHashMap<String, String> getLastTimeStampMap()
    {
       LinkedHashMap<String, String> user2TimeStampMap = new LinkedHashMap<>();
@@ -1193,6 +1201,10 @@ public class YamlIdMap
       return user2TimeStampMap;
    }
 
+   /**
+    * @deprecated since 1.2; unused
+    */
+   @Deprecated
    public LinkedHashMap<String, String> getLastTimeStampMap(String lastTimeStamps)
    {
       LinkedHashMap<String, String> user2TimeStampMap = new LinkedHashMap<>();
