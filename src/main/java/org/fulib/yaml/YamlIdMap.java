@@ -233,6 +233,10 @@ public class YamlIdMap extends IdMap
       return this.attrTimeStamps;
    }
 
+   /**
+    * @deprecated since 1.2; use {@link #setUserId(String)} instead
+    */
+   @Deprecated
    public YamlIdMap withUserId(String userId)
    {
       this.userId = userId;
