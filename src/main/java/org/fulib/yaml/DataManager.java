@@ -52,6 +52,14 @@ public class DataManager
    }
 
    /**
+    * Creates a new DataManager instance and attaches it to the {@code root} object.
+    * Changes are loaded from and stored in files in the log directory given by {@code logDirName}.
+    *
+    * @param root
+    *    the root object
+    * @param logDirName
+    *    the log directory
+    *
     * @since 1.2
     */
    public DataManager(Object root, String logDirName)
