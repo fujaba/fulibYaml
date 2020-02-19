@@ -147,7 +147,7 @@ import java.util.regex.Pattern;
  * <p>result:</p>
  * <img src="doc-files/YamlStep17.png" alt="YamlStep17.png" width='795'>
  */
-public class YamlIdMap
+public class YamlIdMap extends IdMap
 {
    // =============== Constants ===============
 
@@ -157,19 +157,11 @@ public class YamlIdMap
    // =============== Fields ===============
 
    private String yaml;
-   private String userId;
    private boolean decodingPropertyChange;
-
-   private LinkedHashMap<String, Object> objIdMap = new LinkedHashMap<>();
-   private LinkedHashMap<Object, String> idObjMap = new LinkedHashMap<>();
-
-   private int maxUsedIdNum = 0;
 
    private Yamler yamler = new Yamler();
 
    private HashMap<String, String> attrTimeStamps = new HashMap<>();
-
-   ReflectorMap reflectorMap;
 
    private String yamlChangeText;
 
@@ -183,7 +175,7 @@ public class YamlIdMap
     */
    public YamlIdMap(String packageName)
    {
-      this.reflectorMap = new ReflectorMap(packageName);
+      super(new ReflectorMap(packageName));
    }
 
    /**
@@ -192,7 +184,7 @@ public class YamlIdMap
     */
    public YamlIdMap(String... packageNames)
    {
-      this.reflectorMap = new ReflectorMap(packageNames);
+      super(new ReflectorMap(packageNames));
    }
 
    /**
@@ -203,7 +195,7 @@ public class YamlIdMap
     */
    public YamlIdMap(Collection<String> packageNames)
    {
-      this.reflectorMap = new ReflectorMap(packageNames);
+      super(new ReflectorMap(packageNames));
    }
 
    // =============== Properties ===============
@@ -810,24 +802,6 @@ public class YamlIdMap
 
    // --------------- Object Access ---------------
 
-   public Reflector getReflector(Object obj)
-   {
-      return this.reflectorMap.getReflector(obj);
-   }
-
-   /**
-    * @since 1.2
-    */
-   public String getId(Object object)
-   {
-      return this.idObjMap.get(object);
-   }
-
-   public Object getObject(String objId)
-   {
-      return this.objIdMap.get(objId);
-   }
-
    public YamlIdMap putNameObject(String name, Object object)
    {
 
@@ -850,93 +824,7 @@ public class YamlIdMap
 
    public String getOrCreateKey(Object obj)
    {
-      String key = this.idObjMap.get(obj);
-
-      if (key == null)
-      {
-         key = this.addToObjIdMap(obj);
-      }
-      return key;
-   }
-
-   private String addToObjIdMap(Object obj)
-   {
-      final String key = this.generateUniqueKey(obj);
-      this.objIdMap.put(key, obj);
-      this.idObjMap.put(obj, key);
-      return key;
-   }
-
-   private String generateUniqueKey(Object obj)
-   {
-      if (obj instanceof YamlObject)
-      {
-         YamlObject yamlObj = (YamlObject) obj;
-         return yamlObj.getId();
-      }
-
-      String key = getIntrinsicKey(obj);
-      key = StrUtil.downFirstChar(key);
-      key = this.makeUnique(key);
-      key = this.addUserId(key);
-      return key;
-   }
-
-   private static String getIntrinsicKey(Object obj)
-   {
-      final Class<?> clazz = obj.getClass();
-      final String id = getKeyFromProperty(obj, clazz, "getId");
-      if (id != null)
-      {
-         return id;
-      }
-
-      final String name = getKeyFromProperty(obj, clazz, "getName");
-      if (name != null)
-      {
-         return name;
-      }
-
-      return obj.getClass().getSimpleName().substring(0, 1);
-   }
-
-   private String makeUnique(String key)
-   {
-      if (this.objIdMap.get(key) != null)
-      {
-         // key is already in use
-         this.maxUsedIdNum++;
-         key += this.maxUsedIdNum;
-      }
-      return key;
-   }
-
-   private String addUserId(String key)
-   {
-      if (this.maxUsedIdNum > 1 && this.userId != null)
-      {
-         // all but the first get a userId prefix
-         key = this.userId + "." + key;
-      }
-      return key;
-   }
-
-   private static String getKeyFromProperty(Object obj, Class<?> clazz, String getterName)
-   {
-      try
-      {
-         Method getter = clazz.getMethod(getterName);
-         Object result = getter.invoke(obj);
-         if (result != null)
-         {
-            return result.toString().replaceAll("\\W+", "_");
-         }
-      }
-      catch (Exception ignored)
-      {
-         // go with old key
-      }
-      return null;
+      return this.putObject(obj);
    }
 
    // --------------- Object Collection ---------------
@@ -947,7 +835,7 @@ public class YamlIdMap
       this.reflectorMap.discoverObjects(rootObjList, collectedObjects);
       for (final Object collectedObject : collectedObjects)
       {
-         this.addToObjIdMap(collectedObject);
+         this.putObject(collectedObject);
       }
       return collectedObjects;
    }
