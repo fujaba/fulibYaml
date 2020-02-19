@@ -136,13 +136,7 @@ public class YamlObject
    @Override
    public String toString()
    {
-      Object id = this.map.get(ID);
-
-      if (id != null)
-      {
-         return id.toString();
-      }
-
-      return super.toString();
+      final String id = this.getId();
+      return id != null ? id : super.toString();
    }
 }
