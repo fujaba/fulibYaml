@@ -804,18 +804,11 @@ public class YamlIdMap extends IdMap
 
    public YamlIdMap putNameObject(String name, Object object)
    {
-
-      String oldKey = this.idObjMap.get(object);
-      if (oldKey != null)
+      this.putObject(name, object);
+      for (final Object discoveredObject : this.reflectorMap.discoverObjects(object))
       {
-         this.objIdMap.remove(oldKey);
-         this.idObjMap.remove(object);
+         this.putObject(discoveredObject);
       }
-
-      this.collectObjects(object);
-
-      this.objIdMap.put(name, object);
-      this.idObjMap.put(object, name);
 
       return this;
    }
