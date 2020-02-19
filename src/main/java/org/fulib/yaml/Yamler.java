@@ -7,18 +7,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
- * <p>Storyboard <a href='.././src/test/java/org/sdmlib/test/doc/TestJavaDocStories.java'>GenJavaDocStory</a></p>
- * <p>Yamler reads simple key value pairs in YAML syntax.</p>
- * <p>Example:</p>
- * <pre>            String yaml = &quot;&quot; +
- *               &quot;msgType: newPlayer\n&quot; +
- *               &quot;login: albert\n&quot; +
- *               &quot;colors: blue red \n&quot;;
+ * Yamler reads simple key value pairs in YAML syntax.
+ * <p>
+ *    Example:
+ * <pre><code>
+ *    String yaml = &quot;msgType: newPlayer\n&quot;
+ *                + &quot;login: albert\n&quot;
+ *                + &quot;colors: blue red \n&quot;;
  *
- *       Yamler yamler = new Yamler();
- *       LinkedHashMap&lt;String, String&gt; map = yamler.decode(yaml);
- * </pre>
- * <pre>{msgType=newPlayer, login=albert, colors=blue red}</pre>
+ *    Yamler yamler = new Yamler();
+ *    Map&lt;String, String&gt; map = yamler.decode(yaml);
+ *    // {msgType=newPlayer, login=albert, colors=blue red}
+ * </code></pre>
  */
 public class Yamler
 {
