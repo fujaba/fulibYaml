@@ -859,6 +859,14 @@ public class YamlIdMap
 
    private String addToObjIdMap(Object obj)
    {
+      final String key = this.getKey(obj);
+      this.objIdMap.put(key, obj);
+      this.idObjMap.put(obj, key);
+      return key;
+   }
+
+   private String getKey(Object obj)
+   {
       String className = obj.getClass().getSimpleName();
 
       String key = null;
@@ -921,9 +929,6 @@ public class YamlIdMap
             key = this.userId + "." + key;
          }
       }
-      this.objIdMap.put(key, obj);
-      this.idObjMap.put(obj, key);
-
       return key;
    }
 
