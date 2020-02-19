@@ -64,13 +64,13 @@ public class ModelListener implements PropertyChangeListener
       }
       this.supervisedObjects.add(newObject);
 
-      // run through elements and fire property changes and subscribe to neighbors
-      Reflector reflector = this.creatorMap.getReflector(newObject);
-
-      if (reflector == null)
+      if (!this.creatorMap.canReflect(newObject))
       {
          return; // don't know structure of newObject, probably a String
       }
+
+      // run through elements and fire property changes and subscribe to neighbors
+      Reflector reflector = this.creatorMap.getReflector(newObject);
 
       for (String prop : reflector.getOwnProperties())
       {
