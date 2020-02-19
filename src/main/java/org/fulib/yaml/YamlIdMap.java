@@ -928,51 +928,8 @@ public class YamlIdMap extends IdMap
       return buf.toString();
    }
 
-   private void encodePropertyChange(StringBuilder buf, Object obj)
-   {
-      PropertyChangeEvent event = (PropertyChangeEvent) obj;
-      obj = event.getSource();
-      String propertyName = event.getPropertyName();
-      Object value = event.getNewValue();
-      String className = obj.getClass().getSimpleName();
-
-      if (propertyName.equals(REMOVE_YOU))
-      {
-         // send - o42: C1.remove
-         //        remove.time: 2018-03-11T22:11:02.123+01:00
-         value = event.getOldValue();
-         String valueKey = this.putObject(value);
-         buf.append("- ").append(valueKey).append(": \t").append(className).append(".remove\n");
-
-         if (this.userId != null)
-         {
-            String now = "" + LocalDateTime.now() + "." + this.userId;
-            buf.append("  ").append(className).append(".remove.time: \t").append(now).append("\n");
-         }
-
-         // remove it from our id map
-         this.objIdMap.remove(valueKey);
-
-         return;
-      }
-
-      if (value == null)
-      {
-         value = event.getOldValue();
-         propertyName = propertyName + ".remove";
-
-         if (value == null)
-         {
-            // no old nor new value, do nothing
-            return;
-         }
-      }
-
-      this.encodeAttrValue(buf, obj, propertyName, value);
-   }
-
    /**
-    * @deprecated since 1.2; for internal use only
+    * @deprecated since 1.2; unused
     */
    @Deprecated
    public void encodeAttrValue(StringBuilder buf, Object obj, String propertyName, Object value)
