@@ -839,15 +839,38 @@ public class YamlIdMap extends IdMap
 
    // --------------- Encoding ---------------
 
-   public String encode(Object... rootObjList)
+   /**
+    * Encodes this IdMap to a Yaml string.
+    * This method is merely a shorthand for calling {@link #collectObjects(Object...)} and {@link #encode()}.
+    * I.e.,
+    *
+    * <pre><code>
+    *    String yaml = idMap.encode(foo, bar, baz);
+    * </code></pre>
+    *
+    * is equivalent to
+    *
+    * <pre><code>
+    *    idMap.collectObjects(foo, bar, baz);
+    *    String yaml = idMap.encode();
+    * </code></pre>
+    *
+    * @param roots the root objects
+    * @return this IdMap encoded as a Yaml string
+    */
+   public String encode(Object... roots)
    {
-      Objects.requireNonNull(rootObjList);
-      this.collectObjects(rootObjList);
+      Objects.requireNonNull(roots);
+      this.collectObjects(roots);
       return this.encode();
    }
 
    /**
+    * Encodes this IdMap to a Yaml string.
+    *
     * @since 1.2
+    *
+    * @return this IdMap encoded as a Yaml string
     */
    public String encode()
    {
