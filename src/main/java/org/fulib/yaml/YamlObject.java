@@ -9,7 +9,7 @@ public class YamlObject
 {
    // =============== Constants ===============
 
-   public static final String ID   = ".id";
+   public static final String ID = ".id";
    public static final String TYPE = "type";
 
    // =============== Fields ===============
@@ -96,20 +96,20 @@ public class YamlObject
 
    // =============== Methods ===============
 
-   public Object get(String tag)
+   public Object get(String property)
    {
-      return this.map.get(tag);
+      return this.map.get(property);
    }
 
-   public YamlObject put(String tag, Object value)
+   public YamlObject put(String property, Object value)
    {
-      this.map.put(tag, value);
+      this.map.put(property, value);
       return this;
    }
 
-   public YamlObject with(String tag, Object item)
+   public YamlObject with(String property, Object item)
    {
-      this.map.compute(tag, (k, oldValue) -> {
+      this.map.compute(property, (k, oldValue) -> {
          if (oldValue == null) // not yet present
          {
             final List<Object> list = new ArrayList<>();
