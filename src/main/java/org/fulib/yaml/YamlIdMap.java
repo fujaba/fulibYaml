@@ -173,7 +173,7 @@ public class YamlIdMap extends IdMap
     */
    public YamlIdMap(String packageName)
    {
-      super(new ReflectorMap(packageName));
+      this(new ReflectorMap(packageName));
    }
 
    /**
@@ -182,7 +182,7 @@ public class YamlIdMap extends IdMap
     */
    public YamlIdMap(String... packageNames)
    {
-      super(new ReflectorMap(packageNames));
+      this(new ReflectorMap(packageNames));
    }
 
    /**
@@ -193,7 +193,15 @@ public class YamlIdMap extends IdMap
     */
    public YamlIdMap(Collection<String> packageNames)
    {
-      super(new ReflectorMap(packageNames));
+      this(new ReflectorMap(packageNames));
+   }
+
+   /**
+    * @since 1.2
+    */
+   public YamlIdMap(ReflectorMap reflectorMap)
+   {
+      super(reflectorMap);
    }
 
    // =============== Properties ===============
