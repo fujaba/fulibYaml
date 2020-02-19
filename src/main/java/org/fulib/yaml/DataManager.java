@@ -70,7 +70,6 @@ public class DataManager
       }
    }
 
-
    private void getOrCreateLogDir(String logDirName)
    {
       this.logDirName = logDirName;
@@ -79,7 +78,7 @@ public class DataManager
       {
          File logDirFile = new File(logDirName);
 
-         if ( ! logDirFile.exists())
+         if (!logDirFile.exists())
          {
             logDirFile.mkdirs();
          }
@@ -93,7 +92,7 @@ public class DataManager
          {
             File logDirFile = new File(logDirName);
 
-            if ( ! logDirFile.exists())
+            if (!logDirFile.exists())
             {
                logDirFile.mkdirs();
             }
@@ -104,7 +103,6 @@ public class DataManager
          }
       }
    }
-
 
    private void handleEvent(PropertyChangeEvent e)
    {
@@ -117,7 +115,7 @@ public class DataManager
          {
             boolean mkdirs = logDirFile.mkdirs();
             this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
-            if ( !this.logFilePath.exists())
+            if (!this.logFilePath.exists())
             {
                this.logFilePath.createNewFile();
             }
@@ -132,7 +130,7 @@ public class DataManager
             logDirFile = new File(this.logDirName);
             logDirFile.mkdirs();
             this.logFilePath = new File(this.logDirName + "/" + this.logFileName);
-            if ( !this.logFilePath.exists())
+            if (!this.logFilePath.exists())
             {
                this.logFilePath.createNewFile();
             }
@@ -149,16 +147,13 @@ public class DataManager
       }
    }
 
-
-
-
    private boolean storeModel(Object rootObject)
    {
       try
       {
          this.modelFile = new File(this.logDirName + "/model.yaml");
 
-         if ( !this.modelFile.exists())
+         if (!this.modelFile.exists())
          {
             this.modelFile.createNewFile();
          }
@@ -180,35 +175,33 @@ public class DataManager
       return false;
    }
 
-
    private void loadModel(Object rootObject)
    {
       try
       {
          this.modelFile = new File(this.logDirName + "/model.yaml");
 
-         if ( !this.modelFile.exists())
+         if (!this.modelFile.exists())
          {
-           return;
+            return;
          }
 
          byte[] bytes = this.read(this.modelFile);
 
-         if (bytes == null) return;
+         if (bytes == null)
+         {
+            return;
+         }
 
          String content = new String(bytes);
 
          this.yamlIdMap.decode(content, rootObject);
-
       }
       catch (Exception e)
       {
          Logger.getGlobal().log(Level.SEVERE, "could not store model to file " + this.logDirName + "/model.yaml");
       }
    }
-
-
-
 
    private void loadEvents(Object rootObject)
    {
@@ -232,13 +225,22 @@ public class DataManager
          return;
       }
 
-      if (this.logFilePath == null) return;
-      if ( !this.logFilePath.exists()) return;
+      if (this.logFilePath == null)
+      {
+         return;
+      }
+      if (!this.logFilePath.exists())
+      {
+         return;
+      }
 
       byte[] bytes = new byte[0];
       bytes = this.read(this.logFilePath);
 
-      if (bytes == null) return;
+      if (bytes == null)
+      {
+         return;
+      }
 
       String content = new String(bytes);
 
@@ -250,7 +252,8 @@ public class DataManager
     * @deprecated since 1.2; for internal use only
     */
    @Deprecated
-   public byte[] read(File file) {
+   public byte[] read(File file)
+   {
       byte[] buffer = new byte[(int) file.length()];
       InputStream ios = null;
       try
@@ -263,14 +266,16 @@ public class DataManager
       }
       catch (Exception e)
       {
-        Logger.getGlobal().log(Level.SEVERE, "failed reading yaml log", e);
+         Logger.getGlobal().log(Level.SEVERE, "failed reading yaml log", e);
       }
       finally
       {
          try
          {
             if (ios != null)
+            {
                ios.close();
+            }
          }
          catch (IOException e)
          {
@@ -278,6 +283,4 @@ public class DataManager
       }
       return buffer;
    }
-
-
 }
