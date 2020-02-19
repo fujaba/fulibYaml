@@ -826,9 +826,9 @@ public class YamlIdMap extends IdMap
     * and the latter should be used for clarity.
     *
     * @param id
-    * 	the id
+    *    the id
     * @param object
-    * 	the object
+    *    the object
     *
     * @return this instance, to allow method chaining
     *
@@ -859,7 +859,7 @@ public class YamlIdMap extends IdMap
     * Discovers all objects reachable from the {@code roots} and within the packages specified in the constructor.
     *
     * @param roots
-    * 	the root objects
+    *    the root objects
     *
     * @return a set of all {@link ReflectorMap#discoverObjects(Object) discovered} objects
     *
@@ -887,7 +887,7 @@ public class YamlIdMap extends IdMap
     * <pre><code>
     *    String yaml = idMap.encode(foo, bar, baz);
     * </code></pre>
-    *
+    * <p>
     * is equivalent to
     *
     * <pre><code>
@@ -895,7 +895,9 @@ public class YamlIdMap extends IdMap
     *    String yaml = idMap.encode();
     * </code></pre>
     *
-    * @param roots the root objects
+    * @param roots
+    *    the root objects
+    *
     * @return this IdMap encoded as a Yaml string
     */
    public String encode(Object... roots)
@@ -908,9 +910,9 @@ public class YamlIdMap extends IdMap
    /**
     * Encodes this IdMap to a Yaml string.
     *
-    * @since 1.2
-    *
     * @return this IdMap encoded as a Yaml string
+    *
+    * @since 1.2
     */
    public String encode()
    {
