@@ -5,7 +5,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * @author Adrian Kunz
+ * This class provides static utility methods for generating Yaml strings.
+ *
  * @since 1.2
  */
 public class YamlGenerator
