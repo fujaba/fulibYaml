@@ -81,29 +81,6 @@ public class Yamler
 
    // =============== Methods ===============
 
-   /**
-    * Storyboard
-    *
-    * <p>Storyboard <a href='https://github.com/fujaba/SDMLib/blob/master/src/test/java/org/sdmlib/test/examples/groupaccount/GroupAccountTests.java'>PlainYaml</a></p>
-    * <p>Start: plain yaml to be decoded to map</p>
-    * <pre>joining: abu
-    * lastChanges: 2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia</pre>
-    * <pre>{joining=abu, lastChanges=2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia}</pre>
-    * <p>Check: value for joining abu actual abu</p>
-    * <p><a name = 'step_1'>Step 1: Alternatively, use special object type map</a></p>
-    * <pre>- m: .Map
-    *   joining: abu
-    *   lastChanges: 2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia</pre>
-    * <pre>{joining=abu, lastChanges=2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia}</pre>
-    * <p>Check: value for joining abu actual abu</p>
-    *
-    * @param yaml
-    *    yaml text
-    *
-    * @return map with key value pairs
-    *
-    * @see <a href='file://YamlFileMap.java'>YamlFileMap.java</a>
-    */
    public LinkedHashMap<String, String> decode(String yaml)
    {
       LinkedHashMap<String, String> result = new LinkedHashMap<>();
