@@ -2,6 +2,9 @@ package org.fulib.yaml;
 
 import java.util.Set;
 
+/**
+ * A reflector specialized for {@link YamlObject} instances.
+ */
 public class YamlObjectReflector extends Reflector
 {
    // =============== Fields ===============
@@ -11,8 +14,6 @@ public class YamlObjectReflector extends Reflector
    // =============== Constructors ===============
 
    /**
-    * Creates a new {@link YamlObjectReflector} instance.
-    *
     * @param newObject
     *    the yaml object (must be a {@link YamlObject} instance)
     *
@@ -25,8 +26,6 @@ public class YamlObjectReflector extends Reflector
    }
 
    /**
-    * Creates a new {@link YamlObjectReflector} instance.
-    *
     * @param yamlObject
     *    the yaml object
     *
