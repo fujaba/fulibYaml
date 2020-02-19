@@ -28,13 +28,13 @@ public class YamlObject
     */
    public YamlObject(String id)
    {
-      this.map.put(ID, id);
+      this.setId(id);
    }
 
    public YamlObject(String id, String type)
    {
       this(id);
-      this.map.put(TYPE, type);
+      this.setType(type);
    }
 
    // =============== Properties ===============
@@ -58,6 +58,40 @@ public class YamlObject
    public Map<String, Object> getProperties()
    {
       return this.map;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public String getId()
+   {
+      final Object id = this.map.get(ID);
+      return id != null ? id.toString() : null;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void setId(String id)
+   {
+      this.map.put(ID, id);
+   }
+
+   /**
+    * @since 1.2
+    */
+   public String getType()
+   {
+      final Object type = this.map.get(TYPE);
+      return type != null ? type.toString() : null;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public void setType(String type)
+   {
+      this.map.put(TYPE, type);
    }
 
    // =============== Methods ===============
