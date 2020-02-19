@@ -869,65 +869,60 @@ public class YamlIdMap
    {
       String className = obj.getClass().getSimpleName();
 
-      String key = null;
-
       if (obj instanceof YamlObject)
       {
          YamlObject yamlObj = (YamlObject) obj;
-         key = yamlObj.getId();
+         return yamlObj.getId();
       }
 
-      if (key == null)
+      String key = className.substring(0, 1).toLowerCase();
+      Class<?> clazz = obj.getClass();
+      try
       {
-         key = className.substring(0, 1).toLowerCase();
-         Class<?> clazz = obj.getClass();
+         Method getId = clazz.getMethod("getId");
+         Object id = getId.invoke(obj);
+         if (id != null)
+         {
+            key = id.toString().replaceAll("\\W+", "_");
+         }
+      }
+      catch (Exception e)
+      {
          try
          {
-            Method getId = clazz.getMethod("getId");
+            Method getId = clazz.getMethod("getName");
             Object id = getId.invoke(obj);
             if (id != null)
             {
                key = id.toString().replaceAll("\\W+", "_");
             }
          }
-         catch (Exception e)
+         catch (Exception e2)
          {
-            try
-            {
-               Method getId = clazz.getMethod("getName");
-               Object id = getId.invoke(obj);
-               if (id != null)
-               {
-                  key = id.toString().replaceAll("\\W+", "_");
-               }
-            }
-            catch (Exception e2)
-            {
-               // go with old key
-            }
+            // go with old key
          }
+      }
 
-         if (key.length() == 1)
-         {
-            key = key.substring(0, 1).toLowerCase();
-         }
-         else
-         {
-            key = key.substring(0, 1).toLowerCase() + key.substring(1);
-         }
+      if (key.length() == 1)
+      {
+         key = key.substring(0, 1).toLowerCase();
+      }
+      else
+      {
+         key = key.substring(0, 1).toLowerCase() + key.substring(1);
+      }
 
-         if (this.objIdMap.get(key) != null)
-         {
-            // key is already in use
-            this.maxUsedIdNum++;
-            key += this.maxUsedIdNum;
-         }
+      if (this.objIdMap.get(key) != null)
+      {
+         // key is already in use
+         this.maxUsedIdNum++;
+         key += this.maxUsedIdNum;
+      }
 
-         if (this.maxUsedIdNum > 1 && this.userId != null)
-         {
-            // all but the first get a userId prefix
-            key = this.userId + "." + key;
-         }
+      if (this.maxUsedIdNum > 1 && this.userId != null)
+      {
+         // all but the first get a userId prefix
+         key = this.userId + "." + key;
       }
       return key;
    }
