@@ -1,6 +1,7 @@
 package org.fulib.yaml;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 /**
@@ -76,6 +77,21 @@ public class IdMap
 
       this.objIdMap.put(id, object);
       this.idObjMap.put(object, id);
+   }
+
+   public void discoverObjects(Object root)
+   {
+      this.reflectorMap.discoverObjects(root).forEach(this::putObject);
+   }
+
+   public void discoverObjects(Object... roots)
+   {
+      this.reflectorMap.discoverObjects(roots).forEach(this::putObject);
+   }
+
+   public void discoverObjects(Collection<?> roots)
+   {
+      this.reflectorMap.discoverObjects(roots).forEach(this::putObject);
    }
 
    // --------------- Helpers ---------------
