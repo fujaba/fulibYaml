@@ -867,38 +867,35 @@ public class YamlIdMap
 
    private String generateUniqueKey(Object obj)
    {
-      String className = obj.getClass().getSimpleName();
-
       if (obj instanceof YamlObject)
       {
          YamlObject yamlObj = (YamlObject) obj;
          return yamlObj.getId();
       }
 
-      String key;
-      Class<?> clazz = obj.getClass();
-      final String id = getKeyFromProperty(obj, clazz, "getId");
-      if (id != null)
-      {
-         key = id;
-      }
-      else
-      {
-         final String name = getKeyFromProperty(obj, clazz, "getName");
-         if (name != null)
-         {
-            key = name;
-         }
-         else
-         {
-            key = className.substring(0, 1);
-         }
-      }
-
+      String key = getIntrinsicKey(obj);
       key = StrUtil.downFirstChar(key);
       key = this.makeUnique(key);
       key = this.addUserId(key);
       return key;
+   }
+
+   private static String getIntrinsicKey(Object obj)
+   {
+      final Class<?> clazz = obj.getClass();
+      final String id = getKeyFromProperty(obj, clazz, "getId");
+      if (id != null)
+      {
+         return id;
+      }
+
+      final String name = getKeyFromProperty(obj, clazz, "getName");
+      if (name != null)
+      {
+         return name;
+      }
+
+      return obj.getClass().getSimpleName().substring(0, 1);
    }
 
    private String makeUnique(String key)
