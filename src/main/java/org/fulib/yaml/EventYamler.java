@@ -23,11 +23,9 @@ public class EventYamler
 
    private ReflectorMap reflectorMap;
    private YamlIdMap yamlIdMap;
-   private String packageName;
 
    public EventYamler(String packageName)
    {
-      this.packageName = packageName;
       this.reflectorMap = new ReflectorMap(packageName);
       this.yamlIdMap = new YamlIdMap(packageName);
    }
@@ -64,7 +62,7 @@ public class EventYamler
       Object oldValue = e.getOldValue();
       if (oldValue != null)
       {
-         Class valueClass = oldValue.getClass();
+         Class<?> valueClass = oldValue.getClass();
 
          if (valueClass == String.class)
          {
@@ -90,7 +88,7 @@ public class EventYamler
       Object newValue = e.getNewValue();
       if (newValue != null)
       {
-         Class valueClass = newValue.getClass();
+         Class<?> valueClass = newValue.getClass();
 
          if (valueClass == String.class)
          {
@@ -165,7 +163,7 @@ public class EventYamler
 
          if (newValueType == null)
          {
-            reflector.setValue(sourceObject, property, newValue, null);
+            reflector.setValue(sourceObject, property, newValue);
          }
          else
          {
@@ -177,12 +175,10 @@ public class EventYamler
                this.yamlIdMap.putNameObject(newValue, newValueObject);
             }
 
-            reflector.setValue(sourceObject, property, newValueObject, null);
+            reflector.setValue(sourceObject, property, newValueObject);
          }
       }
 
-      Object firstObject = this.yamlIdMap.getObject(firstKey);
-
-      return firstObject;
+      return this.yamlIdMap.getObject(firstKey);
    }
 }
