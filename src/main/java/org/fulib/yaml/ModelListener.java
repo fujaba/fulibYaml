@@ -10,11 +10,11 @@ import java.util.Set;
 
 public class ModelListener implements PropertyChangeListener
 {
-   private HashSet<Object> supervisedObjects = new HashSet<>();
+   private final PropertyChangeListener elementListener;
+   private final ReflectorMap creatorMap;
 
-   private PropertyChangeListener elementListener;
+   private final Set<Object> supervisedObjects = new HashSet<>();
 
-   private ReflectorMap creatorMap;
    private boolean closed = false;
 
    public ModelListener(Object root, PropertyChangeListener elementListener)
