@@ -1,6 +1,7 @@
 
 package org.fulib.yaml;
 
+import org.fulib.yaml.testmodel.Day;
 import org.fulib.yaml.testmodel.Student;
 import org.fulib.yaml.testmodel.subpackage.Room;
 import org.fulib.yaml.testmodel.subpackage.University;
@@ -129,5 +130,16 @@ class TestYamlIdMap
       final String studentUniYaml = studentUniIdMap.encode(student);
       assertThat(studentUniYaml,
                  Matchers.equalTo("- s: \tStudent\n" + "  university: \tu\n" + "\n" + "- u: \tUniversity\n" + "\n"));
+   }
+
+   @Test
+   public void testEnums()
+   {
+      final Student student = new Student();
+      student.setFavoriteDay(Day.FRIDAY);
+
+      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentYaml = studentIdMap.encode(student);
+      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n" + "\n"));
    }
 }
