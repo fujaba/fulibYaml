@@ -367,6 +367,29 @@ public class Reflector
       {
       }
 
+      // enum?
+      try
+      {
+         final String stringValue = (String) value;
+         int dotIndex = stringValue.indexOf('.');
+         if (dotIndex >= 0)
+         {
+            final String className = stringValue.substring(0, dotIndex);
+            final String constantName = stringValue.substring(dotIndex + 1);
+            final Class<?> enumClass = Class.forName(className);
+            if (Enum.class.isAssignableFrom(enumClass))
+            {
+               @SuppressWarnings( { "rawtypes", "unchecked" }) Enum<?> enumValue = Enum
+                  .valueOf((Class) enumClass, constantName);
+               final Method method = clazz.getMethod("set" + capName, enumClass);
+               return method.invoke(object, enumValue);
+            }
+         }
+      }
+      catch (Exception ignored)
+      {
+      }
+
       // to-many?
       try
       {
