@@ -3,116 +3,106 @@ package org.fulib.yaml;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
-import java.util.*;
-
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class ModelListener implements PropertyChangeListener
 {
-   private HashSet<Object> supervisedObjects = new HashSet<Object>();
+   private final PropertyChangeListener elementListener;
+   private final ReflectorMap creatorMap;
 
-   private PropertyChangeListener elementListener;
+   private final Set<Object> supervisedObjects = new HashSet<>();
 
-   private Set<Object> componentElements = new LinkedHashSet<Object>();
-
-   private ReflectorMap creatorMap;
    private boolean closed = false;
-
 
    public ModelListener(Object root, PropertyChangeListener elementListener)
    {
       this.elementListener = elementListener;
       String packageName = root.getClass().getPackage().getName();
-      ArrayList<String> packageNameList = new ArrayList<>();
-      packageNameList.add(packageName);
-      creatorMap = new ReflectorMap(packageNameList);
-      subscribeTo(root);
+      this.creatorMap = new ReflectorMap(packageName);
+      this.subscribeTo(root);
    }
 
    public void removeYou()
    {
       this.closed = true;
 
-      for (Object obj : supervisedObjects)
+      for (Object obj : this.supervisedObjects)
       {
-         Class clazz = obj.getClass();
-         try
-         {
-            Method removePropertyChangeListener = clazz.getMethod("removePropertyChangeListener", PropertyChangeListener.class);
-            removePropertyChangeListener.invoke(obj, this);
-         }
-         catch (Exception e)
-         {
-            // just skip it
-         }
+         this.callChangeListenerMethod(obj, "removePropertyChangeListener");
       }
    }
 
-
    private void subscribeTo(Object newObject)
    {
-      if (supervisedObjects.contains(newObject)) return;
-
-
-      Class clazz = newObject.getClass();
-      try
+      if (this.supervisedObjects.contains(newObject))
       {
-         Method addPropertyChangeListener = clazz.getMethod("addPropertyChangeListener", PropertyChangeListener.class);
-         addPropertyChangeListener.invoke(newObject, this);
+         return;
       }
-      catch (Exception e)
+
+      this.callChangeListenerMethod(newObject, "addPropertyChangeListener");
+      this.supervisedObjects.add(newObject);
+
+      this.fireInitialPropertyChanges(newObject);
+   }
+
+   private void fireInitialPropertyChanges(Object newObject)
+   {
+      if (!this.creatorMap.canReflect(newObject))
       {
-         // just skip it
+         return; // don't know structure of newObject, probably a String
       }
-      supervisedObjects.add(newObject);
 
-      // run through elements and fire property changes and subscribe to neighbors
-      Reflector reflector = creatorMap.getReflector(newObject);
+      Reflector reflector = this.creatorMap.getReflector(newObject);
 
-      if (reflector == null) return; // don't know structure of newObject, probably a String
-
-      for (String prop : reflector.getProperties())
+      for (String prop : reflector.getAllProperties())
       {
-         Object newValue = reflector.getValue(newObject, prop);
+         Object propertyValue = reflector.getValue(newObject, prop);
 
-         if (newValue instanceof Collection)
+         if (propertyValue instanceof Collection)
          {
-            Collection newCollection = (Collection) newValue;
-
-            for (Object obj : newCollection)
+            for (Object obj : (Collection<?>) propertyValue)
             {
-               Object newEntity = obj;
-
-               PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, newEntity);
-
-               propertyChange(event);
+               this.propertyChange(new PropertyChangeEvent(newObject, prop, null, obj));
             }
          }
          else
          {
-            PropertyChangeEvent event = new PropertyChangeEvent(newObject, prop, null, newValue);
-
-            propertyChange(event);
+            this.propertyChange(new PropertyChangeEvent(newObject, prop, null, propertyValue));
          }
+      }
+   }
+
+   private void callChangeListenerMethod(Object receiver, String methodName)
+   {
+      Class<?> clazz = receiver.getClass();
+      try
+      {
+         Method addPropertyChangeListener = clazz.getMethod(methodName, PropertyChangeListener.class);
+         addPropertyChangeListener.invoke(receiver, this);
+      }
+      catch (Exception e)
+      {
+         // just skip it
       }
    }
 
    @Override
    public void propertyChange(PropertyChangeEvent evt)
    {
-      if (closed) return;
-
-      // just forward
-      if (evt.getNewValue() != null)
+      if (this.closed)
       {
-         Object newValue = evt.getNewValue();
-
-         if ( ! supervisedObjects.contains(newValue))
-         {
-            subscribeTo(newValue);
-         }
+         return;
       }
 
-      elementListener.propertyChange(evt);
-   }
+      final Object newValue = evt.getNewValue();
+      if (newValue != null)
+      {
+         this.subscribeTo(newValue);
+      }
 
+      this.elementListener.propertyChange(evt);
+   }
 }

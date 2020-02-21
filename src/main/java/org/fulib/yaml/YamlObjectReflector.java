@@ -2,28 +2,55 @@ package org.fulib.yaml;
 
 import java.util.Set;
 
+/**
+ * A reflector specialized for {@link YamlObject} instances.
+ */
 public class YamlObjectReflector extends Reflector
 {
+   // =============== Fields ===============
+
    private YamlObject yamlObject;
 
+   // =============== Constructors ===============
+
+   /**
+    * @param newObject
+    *    the yaml object (must be a {@link YamlObject} instance)
+    *
+    * @deprecated since 1.2; use {@link #YamlObjectReflector(YamlObject)} instead
+    */
+   @Deprecated
    public YamlObjectReflector(Object newObject)
    {
-      super();
-      yamlObject = (YamlObject) newObject;
+      this((YamlObject) newObject);
+   }
+
+   /**
+    * @param yamlObject
+    *    the yaml object
+    *
+    * @since 1.2
+    */
+   public YamlObjectReflector(YamlObject yamlObject)
+   {
+      this.yamlObject = yamlObject;
+   }
+
+   // =============== Properties ===============
+
+   @Override
+   public Set<String> getOwnProperties()
+   {
+      return this.yamlObject.getProperties().keySet();
    }
 
    @Override
-   public void removeObject(Object object)
+   public Set<String> getAllProperties()
    {
-      super.removeObject(object);
+      return this.getOwnProperties();
    }
 
-   @Override
-   public String[] getProperties()
-   {
-      Set<String> stringSet = yamlObject.getMap().keySet();
-      return stringSet.toArray(new String[stringSet.size()]);
-   }
+   // =============== Methods ===============
 
    @Override
    public Object newInstance()
@@ -34,12 +61,17 @@ public class YamlObjectReflector extends Reflector
    @Override
    public Object getValue(Object object, String attribute)
    {
-      return yamlObject.getMap().get(attribute);
+      return this.yamlObject.get(attribute);
    }
 
    @Override
-   public Object setValue(Object object, String attribute, Object value, String type)
+   public Object setValue(Object object, String attribute, Object value)
    {
-      return yamlObject.getMap().put(attribute, value);
+      return this.yamlObject.put(attribute, value);
+   }
+
+   @Override
+   public void removeObject(Object object)
+   {
    }
 }

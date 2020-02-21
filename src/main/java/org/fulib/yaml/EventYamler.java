@@ -21,18 +21,28 @@ public class EventYamler
    public static final String NEW_VALUE_TYPE = NEW_VALUE + "Type";
    public static final String HISTORY_KEY = "historyKey";
 
-
-   private ReflectorMap reflectorMap;
    private YamlIdMap yamlIdMap;
-   private String packageName;
 
    public EventYamler(String packageName)
    {
-      this.packageName = packageName;
-      this.reflectorMap = new ReflectorMap(packageName);
-      this.yamlIdMap = new YamlIdMap(packageName);
+      this(new YamlIdMap(packageName));
    }
 
+   /**
+    * @since 1.2
+    */
+   public EventYamler(YamlIdMap idMap)
+   {
+      this.yamlIdMap = idMap;
+   }
+
+   /**
+    * @since 1.2
+    */
+   public YamlIdMap getYamlIdMap()
+   {
+      return this.yamlIdMap;
+   }
 
    public EventYamler setYamlIdMap(YamlIdMap yamlIdMap)
    {
@@ -40,7 +50,6 @@ public class EventYamler
 
       return this;
    }
-
 
    public String encode(PropertyChangeEvent e)
    {
@@ -53,7 +62,7 @@ public class EventYamler
       String timeString = dateFormat.format(date);
       buf.append(TIME + ": ").append(timeString).append("\n");
 
-      String sourceKey = yamlIdMap.getOrCreateKey(source);
+      String sourceKey = this.yamlIdMap.putObject(source);
       buf.append("  " + SOURCE + ": ").append(sourceKey).append("\n");
 
       String className = source.getClass().getSimpleName();
@@ -64,24 +73,23 @@ public class EventYamler
 
       String historyKey = sourceKey + "/" + prop;
 
-
       Object oldValue = e.getOldValue();
       if (oldValue != null)
       {
-         Class valueClass = oldValue.getClass();
+         Class<?> valueClass = oldValue.getClass();
 
          if (valueClass == String.class)
          {
-            String encapsulted = Yamler.encapsulate((String) oldValue);
+            String encapsulted = YamlGenerator.encapsulate((String) oldValue);
             buf.append("  " + OLD_VALUE + ": ").append(encapsulted).append("\n");
          }
-         else if (  valueClass.getName().startsWith("java.lang."))
+         else if (valueClass.getName().startsWith("java.lang."))
          {
             buf.append("  " + OLD_VALUE + ": ").append(oldValue).append("\n");
          }
          else
          {
-            String valueKey = yamlIdMap.getOrCreateKey(oldValue);
+            String valueKey = this.yamlIdMap.putObject(oldValue);
             buf.append("  " + OLD_VALUE + ": ").append(valueKey).append("\n");
 
             historyKey += "/" + valueKey;
@@ -94,23 +102,23 @@ public class EventYamler
       Object newValue = e.getNewValue();
       if (newValue != null)
       {
-         Class valueClass = newValue.getClass();
+         Class<?> valueClass = newValue.getClass();
 
          if (valueClass == String.class)
          {
-            String encapsulted = Yamler.encapsulate((String) newValue);
+            String encapsulted = YamlGenerator.encapsulate((String) newValue);
             buf.append("  " + NEW_VALUE + ": ").append(encapsulted).append("\n");
          }
-         else if (  valueClass.getName().startsWith("java.lang."))
+         else if (valueClass.getName().startsWith("java.lang."))
          {
             buf.append("  " + NEW_VALUE + ": ").append(newValue).append("\n");
          }
          else
          {
-            String valueKey = yamlIdMap.getOrCreateKey(newValue);
+            String valueKey = this.yamlIdMap.putObject(newValue);
             buf.append("  " + NEW_VALUE + ": ").append(valueKey).append("\n");
 
-            Reflector reflector = reflectorMap.getReflector(className);
+            Reflector reflector = this.yamlIdMap.getReflector(className);
             Object attrValue = reflector.getValue(source, prop);
             if (attrValue != null && Collection.class.isAssignableFrom(attrValue.getClass()))
             {
@@ -127,7 +135,6 @@ public class EventYamler
       return buf.toString();
    }
 
-
    public Object decode(Object rootObject, String content)
    {
       Yamler yamler = new Yamler();
@@ -137,57 +144,50 @@ public class EventYamler
       for (LinkedHashMap<String, String> map : list)
       {
          // execute change
-         String sourceKey = map.get(DataManager.SOURCE);
+         String sourceKey = map.get(SOURCE);
 
          if (firstKey == null)
          {
             firstKey = sourceKey;
-            Object oldObject = yamlIdMap.getObject(firstKey);
+            Object oldObject = this.yamlIdMap.getObject(firstKey);
             if (oldObject == null)
             {
-               yamlIdMap.putNameObject(firstKey, rootObject);
+               this.yamlIdMap.putNameObject(firstKey, rootObject);
             }
          }
 
-         Object sourceObject = yamlIdMap.getObject(sourceKey);
-         String className = map.get(DataManager.SOURCE_TYPE);
-         Reflector reflector = reflectorMap.getReflector(className);
-
-         if (reflector == null)
-         {
-            Logger.getGlobal().log(Level.SEVERE, "did not find a reflector for " + className);
-         }
+         Object sourceObject = this.yamlIdMap.getObject(sourceKey);
+         String className = map.get(SOURCE_TYPE);
+         Reflector reflector = this.yamlIdMap.getReflector(className);
 
          if (sourceObject == null)
          {
             sourceObject = reflector.newInstance();
-            yamlIdMap.putNameObject(sourceKey, sourceObject);
+            this.yamlIdMap.putNameObject(sourceKey, sourceObject);
          }
 
-         String property = map.get(DataManager.PROPERTY);
-         String newValue = map.get(DataManager.NEW_VALUE);
-         String newValueType = map.get(DataManager.NEW_VALUE_TYPE);
+         String property = map.get(PROPERTY);
+         String newValue = map.get(NEW_VALUE);
+         String newValueType = map.get(NEW_VALUE_TYPE);
 
          if (newValueType == null)
          {
-            reflector.setValue(sourceObject, property, newValue, null);
+            reflector.setValue(sourceObject, property, newValue);
          }
          else
          {
-            Object newValueObject = yamlIdMap.getObject(newValue);
+            Object newValueObject = this.yamlIdMap.getObject(newValue);
             if (newValueObject == null)
             {
-               Reflector newValueReflector = reflectorMap.getReflector(newValueType);
+               Reflector newValueReflector = this.yamlIdMap.getReflector(newValueType);
                newValueObject = newValueReflector.newInstance();
-               yamlIdMap.putNameObject(newValue, newValueObject);
+               this.yamlIdMap.putNameObject(newValue, newValueObject);
             }
 
-            reflector.setValue(sourceObject, property, newValueObject, null);
+            reflector.setValue(sourceObject, property, newValueObject);
          }
       }
 
-      Object firstObject = yamlIdMap.getObject(firstKey);
-
-      return firstObject;
+      return this.yamlIdMap.getObject(firstKey);
    }
 }

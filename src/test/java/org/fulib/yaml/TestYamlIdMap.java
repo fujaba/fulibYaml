@@ -1,13 +1,16 @@
 
 package org.fulib.yaml;
 
+import org.fulib.yaml.testmodel.Student;
 import org.fulib.yaml.testmodel.subpackage.Room;
 import org.fulib.yaml.testmodel.subpackage.University;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,7 +82,7 @@ class TestYamlIdMap
       YamlIdMap idMap = new YamlIdMap("");
 
       YamlObject yamlObj = (YamlObject) idMap.decode(yaml);
-      LinkedHashMap<String, Object> map = yamlObj.getMap();
+      Map<String, Object> map = yamlObj.getProperties();
 
       assertThat(map.get("clazz"), equalTo("Uni"));
       ArrayList<Object> rooms = (ArrayList<Object>) map.get("rooms");
@@ -106,8 +109,25 @@ class TestYamlIdMap
 
       YamlIdMap idMap = new YamlIdMap(uni.getClass().getPackage().getName());
       String encode = idMap.encode(uni);
-      assertThat(idMap.getIdObjMap().get(math), is("math"));
-      assertThat(idMap.getIdObjMap().get(other), is("other"));
-      assertThat(idMap.getIdObjMap().get(other2), is("other2"));
+      assertThat(idMap.getId(math), is("math"));
+      assertThat(idMap.getId(other), is("other"));
+      assertThat(idMap.getId(other2), is("other1"));
+   }
+
+   @Test
+   void testExternalReference()
+   {
+      final University university = new University();
+      final Student student = new Student().setUniversity(university);
+
+      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentYaml = studentIdMap.encode(student);
+      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n" + "  university: \t" + university.toString() + "\n\n"));
+
+      final YamlIdMap studentUniIdMap = new YamlIdMap(student.getClass().getPackage().getName(),
+                                                      University.class.getPackage().getName());
+      final String studentUniYaml = studentUniIdMap.encode(student);
+      assertThat(studentUniYaml,
+                 Matchers.equalTo("- s: \tStudent\n" + "  university: \tu\n" + "\n" + "- u: \tUniversity\n" + "\n"));
    }
 }

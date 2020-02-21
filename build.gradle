@@ -1,9 +1,10 @@
 plugins {
-	id 'java'
-	id 'maven-publish'
-	id 'com.jfrog.bintray' version '1.8.4'
-	id 'de.clashsoft.simple-publish' version '0.5.0'
-	// id 'org.fulib.fulibGradle' version '0.1.0'
+   id 'java'
+   id 'maven-publish'
+   id 'com.jfrog.bintray' version '1.8.4'
+   id 'de.clashsoft.simple-publish' version '0.5.0'
+   id 'com.palantir.revapi' version '1.1.2'
+   // id 'org.fulib.fulibGradle' version '0.1.0'
 }
 
 group = 'org.fulib'
@@ -11,27 +12,31 @@ version = 'git describe --tags'.execute().text[1..-2] // strip v and \n
 description = 'Yaml serialization for fulib object models. Used for storage and communication.'
 
 publishInfo {
-	organization = 'fujaba'
-	githubRepo = 'fujaba/fulibYaml'
-	labels = [ 'fulib', 'yaml' ]
+   organization = 'fujaba'
+   githubRepo = 'fujaba/fulibYaml'
+   labels = [ 'fulib', 'yaml' ]
 
-	developer {
-		id = 'zuendorf'
-		name = 'Albert Zuendorf'
-	}
-	developer {
-		id = 'digitalhoax'
-		name = 'Tobias George'
-	}
-	developer {
-		id = 'eicke123'
-		name = 'Christoph Eickhoff'
-	}
+   developer {
+      id = 'zuendorf'
+      name = 'Albert Zuendorf'
+   }
+   developer {
+      id = 'digitalhoax'
+      name = 'Tobias George'
+   }
+   developer {
+      id = 'eicke123'
+      name = 'Christoph Eickhoff'
+   }
+   developer {
+      id = 'clashsoft'
+      name = 'Adrian Kunz'
+   }
 
-	license {
-		name = 'MIT License'
-		url = 'http://www.opensource.org/licenses/mit-license.php'
-	}
+   license {
+      name = 'MIT License'
+      url = 'http://www.opensource.org/licenses/mit-license.php'
+   }
 }
 
 sourceCompatibility = 1.8
@@ -39,28 +44,28 @@ sourceCompatibility = 1.8
 // --------------- Dependencies ---------------
 
 repositories {
-	mavenLocal()
-	mavenCentral()
-	jcenter()
+   mavenLocal()
+   mavenCentral()
+   jcenter()
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library
-	testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
+   // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library
+   testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
 
-	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.2'
+   // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+   testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.2'
 
-	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
-	testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
+   // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+   testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
 }
 
 // --------------- Misc. Settings ---------------
 
-javadoc {
-	failOnError = false
+test {
+   useJUnitPlatform()
 }
 
-test {
-	useJUnitPlatform()
+revapi {
+   oldVersion = '1.1.0'
 }

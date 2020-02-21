@@ -6,7 +6,7 @@ public class Room
 
    public String getId()
    {
-      return id;
+      return this.id;
    }
 
    public Room setId(String id)
