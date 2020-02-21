@@ -5,6 +5,7 @@ import org.fulib.yaml.testmodel.subpackage.University;
 public class Student
 {
    private University university;
+   private Day favoriteDay;
 
    public University getUniversity()
    {
@@ -15,5 +16,15 @@ public class Student
    {
       this.university = university;
       return this;
+   }
+
+   public Day getFavoriteDay()
+   {
+      return this.favoriteDay;
+   }
+
+   public void setFavoriteDay(Day favorityDay)
+   {
+      this.favoriteDay = favorityDay;
    }
 }
