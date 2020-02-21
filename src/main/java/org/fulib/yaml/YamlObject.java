@@ -177,7 +177,7 @@ public class YamlObject
     *   <li>If the property is already set and the value is a {@link List}, add the {@code item} to that list</li>
     *   <li>If the property is already set and the value is not a {@link List},
     *   create a new list with the old value and the {@code item} and set that as the new value</li>
-    * </ul>
+    * </ol>
     *
     * @param property
     *    the property name
