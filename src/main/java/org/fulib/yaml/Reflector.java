@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 
 public class Reflector
 {
-   private static Object NOT_FOUND = new Object();
-
    // =============== Fields ===============
 
    private String className = "";
