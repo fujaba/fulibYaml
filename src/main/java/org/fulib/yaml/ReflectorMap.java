@@ -70,6 +70,44 @@ public class ReflectorMap
 
    // =============== Methods ===============
 
+   private void bfs(Deque<Object> open, Set<Object> closed)
+   {
+      while (!open.isEmpty())
+      {
+         final Object next = open.removeFirst();
+
+         final Reflector reflector = this.getReflector(next);
+         for (final String property : reflector.getAllProperties())
+         {
+            final Object propertyValue = reflector.getValue(next, property);
+            this.addFlat(propertyValue, closed, open);
+         }
+      }
+   }
+
+   private void addFlat(Object start, Set<Object> closed, Deque<Object> open)
+   {
+      if (start instanceof Collection)
+      {
+         for (Object item : (Collection<?>) start)
+         {
+            this.addFlat(item, closed, open);
+         }
+      }
+      else if (start instanceof Object[])
+      {
+         for (Object item : (Object[]) start)
+         {
+            this.addFlat(item, closed, open);
+         }
+      }
+      else if (start != null && !closed.contains(start) && this.canReflect(start))
+      {
+         closed.add(start);
+         open.add(start);
+      }
+   }
+
    /**
     * Discovers all objects reachable from the {@code root} and within the packages specified in the constructor.
     * Objects that {@linkplain #canReflect(Object) cannot be handled} are neither added to the result nor recursively scanned.
@@ -137,34 +175,9 @@ public class ReflectorMap
     */
    public void discoverObjects(Object root, Set<Object> out)
    {
-      if (root == null)
-      {
-         return;
-      }
-
-      if (root instanceof Collection)
-      {
-         this.discoverObjects((Collection<?>) root, out);
-         return;
-      }
-      else if (root instanceof Object[])
-      {
-         this.discoverObjects((Object[]) root);
-         return;
-      }
-
-      if (!this.canReflect(root) || !out.add(root))
-      {
-         return;
-      }
-
-      final Reflector reflector = this.getReflector(root);
-
-      for (final String property : reflector.getAllProperties())
-      {
-         final Object value = reflector.getValue(root, property);
-         this.discoverObjects(value, out);
-      }
+      Deque<Object> open = new ArrayDeque<>();
+      this.addFlat(root, out, open);
+      this.bfs(open, out);
    }
 
    /**
@@ -180,10 +193,7 @@ public class ReflectorMap
     */
    public void discoverObjects(Object[] roots, Set<Object> out)
    {
-      for (final Object root : roots)
-      {
-         this.discoverObjects(root, out);
-      }
+      this.discoverObjects((Object) roots, out);
    }
 
    /**
@@ -199,10 +209,7 @@ public class ReflectorMap
     */
    public void discoverObjects(Collection<?> roots, Set<Object> out)
    {
-      for (final Object item : roots)
-      {
-         this.discoverObjects(item, out);
-      }
+      this.discoverObjects((Object) roots, out);
    }
 
    /**

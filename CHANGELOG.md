@@ -36,3 +36,10 @@
 * Deprecated some misplaced or accidentally public APIs.
   > Check for deprecation warnings and see the respective Javadocs for migration info.
 * General code cleanup and minor optimizations.
+
+# fulibYaml v1.2.1
+
+## Bugfixes
+
+* The `ReflectorMap.discoverObjects` methods now use breadth-first search.
+  > This restores the previous order in which `YamlIdMap`s were serialized.
