@@ -431,7 +431,49 @@ public class Reflector
       case "java.lang.Double":
          return Double.valueOf(value);
       }
+      if (Enum.class.isAssignableFrom(targetType))
+      {
+         return this.coerceToEnum(value, targetType);
+      }
       return value;
+   }
+
+   @SuppressWarnings( { "unchecked", "rawtypes" })
+   private Object coerceToEnum(String value, Class targetType)
+   {
+      final int dotIndex = value.lastIndexOf('.');
+      if (dotIndex < 0)
+      {
+         // unqualified names are resolved as constants of targetType
+         try
+         {
+            return Enum.valueOf(targetType, value);
+         }
+         catch (IllegalArgumentException ignored)
+         {
+            return INCOMPATIBLE;
+         }
+      }
+
+      // qualified names of the form "<enumClass>.<constantName>" are converted to constants of enumClass instead of targetType
+      final String className = value.substring(0, dotIndex);
+      final String constantName = value.substring(dotIndex + 1);
+      final Class<?> enumClass;
+      try
+      {
+         enumClass = Class.forName(className);
+      }
+      catch (ClassNotFoundException ignored)
+      {
+         return INCOMPATIBLE;
+      }
+
+      if (Enum.class.isAssignableFrom(enumClass))
+      {
+         return Enum.valueOf((Class) enumClass, constantName);
+      }
+
+      return INCOMPATIBLE;
    }
 
    private List<Method> resolveSetters(String propertyName)
