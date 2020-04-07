@@ -140,6 +140,8 @@ class TestYamlIdMap
 
       final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
       final String studentYaml = studentIdMap.encode(student);
-      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n" + "\n"));
+      // language=yaml
+      assertThat(studentYaml, Matchers.equalTo(
+         "- s: \tStudent\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n" + "\n"));
    }
 }
