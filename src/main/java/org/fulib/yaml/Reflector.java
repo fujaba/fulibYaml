@@ -1,15 +1,20 @@
 package org.fulib.yaml;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Reflector
 {
+   // =============== Constants ===============
+
+   // Sentinels
+   private static final Object INCOMPATIBLE = new Object();
+
    // =============== Fields ===============
 
    private String className = "";
@@ -20,6 +25,9 @@ public class Reflector
 
    private transient Set<String> ownProperties;
    private transient Set<String> allProperties;
+
+   private transient Map<String, Method> getterCache = new HashMap<>();
+   private transient Map<String, List<Method>> setterCache = new HashMap<>();
 
    // =============== Properties ===============
 
@@ -224,33 +232,60 @@ public class Reflector
          return null;
       }
 
-      final String capName = StrUtil.cap(attribute);
-      Class<?> clazz = this.getClazz();
-
-      // e.g. foo.getName(); default bean getter naming convention
-      try
+      final Method getter = this.resolveGetter(attribute);
+      if (getter == null)
       {
-         return clazz.getMethod("get" + capName).invoke(object);
-      }
-      catch (Exception ignored)
-      {
+         return null;
       }
 
-      // e.g. foo.name(); used by some code styles and Scala
       try
       {
-         return clazz.getMethod(attribute).invoke(object);
+         return getter.invoke(object);
       }
-      catch (Exception ignored)
+      catch (InvocationTargetException e)
+      {
+         throw new RuntimeException(e.getTargetException());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw handleIllegalAccess(e);
+      }
+   }
+
+   private Method resolveGetter(String propertyName)
+   {
+      return this.getterCache.computeIfAbsent(propertyName, this::loadGetter);
+   }
+
+   private Method loadGetter(String propertyName)
+   {
+      final Class<?> clazz = this.getClazz();
+      final String uppercasePropertyName = StrUtil.cap(propertyName);
+
+      try
+      {
+         // e.g. foo.getName(); default bean getter naming convention
+         return clazz.getMethod("get" + uppercasePropertyName);
+      }
+      catch (NoSuchMethodException ignored)
       {
       }
 
-      // e.g. foo.isValid(); for booleans
       try
       {
-         return clazz.getMethod("is" + capName).invoke(object);
+         // e.g. foo.name(); used by some code styles and Scala
+         return clazz.getMethod(uppercasePropertyName);
       }
-      catch (Exception ignored)
+      catch (NoSuchMethodException ignored)
+      {
+      }
+
+      try
+      {
+         // e.g. foo.isValid(); for booleans
+         return clazz.getMethod("is" + uppercasePropertyName);
+      }
+      catch (NoSuchMethodException ignored)
       {
       }
 
@@ -302,100 +337,40 @@ public class Reflector
          return null;
       }
 
-      Class<?> clazz = this.getClazz();
-      final String capName = StrUtil.cap(attribute);
-      final String setterName = "set" + capName;
-
-      try
+      for (final Method setter : this.resolveSetters(attribute))
       {
-         Class<?> valueClass = value.getClass();
-         if (this.eObjectClass != null && this.eObjectClass.isAssignableFrom(valueClass))
+         Class<?> targetType = setter.getParameterTypes()[0];
+
+         if (setter.isVarArgs())
          {
-            valueClass = valueClass.getInterfaces()[0];
+            targetType = targetType.getComponentType();
          }
 
-         Method method = clazz.getMethod(setterName, valueClass);
-         return method.invoke(object, value);
-      }
-      catch (Exception ignored)
-      {
-      }
-
-      // maybe a number
-      try
-      {
-         int intValue = Integer.parseInt((String) value);
-         Method method = clazz.getMethod(setterName, int.class);
-         return method.invoke(object, intValue);
-      }
-      catch (Exception ignored)
-      {
-      }
-
-      // maybe a huge number
-      try
-      {
-         long longValue = Long.parseLong((String) value);
-         Method method = clazz.getMethod(setterName, long.class);
-         return method.invoke(object, longValue);
-      }
-      catch (Exception ignored)
-      {
-      }
-
-      // maybe a double
-      try
-      {
-         double doubleValue = Double.parseDouble((String) value);
-         Method method = clazz.getMethod(setterName, double.class);
-         return method.invoke(object, doubleValue);
-      }
-      catch (Exception ignored)
-      {
-      }
-
-      // maybe a float
-      try
-      {
-         float floatValue = Float.parseFloat((String) value);
-         Method method = clazz.getMethod(setterName, float.class);
-         return method.invoke(object, floatValue);
-      }
-      catch (Exception ignored)
-      {
-      }
-
-      // enum?
-      try
-      {
-         final String stringValue = (String) value;
-         int dotIndex = stringValue.indexOf('.');
-         if (dotIndex >= 0)
+         Object param = this.coerce(value, targetType);
+         if (param == INCOMPATIBLE)
          {
-            final String className = stringValue.substring(0, dotIndex);
-            final String constantName = stringValue.substring(dotIndex + 1);
-            final Class<?> enumClass = Class.forName(className);
-            if (Enum.class.isAssignableFrom(enumClass))
-            {
-               @SuppressWarnings( { "rawtypes", "unchecked" }) Enum<?> enumValue = Enum
-                  .valueOf((Class) enumClass, constantName);
-               final Method method = clazz.getMethod("set" + capName, enumClass);
-               return method.invoke(object, enumValue);
-            }
+            continue;
          }
-      }
-      catch (Exception ignored)
-      {
-      }
 
-      // to-many?
-      try
-      {
-         Method method = clazz.getMethod("with" + capName, Object[].class);
-         return method.invoke(object, new Object[] { new Object[] { value } });
-      }
-      catch (Exception ignored)
-      {
+         if (setter.isVarArgs())
+         {
+            final Object array = Array.newInstance(targetType, 1);
+            Array.set(array, 0, param);
+            param = array;
+         }
+
+         try
+         {
+            return setter.invoke(object, param);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new RuntimeException(e.getTargetException());
+         }
+         catch (IllegalAccessException e)
+         {
+            throw handleIllegalAccess(e);
+         }
       }
 
       if (this.emfCreateMethod != null)
@@ -403,7 +378,7 @@ public class Reflector
          try
          {
             // its o.getAssoc().add(v)
-            Method getMethod = clazz.getMethod("get" + capName);
+            Method getMethod = this.clazz.getMethod("get" + StrUtil.cap(attribute));
             Object collection = getMethod.invoke(object);
             Method addMethod = collection.getClass().getMethod("add", Object.class);
             return addMethod.invoke(collection, value);
@@ -414,6 +389,80 @@ public class Reflector
       }
 
       return null;
+   }
+
+   private static AssertionError handleIllegalAccess(IllegalAccessException e)
+   {
+      throw new AssertionError("this should not occur since we only search for public methods", e);
+   }
+
+   private Object coerce(Object value, Class<?> targetType)
+   {
+      if (value == null)
+      {
+         return targetType.isPrimitive() ? INCOMPATIBLE : null;
+      }
+      if (targetType.isInstance(value))
+      {
+         return value;
+      }
+      if (value instanceof String)
+      {
+         return this.coerce((String) value, targetType);
+      }
+
+      return INCOMPATIBLE;
+   }
+
+   private Object coerce(String value, Class<?> targetType)
+   {
+      switch (targetType.getName())
+      {
+      case "int":
+      case "java.lang.Integer":
+         return Integer.valueOf(value);
+      case "long":
+      case "java.lang.Long":
+         return Long.valueOf(value);
+      case "float":
+      case "java.lang.Float":
+         return Float.valueOf(value);
+      case "double":
+      case "java.lang.Double":
+         return Double.valueOf(value);
+      }
+      return value;
+   }
+
+   private List<Method> resolveSetters(String propertyName)
+   {
+      return this.setterCache.computeIfAbsent(propertyName, this::loadSetters);
+   }
+
+   private List<Method> loadSetters(String propertyName)
+   {
+      final String uppercasedPropertyName = StrUtil.cap(propertyName);
+      final String setterName = "set" + uppercasedPropertyName;
+      final String witherName = "with" + uppercasedPropertyName;
+      final List<Method> result = new ArrayList<>();
+
+      for (final Method method : this.getClazz().getMethods())
+      {
+         final String methodName = method.getName();
+         if (!setterName.equals(methodName) && !witherName.equals(methodName))
+         {
+            continue;
+         }
+
+         if (method.getParameterCount() != 1)
+         {
+            continue;
+         }
+
+         result.add(method);
+      }
+
+      return result;
    }
 
    /**
