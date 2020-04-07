@@ -147,4 +147,22 @@ class TestYamlIdMap
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getFavoriteDay(), sameInstance(Day.FRIDAY));
    }
+
+   @Test
+   public void enumCollections()
+   {
+      final Student student = new Student();
+      student.withStudyDays(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY);
+
+      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentYaml = studentIdMap.encode(student);
+      // language=yaml
+      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n"
+                                               + "  studyDays: \torg.fulib.yaml.testmodel.Day.MONDAY \torg.fulib.yaml.testmodel.Day.WEDNESDAY \torg.fulib.yaml.testmodel.Day.FRIDAY"
+                                               + "\n" + "\n"));
+
+      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final Student newStudent = (Student) newIdMap.decode(studentYaml);
+      assertThat(newStudent.getStudyDays(), hasItems(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY));
+   }
 }
