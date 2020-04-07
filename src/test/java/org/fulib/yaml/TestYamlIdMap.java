@@ -13,8 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class TestYamlIdMap
@@ -143,5 +142,9 @@ class TestYamlIdMap
       // language=yaml
       assertThat(studentYaml, Matchers.equalTo(
          "- s: \tStudent\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n" + "\n"));
+
+      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final Student newStudent = (Student) newIdMap.decode(studentYaml);
+      assertThat(newStudent.getFavoriteDay(), sameInstance(Day.FRIDAY));
    }
 }
