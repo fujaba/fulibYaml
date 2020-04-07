@@ -815,13 +815,13 @@ public class YamlIdMap extends IdMap
                   continue;
                }
 
-               buf.append("  ").append(prop).append(": \t");
+               buf.append("  ").append(prop).append(':');
                for (Object valueObj : (Collection<?>) value)
                {
                   String valueKey = this.idObjMap.get(valueObj);
-                  buf.append(valueKey).append(" \t");
+                  buf.append(" \t").append(valueKey);
                }
-               buf.append("\n");
+               buf.append('\n');
             }
             else if (value instanceof Map)
             {
