@@ -828,20 +828,29 @@ public class YamlIdMap extends IdMap
             }
             else
             {
-               String valueKey = this.idObjMap.get(value);
+               buf.append("  ").append(prop).append(": \t");
 
+               String valueKey = this.idObjMap.get(value);
                if (valueKey != null)
                {
-                  buf.append("  ").append(prop).append(": \t").append(valueKey).append("\n");
+                  buf.append(valueKey);
+               }
+               else if (value instanceof String)
+               {
+                  try
+                  {
+                     YamlGenerator.encapsulate((String) value, buf);
+                  }
+                  catch (IOException ignored)
+                  {
+                  }
                }
                else
                {
-                  if (value instanceof String)
-                  {
-                     value = YamlGenerator.encapsulate((String) value);
-                  }
-                  buf.append("  ").append(prop).append(": \t").append(value).append("\n");
+                  buf.append(value);
                }
+
+               buf.append('\n');
 
                // add time stamp?
                if (this.userId != null)
