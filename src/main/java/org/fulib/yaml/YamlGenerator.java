@@ -140,6 +140,7 @@ public class YamlGenerator
       if (SIMPLE_VALUE_PATTERN.matcher(value).matches())
       {
          writer.append(value);
+         return;
       }
       writer.append('"');
       writer.append(value.replace("\"", "\\\""));
