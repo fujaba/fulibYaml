@@ -120,8 +120,7 @@ public class YamlGenerator
       {
          return value;
       }
-      // replace " with \"
-      return "\"" + value.replace("\"", "\\\"") + "\"";
+      return quote(value);
    }
 
    /**
@@ -142,6 +141,23 @@ public class YamlGenerator
          writer.append(value);
          return;
       }
+      quote(value, writer);
+   }
+
+   /**
+    * @since 1.2.2
+    */
+   public static String quote(String value)
+   {
+      // replace " with \"
+      return "\"" + value.replace("\"", "\\\"") + "\"";
+   }
+
+   /**
+    * @since 1.2.2
+    */
+   public static void quote(String value, Appendable writer) throws IOException
+   {
       writer.append('"');
       writer.append(value.replace("\"", "\\\""));
       writer.append('"');
