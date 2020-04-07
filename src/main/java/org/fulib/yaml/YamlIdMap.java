@@ -816,10 +816,10 @@ public class YamlIdMap extends IdMap
                }
 
                buf.append("  ").append(prop).append(':');
-               for (Object valueObj : (Collection<?>) value)
+               for (Object item : (Collection<?>) value)
                {
-                  String valueKey = this.idObjMap.get(valueObj);
-                  buf.append(" \t").append(valueKey);
+                  buf.append(" \t");
+                  this.encodeValue(buf, item);
                }
                buf.append('\n');
             }
@@ -829,27 +829,7 @@ public class YamlIdMap extends IdMap
             else
             {
                buf.append("  ").append(prop).append(": \t");
-
-               String valueKey = this.idObjMap.get(value);
-               if (valueKey != null)
-               {
-                  buf.append(valueKey);
-               }
-               else if (value instanceof String)
-               {
-                  try
-                  {
-                     YamlGenerator.encapsulate((String) value, buf);
-                  }
-                  catch (IOException ignored)
-                  {
-                  }
-               }
-               else
-               {
-                  buf.append(value);
-               }
-
+               this.encodeValue(buf, value);
                buf.append('\n');
 
                // add time stamp?
@@ -869,6 +849,29 @@ public class YamlIdMap extends IdMap
       }
 
       return buf.toString();
+   }
+
+   private void encodeValue(StringBuilder buf, Object value)
+   {
+      final String valueKey = this.idObjMap.get(value);
+      if (valueKey != null)
+      {
+         buf.append(valueKey);
+      }
+      else if (value instanceof String)
+      {
+         try
+         {
+            YamlGenerator.encapsulate((String) value, buf);
+         }
+         catch (IOException ignored)
+         {
+         }
+      }
+      else
+      {
+         buf.append(value);
+      }
    }
 
    /**
