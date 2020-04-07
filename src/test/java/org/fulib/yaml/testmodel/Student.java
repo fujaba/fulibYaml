@@ -2,10 +2,7 @@ package org.fulib.yaml.testmodel;
 
 import org.fulib.yaml.testmodel.subpackage.University;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 
 public class Student
 {
@@ -13,6 +10,7 @@ public class Student
    private Day favoriteDay;
 
    private Set<Day> studyDays = EnumSet.noneOf(Day.class);
+   private Set<String> notes = new LinkedHashSet<>();
 
    public University getUniversity()
    {
@@ -53,5 +51,25 @@ public class Student
    public void withStudyDays(Collection<Day> value)
    {
       this.studyDays.addAll(value);
+   }
+
+   public Set<String> getNotes()
+   {
+      return this.notes;
+   }
+
+   public void withNotes(String value)
+   {
+      this.notes.add(value);
+   }
+
+   public void withNotes(String... value)
+   {
+      Collections.addAll(this.notes, value);
+   }
+
+   public void withNotes(Collection<String> value)
+   {
+      this.notes.addAll(value);
    }
 }

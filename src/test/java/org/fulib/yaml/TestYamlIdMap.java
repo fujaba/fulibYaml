@@ -165,4 +165,21 @@ class TestYamlIdMap
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getStudyDays(), hasItems(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY));
    }
+
+   @Test
+   public void stringCollections()
+   {
+      final Student student = new Student();
+      student.withNotes("study", "foo", "bar");
+
+      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentYaml = studentIdMap.encode(student);
+      // language=yaml
+      assertThat(studentYaml,
+                 Matchers.equalTo("- s: \tStudent\n" + "  notes: \tstudy \tfoo \tbar\n" + "\n"));
+
+      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final Student newStudent = (Student) newIdMap.decode(studentYaml);
+      assertThat(newStudent.getNotes(), hasItems("study", "foo", "bar"));
+   }
 }
