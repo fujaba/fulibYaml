@@ -26,6 +26,7 @@ public class Reflector
    private transient Set<String> ownProperties;
    private transient Set<String> allProperties;
 
+   private transient Map<String, Method> getterCache = new HashMap<>();
    private transient Map<String, List<Method>> setterCache = new HashMap<>();
 
    // =============== Properties ===============
@@ -231,33 +232,60 @@ public class Reflector
          return null;
       }
 
-      final String capName = StrUtil.cap(attribute);
-      Class<?> clazz = this.getClazz();
-
-      // e.g. foo.getName(); default bean getter naming convention
-      try
+      final Method getter = this.resolveGetter(attribute);
+      if (getter == null)
       {
-         return clazz.getMethod("get" + capName).invoke(object);
-      }
-      catch (Exception ignored)
-      {
+         return null;
       }
 
-      // e.g. foo.name(); used by some code styles and Scala
       try
       {
-         return clazz.getMethod(attribute).invoke(object);
+         return getter.invoke(object);
       }
-      catch (Exception ignored)
+      catch (InvocationTargetException e)
+      {
+         throw new RuntimeException(e.getTargetException());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw handleIllegalAccess(e);
+      }
+   }
+
+   private Method resolveGetter(String propertyName)
+   {
+      return this.getterCache.computeIfAbsent(propertyName, this::loadGetter);
+   }
+
+   private Method loadGetter(String propertyName)
+   {
+      final Class<?> clazz = this.getClazz();
+      final String uppercasePropertyName = StrUtil.cap(propertyName);
+
+      try
+      {
+         // e.g. foo.getName(); default bean getter naming convention
+         return clazz.getMethod("get" + uppercasePropertyName);
+      }
+      catch (NoSuchMethodException ignored)
       {
       }
 
-      // e.g. foo.isValid(); for booleans
       try
       {
-         return clazz.getMethod("is" + capName).invoke(object);
+         // e.g. foo.name(); used by some code styles and Scala
+         return clazz.getMethod(uppercasePropertyName);
       }
-      catch (Exception ignored)
+      catch (NoSuchMethodException ignored)
+      {
+      }
+
+      try
+      {
+         // e.g. foo.isValid(); for booleans
+         return clazz.getMethod("is" + uppercasePropertyName);
+      }
+      catch (NoSuchMethodException ignored)
       {
       }
 
