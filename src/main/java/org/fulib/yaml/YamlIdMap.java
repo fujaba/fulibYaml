@@ -790,8 +790,13 @@ public class YamlIdMap extends IdMap
       StringBuilder buf = new StringBuilder();
       for (Entry<String, Object> entry : this.objIdMap.entrySet())
       {
-         String key = entry.getKey();
          Object obj = entry.getValue();
+         if (obj instanceof Enum)
+         {
+            continue;
+         }
+
+         String key = entry.getKey();
          String className = obj.getClass().getSimpleName();
 
          buf.append("- ").append(key).append(": \t").append(className).append("\n");
@@ -853,6 +858,14 @@ public class YamlIdMap extends IdMap
 
    private void encodeValue(StringBuilder buf, Object value)
    {
+      if (value instanceof Enum)
+      {
+         final Enum<?> enumValue = (Enum<?>) value;
+         // <enumClass>.<constantName>
+         buf.append(enumValue.getDeclaringClass().getName()).append('.').append(enumValue.name());
+         return;
+      }
+
       final String valueKey = this.idObjMap.get(value);
       if (valueKey != null)
       {
