@@ -435,7 +435,7 @@ public class Reflector
       {
          return this.coerceToEnum(value, targetType);
       }
-      return value;
+      return INCOMPATIBLE;
    }
 
    @SuppressWarnings( { "unchecked", "rawtypes" })
