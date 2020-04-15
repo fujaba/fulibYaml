@@ -26,8 +26,8 @@ public class Reflector
    private transient Set<String> ownProperties;
    private transient Set<String> allProperties;
 
-   private transient Map<String, Method> getterCache = new HashMap<>();
-   private transient Map<String, List<Method>> setterCache = new HashMap<>();
+   private final transient Map<String, Method> getterCache = new HashMap<>();
+   private final transient Map<String, List<Method>> setterCache = new HashMap<>();
 
    // =============== Properties ===============
 
@@ -418,6 +418,22 @@ public class Reflector
    {
       switch (targetType.getName())
       {
+      case "boolean":
+      case "java.lang.Boolean":
+         return Boolean.valueOf(value);
+      case "byte":
+      case "java.lang.Byte":
+         return Byte.valueOf(value);
+      case "short":
+      case "java.lang.Short":
+         return Short.valueOf(value);
+      case "char":
+      case "java.lang.Character":
+         if (value.length() != 1)
+         {
+            return INCOMPATIBLE;
+         }
+         return value.charAt(0);
       case "int":
       case "java.lang.Integer":
          return Integer.valueOf(value);
