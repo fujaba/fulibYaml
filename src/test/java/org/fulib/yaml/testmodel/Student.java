@@ -6,8 +6,15 @@ import java.util.*;
 
 public class Student
 {
+   public enum Type
+   {
+      BACHELOR,
+      MASTER,
+   }
+
    private University university;
    private Day favoriteDay;
+   private Type type;
 
    private Set<Day> studyDays = EnumSet.noneOf(Day.class);
    private Set<String> notes = new LinkedHashSet<>();
@@ -31,6 +38,16 @@ public class Student
    public void setFavoriteDay(Day favorityDay)
    {
       this.favoriteDay = favorityDay;
+   }
+
+   public Type getType()
+   {
+      return type;
+   }
+
+   public void setType(Type type)
+   {
+      this.type = type;
    }
 
    public Set<Day> getStudyDays()

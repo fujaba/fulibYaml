@@ -136,16 +136,19 @@ class TestYamlIdMap
    {
       final Student student = new Student();
       student.setFavoriteDay(Day.FRIDAY);
+      student.setType(Student.Type.BACHELOR);
 
       final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
       final String studentYaml = studentIdMap.encode(student);
       // language=yaml
       assertThat(studentYaml, Matchers.equalTo(
-         "- s: \tStudent\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n" + "\n"));
+         "- s: \tStudent\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n"
+         + "  type: \torg.fulib.yaml.testmodel.Student$Type.BACHELOR\n" + "\n"));
 
       final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getFavoriteDay(), sameInstance(Day.FRIDAY));
+      assertThat(newStudent.getType(), sameInstance(Student.Type.BACHELOR));
    }
 
    @Test
