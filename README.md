@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/fujaba/fulibYaml.svg?branch=master)](https://travis-ci.org/fujaba/fulibYaml)
 [![Download](https://api.bintray.com/packages/fujaba/maven/fulibYaml/images/download.svg)](https://bintray.com/fujaba/maven/fulibYaml/_latestVersion "Download")
 
-Yaml serialization for fulib object models. Used for storage and communication.
+Yaml serialization for [fulib](https://github.com/fujaba/fulib) object models. Used for storage and communication.
 
 ## Installation
 
@@ -19,6 +19,6 @@ repositories {
 ```groovy
 dependencies {
     // https://mvnrepository.com/artifact/org.fulib/fulibYaml
-    compile group: 'org.fulib', name: 'fulibYaml', version: '1.2.1'
+    compile group: 'org.fulib', name: 'fulibYaml', version: '1.3.0'
 }
 ```
