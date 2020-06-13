@@ -145,7 +145,12 @@ public class YamlGenerator
    }
 
    /**
-    * @since 1.2.2
+    * Encapsulates a YAML value by enclosing it in quotes (").
+    *
+    * @param value
+    *    the YAML value to quote
+    *
+    * @since 1.3
     */
    public static String quote(String value)
    {
@@ -154,7 +159,17 @@ public class YamlGenerator
    }
 
    /**
-    * @since 1.2.2
+    * Encapsulates a YAML value by enclosing it in quotes ("), and appends the result to the writer.
+    *
+    * @param value
+    *    the YAML value to quote
+    * @param writer
+    *    the writer
+    *
+    * @throws IOException
+    *    when appending to the writer produces an error
+    *
+    * @since 1.3
     */
    public static void quote(String value, Appendable writer) throws IOException
    {
