@@ -71,5 +71,5 @@ test {
 }
 
 revapi {
-   oldVersion = '1.1.0'
+   oldVersion = '1.3.0'
 }
