@@ -545,4 +545,88 @@ public class Reflector
          // e.printStackTrace();
       }
    }
+
+
+   /**
+    * Removes the link from object to target by invoking a fitting {@code set<attribute>(...)} or
+    * {@code without<attribute>(...)} method.
+    *
+    * @param object
+    *    the source object
+    * @param attribute
+    *    the link name
+    * @param target
+    *    the target that shall no longer be attached to object
+    *
+    * @since 1.2
+    */
+   public void removeLink(Object object, String attribute, Object target)
+   {
+      if (object == null) {
+         return;
+      }
+
+      String setterName = "set" + StrUtil.cap(attribute);
+      String withoutName = "without" + StrUtil.cap(attribute);
+
+      for (final Method method : this.getClazz().getMethods())
+      {
+         final String methodName = method.getName();
+         if (!setterName.equals(methodName) && !withoutName.equals(methodName))
+         {
+            continue;
+         }
+
+         if (method.getParameterCount() != 1)
+         {
+            continue;
+         }
+
+         // found it
+         if (methodName.equals(setterName)) {
+            setValue(object, attribute, null);
+            return;
+         }
+
+         // to many
+         if (target == null) {
+            return;
+         }
+
+         Class<?> targetType = method.getParameterTypes()[0];
+
+         if (method.isVarArgs())
+         {
+            targetType = targetType.getComponentType();
+         }
+
+         Object param = this.coerce(target, targetType);
+         if (param == INCOMPATIBLE)
+         {
+            return;
+         }
+
+         if (method.isVarArgs())
+         {
+            final Object array = Array.newInstance(targetType, 1);
+            Array.set(array, 0, param);
+            param = array;
+         }
+
+         try
+         {
+            method.invoke(object, param);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new RuntimeException(e.getTargetException());
+         }
+         catch (IllegalAccessException e)
+         {
+            throw handleIllegalAccess(e);
+         }
+
+         return;
+      }
+   }
 }
