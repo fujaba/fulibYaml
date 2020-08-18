@@ -150,10 +150,18 @@ public class Yaml
 
    private void createObjects(ArrayList<LinkedHashMap<String, String>> hashMaps)
    {
-      for (LinkedHashMap<String, String> map : hashMaps) {
-         createOneObject(map);
+      ArrayList<LinkedHashMap<String, String>> clone = (ArrayList<LinkedHashMap<String, String>>) hashMaps.clone();
+      for (LinkedHashMap<String, String> map : clone) {
+         try {
+            createOneObject(map);
+         }
+         catch (Exception e) {
+            // ignore unkown object (types)
+            hashMaps.remove(map);
+         }
       }
    }
+
 
    private void createOneObject(LinkedHashMap<String, String> map)
    {
