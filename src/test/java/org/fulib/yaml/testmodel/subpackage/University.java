@@ -28,4 +28,10 @@ public class University
       this.rooms.add(newRoom);
       return this;
    }
+
+   public University withoutRooms(Room room)
+   {
+      this.rooms.remove(room);
+      return this;
+   }
 }
