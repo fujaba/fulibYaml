@@ -341,37 +341,10 @@ public class Reflector
 
       for (final Method setter : this.resolveSetters(attribute))
       {
-         Class<?> targetType = setter.getParameterTypes()[0];
-
-         if (setter.isVarArgs())
+         final Object result = this.invokeSetter(object, setter, value);
+         if (result != INCOMPATIBLE)
          {
-            targetType = targetType.getComponentType();
-         }
-
-         Object param = this.coerce(value, targetType);
-         if (param == INCOMPATIBLE)
-         {
-            continue;
-         }
-
-         if (setter.isVarArgs())
-         {
-            final Object array = Array.newInstance(targetType, 1);
-            Array.set(array, 0, param);
-            param = array;
-         }
-
-         try
-         {
-            return setter.invoke(object, param);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e.getTargetException());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw handleIllegalAccess(e);
+            return result;
          }
       }
 
@@ -391,6 +364,42 @@ public class Reflector
       }
 
       return null;
+   }
+
+   private Object invokeSetter(Object object, Method setter, Object value)
+   {
+      Class<?> targetType = setter.getParameterTypes()[0];
+
+      if (setter.isVarArgs())
+      {
+         targetType = targetType.getComponentType();
+      }
+
+      Object param = this.coerce(value, targetType);
+      if (param == INCOMPATIBLE)
+      {
+         return INCOMPATIBLE;
+      }
+
+      if (setter.isVarArgs())
+      {
+         final Object array = Array.newInstance(targetType, 1);
+         Array.set(array, 0, param);
+         param = array;
+      }
+
+      try
+      {
+         return setter.invoke(object, param);
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new RuntimeException(e.getTargetException());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw handleIllegalAccess(e);
+      }
    }
 
    private static AssertionError handleIllegalAccess(IllegalAccessException e)
@@ -530,46 +539,10 @@ public class Reflector
 
       for (final Method setter : this.resolveUnsetters(attribute))
       {
-         final String methodName = setter.getName();
-
-         // found it
-         if (methodName.startsWith("set"))
+         final Object result = this.invokeSetter(object, setter, setter.getName().startsWith("set") ? null : target);
+         if (result != INCOMPATIBLE)
          {
-            target = null;
-         }
-
-         Class<?> targetType = setter.getParameterTypes()[0];
-
-         if (setter.isVarArgs())
-         {
-            targetType = targetType.getComponentType();
-         }
-
-         Object param = this.coerce(target, targetType);
-         if (param == INCOMPATIBLE)
-         {
-            continue;
-         }
-
-         if (setter.isVarArgs())
-         {
-            final Object array = Array.newInstance(targetType, 1);
-            Array.set(array, 0, param);
-            param = array;
-         }
-
-         try
-         {
-            setter.invoke(object, param);
             return;
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e.getTargetException());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw handleIllegalAccess(e);
          }
       }
    }
