@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Reflector
 {
@@ -501,27 +502,10 @@ public class Reflector
    private List<Method> loadSetters(String propertyName)
    {
       final String uppercasedPropertyName = StrUtil.cap(propertyName);
-      final String setterName = "set" + uppercasedPropertyName;
-      final String witherName = "with" + uppercasedPropertyName;
-      final List<Method> result = new ArrayList<>();
-
-      for (final Method method : this.getClazz().getMethods())
-      {
-         final String methodName = method.getName();
-         if (!setterName.equals(methodName) && !witherName.equals(methodName))
-         {
-            continue;
-         }
-
-         if (method.getParameterCount() != 1)
-         {
-            continue;
-         }
-
-         result.add(method);
-      }
-
-      return result;
+      final Set<String> names = new HashSet<>(2);
+      names.add("set" + uppercasedPropertyName);
+      names.add("with" + uppercasedPropertyName);
+      return this.loadMethods(names);
    }
 
    /**
@@ -598,27 +582,18 @@ public class Reflector
    private List<Method> loadUnsetters(String propertyName)
    {
       final String uppercasedPropertyName = StrUtil.cap(propertyName);
-      final String setterName = "set" + uppercasedPropertyName;
-      final String witherName = "without" + uppercasedPropertyName;
-      final List<Method> result = new ArrayList<>();
+      final Set<String> names = new HashSet<>(2);
+      names.add("set" + uppercasedPropertyName);
+      names.add("without" + uppercasedPropertyName);
+      return this.loadMethods(names);
+   }
 
-      for (final Method method : this.getClazz().getMethods())
-      {
-         final String methodName = method.getName();
-         if (!setterName.equals(methodName) && !witherName.equals(methodName))
-         {
-            continue;
-         }
-
-         if (method.getParameterCount() != 1)
-         {
-            continue;
-         }
-
-         result.add(method);
-      }
-
-      return result;
+   private List<Method> loadMethods(Set<String> names)
+   {
+      return Arrays
+         .stream(this.getClazz().getMethods())
+         .filter(method -> method.getParameterCount() == 1 && names.contains(method.getName()))
+         .collect(Collectors.toList());
    }
 
    /**
