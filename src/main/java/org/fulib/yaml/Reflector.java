@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Reflector
 {
@@ -28,6 +29,7 @@ public class Reflector
 
    private final transient Map<String, Method> getterCache = new HashMap<>();
    private final transient Map<String, List<Method>> setterCache = new HashMap<>();
+   private final transient Map<String, List<Method>> unsetterCache = new HashMap<>();
 
    // =============== Properties ===============
 
@@ -339,37 +341,10 @@ public class Reflector
 
       for (final Method setter : this.resolveSetters(attribute))
       {
-         Class<?> targetType = setter.getParameterTypes()[0];
-
-         if (setter.isVarArgs())
+         final Object result = this.invokeSetter(object, setter, value);
+         if (result != INCOMPATIBLE)
          {
-            targetType = targetType.getComponentType();
-         }
-
-         Object param = this.coerce(value, targetType);
-         if (param == INCOMPATIBLE)
-         {
-            continue;
-         }
-
-         if (setter.isVarArgs())
-         {
-            final Object array = Array.newInstance(targetType, 1);
-            Array.set(array, 0, param);
-            param = array;
-         }
-
-         try
-         {
-            return setter.invoke(object, param);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new RuntimeException(e.getTargetException());
-         }
-         catch (IllegalAccessException e)
-         {
-            throw handleIllegalAccess(e);
+            return result;
          }
       }
 
@@ -389,6 +364,42 @@ public class Reflector
       }
 
       return null;
+   }
+
+   private Object invokeSetter(Object object, Method setter, Object value)
+   {
+      Class<?> targetType = setter.getParameterTypes()[0];
+
+      if (setter.isVarArgs())
+      {
+         targetType = targetType.getComponentType();
+      }
+
+      Object param = this.coerce(value, targetType);
+      if (param == INCOMPATIBLE)
+      {
+         return INCOMPATIBLE;
+      }
+
+      if (setter.isVarArgs())
+      {
+         final Object array = Array.newInstance(targetType, 1);
+         Array.set(array, 0, param);
+         param = array;
+      }
+
+      try
+      {
+         return setter.invoke(object, param);
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new RuntimeException(e.getTargetException());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw handleIllegalAccess(e);
+      }
    }
 
    private static AssertionError handleIllegalAccess(IllegalAccessException e)
@@ -500,27 +511,62 @@ public class Reflector
    private List<Method> loadSetters(String propertyName)
    {
       final String uppercasedPropertyName = StrUtil.cap(propertyName);
-      final String setterName = "set" + uppercasedPropertyName;
-      final String witherName = "with" + uppercasedPropertyName;
-      final List<Method> result = new ArrayList<>();
+      final Set<String> names = new HashSet<>(2);
+      names.add("set" + uppercasedPropertyName);
+      names.add("with" + uppercasedPropertyName);
+      return this.loadMethods(names);
+   }
 
-      for (final Method method : this.getClazz().getMethods())
+   /**
+    * Removes the link from object to target by invoking a fitting {@code set<attribute>(null)} or
+    * {@code without<attribute>(target)} method.
+    *
+    * @param object
+    *    the source object
+    * @param attribute
+    *    the link name
+    * @param target
+    *    the target that shall no longer be attached to object
+    *
+    * @since 1.4
+    */
+   public void removeValue(Object object, String attribute, Object target)
+   {
+      if (object == null)
       {
-         final String methodName = method.getName();
-         if (!setterName.equals(methodName) && !witherName.equals(methodName))
-         {
-            continue;
-         }
-
-         if (method.getParameterCount() != 1)
-         {
-            continue;
-         }
-
-         result.add(method);
+         return;
       }
 
-      return result;
+      for (final Method setter : this.resolveUnsetters(attribute))
+      {
+         final Object result = this.invokeSetter(object, setter, setter.getName().startsWith("set") ? null : target);
+         if (result != INCOMPATIBLE)
+         {
+            return;
+         }
+      }
+   }
+
+   private List<Method> resolveUnsetters(String propertyName)
+   {
+      return this.unsetterCache.computeIfAbsent(propertyName, this::loadUnsetters);
+   }
+
+   private List<Method> loadUnsetters(String propertyName)
+   {
+      final String uppercasedPropertyName = StrUtil.cap(propertyName);
+      final Set<String> names = new HashSet<>(2);
+      names.add("set" + uppercasedPropertyName);
+      names.add("without" + uppercasedPropertyName);
+      return this.loadMethods(names);
+   }
+
+   private List<Method> loadMethods(Set<String> names)
+   {
+      return Arrays
+         .stream(this.getClazz().getMethods())
+         .filter(method -> method.getParameterCount() == 1 && names.contains(method.getName()))
+         .collect(Collectors.toList());
    }
 
    /**
