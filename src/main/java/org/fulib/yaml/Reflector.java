@@ -28,6 +28,7 @@ public class Reflector
 
    private final transient Map<String, Method> getterCache = new HashMap<>();
    private final transient Map<String, List<Method>> setterCache = new HashMap<>();
+   private final transient Map<String, List<Method>> unsetterCache = new HashMap<>();
 
    // =============== Properties ===============
 
@@ -502,6 +503,103 @@ public class Reflector
       final String uppercasedPropertyName = StrUtil.cap(propertyName);
       final String setterName = "set" + uppercasedPropertyName;
       final String witherName = "with" + uppercasedPropertyName;
+      final List<Method> result = new ArrayList<>();
+
+      for (final Method method : this.getClazz().getMethods())
+      {
+         final String methodName = method.getName();
+         if (!setterName.equals(methodName) && !witherName.equals(methodName))
+         {
+            continue;
+         }
+
+         if (method.getParameterCount() != 1)
+         {
+            continue;
+         }
+
+         result.add(method);
+      }
+
+      return result;
+   }
+
+   /**
+    * Removes the link from object to target by invoking a fitting {@code set<attribute>(null)} or
+    * {@code without<attribute>(target)} method.
+    *
+    * @param object
+    *    the source object
+    * @param attribute
+    *    the link name
+    * @param target
+    *    the target that shall no longer be attached to object
+    *
+    * @since 1.4
+    */
+   public void removeValue(Object object, String attribute, Object target)
+   {
+      if (object == null)
+      {
+         return;
+      }
+
+      for (final Method setter : this.resolveUnsetters(attribute))
+      {
+         final String methodName = setter.getName();
+
+         // found it
+         if (methodName.startsWith("set"))
+         {
+            target = null;
+         }
+
+         Class<?> targetType = setter.getParameterTypes()[0];
+
+         if (setter.isVarArgs())
+         {
+            targetType = targetType.getComponentType();
+         }
+
+         Object param = this.coerce(target, targetType);
+         if (param == INCOMPATIBLE)
+         {
+            continue;
+         }
+
+         if (setter.isVarArgs())
+         {
+            final Object array = Array.newInstance(targetType, 1);
+            Array.set(array, 0, param);
+            param = array;
+         }
+
+         try
+         {
+            setter.invoke(object, param);
+            return;
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new RuntimeException(e.getTargetException());
+         }
+         catch (IllegalAccessException e)
+         {
+            throw handleIllegalAccess(e);
+         }
+      }
+   }
+
+   private List<Method> resolveUnsetters(String propertyName)
+   {
+      return this.unsetterCache.computeIfAbsent(propertyName, this::loadUnsetters);
+   }
+
+   private List<Method> loadUnsetters(String propertyName)
+   {
+      final String uppercasedPropertyName = StrUtil.cap(propertyName);
+      final String setterName = "set" + uppercasedPropertyName;
+      final String witherName = "without" + uppercasedPropertyName;
       final List<Method> result = new ArrayList<>();
 
       for (final Method method : this.getClazz().getMethods())
