@@ -804,7 +804,7 @@ public class YamlIdMap extends IdMap
          // attrs
          Reflector creator = this.getReflector(obj);
 
-         for (String prop : creator.getOwnProperties())
+         for (String prop : creator.getAllProperties())
          {
             Object value = creator.getValue(obj, prop);
 

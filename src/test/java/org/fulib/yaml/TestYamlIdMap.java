@@ -179,6 +179,24 @@ class TestYamlIdMap
    }
 
    @Test
+   public void inheritance()
+   {
+      final Student student = new Student();
+      student.setName("Alice");
+
+      final String packageName = student.getClass().getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(packageName);
+      final String studentYaml = studentIdMap.encode(student);
+
+      // language=YAML
+      assertThat(studentYaml, equalTo("- alice: \tStudent\n" + "  name: \tAlice\n" + "\n"));
+
+      final YamlIdMap newIdMap = new YamlIdMap(packageName);
+      final Student newStudent = (Student) newIdMap.decode(studentYaml);
+      assertThat(newStudent.getName(), equalTo("Alice"));
+   }
+
+   @Test
    public void stringCollections()
    {
       final Student student = new Student();
