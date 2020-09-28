@@ -4,7 +4,7 @@ import org.fulib.yaml.testmodel.subpackage.University;
 
 import java.util.*;
 
-public class Student
+public class Student extends Person
 {
    public enum Type
    {
@@ -13,7 +13,7 @@ public class Student
    }
 
    private University university;
-   private Day favoriteDay;
+
    private Type type;
 
    private Set<Day> studyDays = EnumSet.noneOf(Day.class);
@@ -28,16 +28,6 @@ public class Student
    {
       this.university = university;
       return this;
-   }
-
-   public Day getFavoriteDay()
-   {
-      return this.favoriteDay;
-   }
-
-   public void setFavoriteDay(Day favorityDay)
-   {
-      this.favoriteDay = favorityDay;
    }
 
    public Type getType()
