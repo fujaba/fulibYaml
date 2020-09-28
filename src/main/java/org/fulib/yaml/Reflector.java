@@ -129,7 +129,7 @@ public class Reflector
       }
 
       final Set<String> ownProperties = new TreeSet<>();
-      addOwnProperties(this.getClazz(), ownProperties);
+      addProperties(this.getClazz(), false, ownProperties);
       return this.ownProperties = Collections.unmodifiableSet(ownProperties);
    }
 
@@ -147,11 +147,11 @@ public class Reflector
       }
 
       final Set<String> ownProperties = new TreeSet<>();
-      addAllProperties(this.getClazz(), ownProperties);
+      addProperties(this.getClazz(), true, ownProperties);
       return this.allProperties = Collections.unmodifiableSet(ownProperties);
    }
 
-   private static void addOwnProperties(Class<?> clazz, Set<String> fieldNames)
+   private static void addProperties(Class<?> clazz, boolean inherited, Set<String> fieldNames)
    {
       final Method[] methods = clazz.getMethods();
       for (Method method : methods)
@@ -160,27 +160,12 @@ public class Reflector
 
          // getter, but not getClass(), get() or parameterized
          if (method.getParameterCount() == 0 && methodName.length() > 3 // fast checks
+             && (inherited || method.getDeclaringClass() == clazz)
              && methodName.startsWith("get") && !"getClass".equals(methodName))
          {
             final String attributeName = StrUtil.downFirstChar(methodName.substring(3));
             fieldNames.add(attributeName);
          }
-      }
-   }
-
-   private static void addAllProperties(Class<?> clazz, Set<String> fieldNames)
-   {
-      addOwnProperties(clazz, fieldNames);
-
-      final Class<?> superClass = clazz.getSuperclass();
-      if (superClass != null)
-      {
-         addAllProperties(superClass, fieldNames);
-      }
-
-      for (final Class<?> superInterface : clazz.getInterfaces())
-      {
-         addAllProperties(superInterface, fieldNames);
       }
    }
 
