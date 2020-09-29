@@ -24,3 +24,7 @@ dependencies {
     compile group: 'org.fulib', name: 'fulibYaml', version: '1.3.0'
 }
 ```
+
+## License
+
+[MIT](LICENSE.md)
