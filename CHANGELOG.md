@@ -66,3 +66,15 @@
 ## Bugfixes
 
 * Fixed the `YamlGenerator.encapsulate(String, Appendable)` method appending the value twice.
+
+# fulibYaml v1.4.0
+
+## New Features
+
++ Added the `Reflector.removeValue` method for removing links and multi-attribute values using `without` methods. #18 #20
++ `YamlIdMap` now also serializes properties from superclasses and interfaces. #24
+
+## Bugfixes
+
+* Fixed an exception when serializing an object with an empty ID. #21 #22
+* `Reflector.getOwnProperties` no longer returns properties from superclasses and interfaces. #23
