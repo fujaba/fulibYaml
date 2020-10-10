@@ -104,14 +104,23 @@ class TestYamlIdMap
       Room arts = new Room().setId("arts");
       Room other = new Room().setId("other");
       Room other2 = new Room().setId("other");
+      Room empty = new Room().setId("");
+      Room empty2 = new Room().setId("");
 
-      uni.withRooms(math).withRooms(arts).withRooms(other).withRooms(other2);
+      uni.withRooms(math);
+      uni.withRooms(arts);
+      uni.withRooms(other);
+      uni.withRooms(other2);
+      uni.withRooms(empty);
+      uni.withRooms(empty2);
 
       YamlIdMap idMap = new YamlIdMap(uni.getClass().getPackage().getName());
-      String encode = idMap.encode(uni);
+      idMap.encode(uni);
       assertThat(idMap.getId(math), is("math"));
       assertThat(idMap.getId(other), is("other"));
       assertThat(idMap.getId(other2), is("other1"));
+      assertThat(idMap.getId(empty), is("_"));
+      assertThat(idMap.getId(empty2), is("_2"));
    }
 
    @Test
@@ -167,6 +176,24 @@ class TestYamlIdMap
       final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getStudyDays(), hasItems(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY));
+   }
+
+   @Test
+   public void inheritance()
+   {
+      final Student student = new Student();
+      student.setName("Alice");
+
+      final String packageName = student.getClass().getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(packageName);
+      final String studentYaml = studentIdMap.encode(student);
+
+      // language=YAML
+      assertThat(studentYaml, equalTo("- alice: \tStudent\n" + "  name: \tAlice\n" + "\n"));
+
+      final YamlIdMap newIdMap = new YamlIdMap(packageName);
+      final Student newStudent = (Student) newIdMap.decode(studentYaml);
+      assertThat(newStudent.getName(), equalTo("Alice"));
    }
 
    @Test

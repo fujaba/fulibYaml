@@ -1,6 +1,5 @@
 package org.fulib.yaml;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
@@ -199,26 +198,28 @@ public class IdMap
          return yamlObj.getId();
       }
 
-      String key = getIntrinsicKey(obj);
-      key = StrUtil.downFirstChar(key);
+      String key = this.getIntrinsicKey(obj);
+      key = key.replaceAll("\\W+", "_");
+      key = key.isEmpty() ? "_" : StrUtil.downFirstChar(key);
       key = this.makeUnique(key);
       key = this.addUserId(key);
       return key;
    }
 
-   private static String getIntrinsicKey(Object obj)
+   private String getIntrinsicKey(Object obj)
    {
-      final Class<?> clazz = obj.getClass();
-      final String id = getKeyFromProperty(obj, clazz, "getId");
+      final Reflector reflector = this.getReflector(obj);
+
+      final Object id = reflector.getValue(obj, "id");
       if (id != null)
       {
-         return id;
+         return id.toString();
       }
 
-      final String name = getKeyFromProperty(obj, clazz, "getName");
+      final Object name = reflector.getValue(obj, "name");
       if (name != null)
       {
-         return name;
+         return name.toString();
       }
 
       return obj.getClass().getSimpleName().substring(0, 1);
@@ -243,23 +244,5 @@ public class IdMap
          key = this.userId + "." + key;
       }
       return key;
-   }
-
-   private static String getKeyFromProperty(Object obj, Class<?> clazz, String getterName)
-   {
-      try
-      {
-         Method getter = clazz.getMethod(getterName);
-         Object result = getter.invoke(obj);
-         if (result != null)
-         {
-            return result.toString().replaceAll("\\W+", "_");
-         }
-      }
-      catch (Exception ignored)
-      {
-         // go with old key
-      }
-      return null;
    }
 }
