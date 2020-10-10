@@ -224,7 +224,7 @@ public class Yaml
          // attrs
          Reflector creator = getReflector(obj);
 
-         for (String prop : creator.getProperties()) {
+         for (String prop : creator.getAllProperties()) {
             if (prop.equals("id")) {
                continue;
             }
@@ -318,7 +318,7 @@ public class Yaml
             // find neighbors
             Reflector reflector = getReflector(obj);
 
-            for (String prop : reflector.getProperties()) {
+            for (String prop : reflector.getAllProperties()) {
                Object value = reflector.getValue(obj, prop);
 
                if (value == null) {
@@ -391,9 +391,6 @@ public class Yaml
 
          if (key.length() == 1) {
             key = key.substring(0, 1).toLowerCase();
-         }
-         else {
-            key = key.substring(0, 1).toLowerCase() + key.substring(1);
          }
 
          if (idToObjectMap.get(key) != null) {
