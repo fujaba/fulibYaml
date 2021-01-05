@@ -5,12 +5,10 @@ import org.fulib.yaml.testmodel.subpackage.Room;
 import org.fulib.yaml.testmodel.subpackage.University;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 
 public class TestBasicYaml
 {
@@ -37,8 +35,7 @@ public class TestBasicYaml
       assertThat(yamlString.contains("just ordered"), is(true));
       assertThat(yamlString, containsString("Uni Kassel Hoodie"));
 
-      LinkedHashMap<String, Object> resultMap = Yaml.forPackage(tShirt.getClass().getPackage().getName())
-         .decode(yamlString);
+      Map<String, Object> resultMap = Yaml.forPackage(tShirt.getClass().getPackage().getName()).decode(yamlString);
       Customer alice2 = (Customer) resultMap.get("alice");
       Product tShirt2 = (Product) resultMap.get("tShirt");
 
@@ -69,7 +66,8 @@ public class TestBasicYaml
 
       String yaml = Yaml.encode(alice);
 
-      LinkedHashMap<String, Object> decodedMap = Yaml.forPackage(University.class.getPackage().getName(), Student.class.getPackage().getName())
+      Map<String, Object> decodedMap = Yaml
+         .forPackage(University.class.getPackage().getName(), Student.class.getPackage().getName())
          .decode(yaml);
 
       Object decodedStudyRight = decodedMap.get("studyRight");
