@@ -21,6 +21,10 @@ repositories {
 ```groovy
 dependencies {
     // https://mvnrepository.com/artifact/org.fulib/fulibYaml
-    compile group: 'org.fulib', name: 'fulibYaml', version: '1.3.0'
+    compile group: 'org.fulib', name: 'fulibYaml', version: '1.4.0'
 }
 ```
+
+## License
+
+[MIT](LICENSE.md)
