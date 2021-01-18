@@ -5,12 +5,10 @@ import org.fulib.yaml.testmodel.subpackage.Room;
 import org.fulib.yaml.testmodel.subpackage.University;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 
 public class TestBasicYaml
 {
@@ -32,22 +30,17 @@ public class TestBasicYaml
 
       String yamlString = Yaml.encode(tShirt);
 
-      System.out.println(yamlString);
-
       assertThat(yamlString.contains("just ordered"), is(true));
       assertThat(yamlString, containsString("Uni Kassel Hoodie"));
 
-      LinkedHashMap<String, Object> resultMap = Yaml.forPackage(tShirt.getClass().getPackage().getName())
-         .decode(yamlString);
+      Map<String, Object> resultMap = Yaml.forPackage(tShirt.getClass().getPackage().getName()).decode(yamlString);
       Customer alice2 = (Customer) resultMap.get("alice");
       Product tShirt2 = (Product) resultMap.get("tShirt");
-
 
       assertThat(alice2, is(not(alice)));
       assertThat(alice2.getProducts().size(), is(2));
       assertThat(tShirt2, is(not(tShirt)));
       assertThat(tShirt2.getCustomers().size(), is(2));
-      // seems to work.
    }
 
    @Test
@@ -67,26 +60,26 @@ public class TestBasicYaml
       alice.setFavoriteDay(Day.THURSDAY);
       alice.setType(Student.Type.MASTER);
 
-      String yaml = Yaml.encode(alice);
+      String yaml = Yaml.encode(alice, uni);
 
-      LinkedHashMap<String, Object> decodedMap = Yaml.forPackage(University.class.getPackage().getName(), Student.class.getPackage().getName())
+      Map<String, Object> decodedMap = Yaml
+         .forPackage(University.class.getPackage().getName(), Student.class.getPackage().getName())
          .decode(yaml);
 
       Object decodedStudyRight = decodedMap.get("studyRight");
       assertThat("Decoded map should contain studyRight", decodedStudyRight, notNullValue());
       University dUni = (University) decodedStudyRight;
 
-      Object decodeOther2 = decodedMap.get("other2");
+      Object decodeOther2 = decodedMap.get("other1");
       assertThat(decodeOther2, notNullValue());
       Room dOther2 = (Room) decodeOther2;
       assertThat(dUni.getRooms(), hasItem(dOther2));
 
       Object decodedAlice = decodedMap.get("s");
-      assertThat("Decoded map should contain student s2", decodedAlice, notNullValue());
+      assertThat("Decoded map should contain student s", decodedAlice, notNullValue());
 
       Student dAlice = (Student) decodedAlice;
       assertThat(dAlice.getFavoriteDay(), is(Day.THURSDAY));
       assertThat(dAlice.getUniversity(), is(dUni));
-
    }
 }
