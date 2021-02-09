@@ -33,7 +33,7 @@ public class TestBasicYaml
       assertThat(yamlString.contains("just ordered"), is(true));
       assertThat(yamlString, containsString("Uni Kassel Hoodie"));
 
-      Map<String, Object> resultMap = Yaml.forPackage(tShirt.getClass().getPackage().getName()).decode(yamlString);
+      Map<String, Object> resultMap = Yaml.decode(yamlString);
       Customer alice2 = (Customer) resultMap.get("alice");
       Product tShirt2 = (Product) resultMap.get("tShirt");
 
@@ -62,9 +62,7 @@ public class TestBasicYaml
 
       String yaml = Yaml.encode(alice, uni);
 
-      Map<String, Object> decodedMap = Yaml
-         .forPackage(University.class.getPackage().getName(), Student.class.getPackage().getName())
-         .decode(yaml);
+      Map<String, Object> decodedMap = Yaml.decode(yaml);
 
       Object decodedStudyRight = decodedMap.get("studyRight");
       assertThat("Decoded map should contain studyRight", decodedStudyRight, notNullValue());

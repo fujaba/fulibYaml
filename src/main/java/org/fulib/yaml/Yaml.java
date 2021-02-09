@@ -10,7 +10,10 @@ import java.util.Map;
  */
 public class Yaml
 {
-   private final YamlIdMap idMap;
+   private Yaml()
+   {
+      // no instances
+   }
 
    public static String encode(Object... objects)
    {
@@ -20,27 +23,13 @@ public class Yaml
          .map(Class::getPackage)
          .map(Package::getName)
          .toArray(String[]::new);
-      return new Yaml(packageNames).idMap.encode(objects);
+      return new YamlIdMap(packageNames).encode(objects);
    }
 
-   public static Yaml forPackage(String... packageNames)
+   public static Map<String, Object> decode(String yaml)
    {
-      return new Yaml(packageNames);
-   }
-
-   public Yaml(String... packageNames)
-   {
-      this.idMap = new YamlIdMap(packageNames);
-   }
-
-   public Map<String, Object> decode(String yaml)
-   {
-      this.idMap.decode(yaml);
-      return this.idMap.getObjIdMap();
-   }
-
-   public Object getObject(String id)
-   {
-      return this.idMap.getObject(id);
+      final YamlIdMap idMap = new YamlIdMap();
+      idMap.decode(yaml);
+      return idMap.getObjIdMap();
    }
 }

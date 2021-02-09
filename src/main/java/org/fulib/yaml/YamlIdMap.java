@@ -797,7 +797,7 @@ public class YamlIdMap extends IdMap
          }
 
          String key = entry.getKey();
-         String className = obj.getClass().getSimpleName();
+         String className = obj.getClass().getName();
 
          buf.append("- ").append(key).append(": \t").append(className).append("\n");
 

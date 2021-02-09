@@ -332,6 +332,15 @@ public class ReflectorMap
 
    private Reflector createReflector(String simpleName)
    {
+      try
+      {
+         Class<?> theClass = Class.forName(simpleName);
+         return new Reflector().setClassName(simpleName).setClazz(theClass);
+      }
+      catch (ClassNotFoundException ignored)
+      {
+      }
+
       for (String packageName : this.packageNames)
       {
          String fullClassName = packageName + "." + simpleName;
