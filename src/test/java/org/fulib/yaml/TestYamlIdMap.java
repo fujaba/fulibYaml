@@ -1,4 +1,3 @@
-
 package org.fulib.yaml;
 
 import org.fulib.yaml.testmodel.Day;
@@ -10,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,9 +20,8 @@ class TestYamlIdMap
    @Test
    void testPlainYaml()
    {
-      String yaml = "" +
-            "joining: abu \n" +
-            "lastChanges: 2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia";
+      String yaml = "" + "joining: abu \n"
+                    + "lastChanges: 2018-03-17T14:48:00.000.abu 2018-03-17T14:38:00.000.bob 2018-03-17T14:18:00.000.xia";
 
       Yamler yamler = new Yamler();
 
@@ -34,24 +32,11 @@ class TestYamlIdMap
    @Test
    void testYammlerObjectList()
    {
-      String yaml = "" +
-            "- time: 2018.10.09T12:14:55.007\n" +
-            "  source: g1\n" +
-            "  sourceType: GroupEvent\n" +
-            "  property: name\n" +
-            "  newValue: BBQ\n" +
-            "- time: 2018.10.09T12:14:55.008\n" +
-            "  source: m2\n" +
-            "  sourceType: Member\n" +
-            "  property: name\n" +
-            "  newValue: \"Abu Aba\"\n" +
-            "- time: 2018.10.09T12:14:55.009\n" +
-            "  source: g1\n" +
-            "  sourceType: GroupEvent\n" +
-            "  property: members\n" +
-            "  newValue: m2\n" +
-            "  newValueType: Member\n"
-            ;
+      String yaml = "" + "- time: 2018.10.09T12:14:55.007\n" + "  source: g1\n" + "  sourceType: GroupEvent\n"
+                    + "  property: name\n" + "  newValue: BBQ\n" + "- time: 2018.10.09T12:14:55.008\n"
+                    + "  source: m2\n" + "  sourceType: Member\n" + "  property: name\n" + "  newValue: \"Abu Aba\"\n"
+                    + "- time: 2018.10.09T12:14:55.009\n" + "  source: g1\n" + "  sourceType: GroupEvent\n"
+                    + "  property: members\n" + "  newValue: m2\n" + "  newValueType: Member\n";
 
       Yamler yamler = new Yamler();
 
@@ -61,23 +46,13 @@ class TestYamlIdMap
       assertThat(map.get("newValue"), equalTo("Abu Aba"));
    }
 
-
    @Test
    void testYamlIdMap()
    {
-      String yaml = "" +
-            "- sr: .Map\n" +
-            "  clazz: Uni\n" +
-            "  name: Study Right\n" +
-            "  rooms: r1 r2\n" +
-            "- r1: .Map\n" +
-            "  clazz: Room\n" +
-            "  name: wa1337\n" +
-            "  uni: sr\n" +
-            "- r2: .Map\n" +
-            "  clazz: Room\n" +
-            "  name: wa4242\n" +
-            "  uni: sr\n";
+      String yaml =
+         "" + "- sr: .Map\n" + "  clazz: Uni\n" + "  name: Study Right\n" + "  rooms: r1 r2\n" + "- r1: .Map\n"
+         + "  clazz: Room\n" + "  name: wa1337\n" + "  uni: sr\n" + "- r2: .Map\n" + "  clazz: Room\n"
+         + "  name: wa4242\n" + "  uni: sr\n";
 
       YamlIdMap idMap = new YamlIdMap("");
 
@@ -89,7 +64,7 @@ class TestYamlIdMap
       assertThat(rooms.size(), equalTo(2));
 
       YamlIdMap dumpMap = new YamlIdMap();
-      LinkedHashSet<Object> list = dumpMap.collectObjects(yamlObj);
+      Set<Object> list = dumpMap.collectObjects(yamlObj);
 
       assertThat(list.size(), equalTo(3));
    }
@@ -129,15 +104,18 @@ class TestYamlIdMap
       final University university = new University();
       final Student student = new Student().setUniversity(university);
 
-      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentPackageName = Student.class.getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(studentPackageName);
       final String studentYaml = studentIdMap.encode(student);
-      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n" + "  university: \t" + university.toString() + "\n\n"));
+      assertThat(studentYaml, Matchers.equalTo(
+         "- s: \t" + Student.class.getName() + "\n" + "  university: \t" + university.toString() + "\n\n"));
 
-      final YamlIdMap studentUniIdMap = new YamlIdMap(student.getClass().getPackage().getName(),
-                                                      University.class.getPackage().getName());
+      final String universityPackageName = University.class.getPackage().getName();
+      final YamlIdMap studentUniIdMap = new YamlIdMap(studentPackageName, universityPackageName);
       final String studentUniYaml = studentUniIdMap.encode(student);
-      assertThat(studentUniYaml,
-                 Matchers.equalTo("- s: \tStudent\n" + "  university: \tu\n" + "\n" + "- u: \tUniversity\n" + "\n"));
+      assertThat(studentUniYaml, Matchers.equalTo(
+         "- s: \t" + Student.class.getName() + "\n" + "  university: \tu\n" + "\n" + "- u: \t"
+         + University.class.getName() + "\n" + "\n"));
    }
 
    @Test
@@ -147,14 +125,15 @@ class TestYamlIdMap
       student.setFavoriteDay(Day.FRIDAY);
       student.setType(Student.Type.BACHELOR);
 
-      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentPackageName = student.getClass().getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(studentPackageName);
       final String studentYaml = studentIdMap.encode(student);
       // language=yaml
       assertThat(studentYaml, Matchers.equalTo(
-         "- s: \tStudent\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n"
+         "- s: \t" + Student.class.getName() + "\n" + "  favoriteDay: \torg.fulib.yaml.testmodel.Day.FRIDAY\n"
          + "  type: \torg.fulib.yaml.testmodel.Student$Type.BACHELOR\n" + "\n"));
 
-      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final YamlIdMap newIdMap = new YamlIdMap(studentPackageName);
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getFavoriteDay(), sameInstance(Day.FRIDAY));
       assertThat(newStudent.getType(), sameInstance(Student.Type.BACHELOR));
@@ -166,14 +145,15 @@ class TestYamlIdMap
       final Student student = new Student();
       student.withStudyDays(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY);
 
-      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentPackageName = student.getClass().getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(studentPackageName);
       final String studentYaml = studentIdMap.encode(student);
       // language=yaml
-      assertThat(studentYaml, Matchers.equalTo("- s: \tStudent\n"
+      assertThat(studentYaml, Matchers.equalTo("- s: \t" + Student.class.getName() + "\n"
                                                + "  studyDays: \torg.fulib.yaml.testmodel.Day.MONDAY \torg.fulib.yaml.testmodel.Day.WEDNESDAY \torg.fulib.yaml.testmodel.Day.FRIDAY"
                                                + "\n" + "\n"));
 
-      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final YamlIdMap newIdMap = new YamlIdMap(studentPackageName);
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getStudyDays(), hasItems(Day.MONDAY, Day.WEDNESDAY, Day.FRIDAY));
    }
@@ -189,7 +169,7 @@ class TestYamlIdMap
       final String studentYaml = studentIdMap.encode(student);
 
       // language=YAML
-      assertThat(studentYaml, equalTo("- alice: \tStudent\n" + "  name: \tAlice\n" + "\n"));
+      assertThat(studentYaml, equalTo("- alice: \t" + Student.class.getName() + "\n" + "  name: \tAlice\n" + "\n"));
 
       final YamlIdMap newIdMap = new YamlIdMap(packageName);
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
@@ -202,13 +182,14 @@ class TestYamlIdMap
       final Student student = new Student();
       student.withNotes("study", "foo", "bar");
 
-      final YamlIdMap studentIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final String studentPackageName = student.getClass().getPackage().getName();
+      final YamlIdMap studentIdMap = new YamlIdMap(studentPackageName);
       final String studentYaml = studentIdMap.encode(student);
       // language=yaml
-      assertThat(studentYaml,
-                 Matchers.equalTo("- s: \tStudent\n" + "  notes: \tstudy \tfoo \tbar\n" + "\n"));
+      assertThat(studentYaml, Matchers.equalTo(
+         "- s: \t" + Student.class.getName() + "\n" + "  notes: \tstudy \tfoo \tbar\n" + "\n"));
 
-      final YamlIdMap newIdMap = new YamlIdMap(student.getClass().getPackage().getName());
+      final YamlIdMap newIdMap = new YamlIdMap(studentPackageName);
       final Student newStudent = (Student) newIdMap.decode(studentYaml);
       assertThat(newStudent.getNotes(), hasItems("study", "foo", "bar"));
    }
