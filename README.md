@@ -1,6 +1,5 @@
 # fulibYaml
 
-[![Build Status](https://travis-ci.org/fujaba/fulibYaml.svg?branch=master)](https://travis-ci.org/fujaba/fulibYaml)
 [![Java CI](https://github.com/fujaba/fulibYaml/workflows/Java%20CI/badge.svg)](https://github.com/fujaba/fulibYaml/actions)
 [![javadoc](https://javadoc.io/badge2/org.fulib/fulibYaml/javadoc.svg)](https://javadoc.io/doc/org.fulib/fulibYaml)
 
