@@ -1,45 +1,54 @@
 plugins {
    id 'java'
    id 'maven-publish'
-   // https://plugins.gradle.org/plugin/com.jfrog.bintray
-   id 'com.jfrog.bintray' version '1.8.5'
-   // https://plugins.gradle.org/plugin/de.clashsoft.simple-publish
-   id 'de.clashsoft.simple-publish' version '0.6.0'
    // https://plugins.gradle.org/plugin/com.palantir.revapi
-   id 'com.palantir.revapi' version '1.4.3'
-   // https://plugins.gradle.org/plugin/org.fulib.fulibGradle
-   // id 'org.fulib.fulibGradle' version '0.1.0'
+   id 'com.palantir.revapi' version '1.4.4'
+   // https://plugins.gradle.org/plugin/com.bmuschko.nexus
+   id 'com.bmuschko.nexus' version '2.3.1'
+   // https://plugins.gradle.org/plugin/io.codearte.nexus-staging
+   id 'io.codearte.nexus-staging' version '0.22.0'
 }
 
 group = 'org.fulib'
 version = 'git describe --tags'.execute().text[1..-2] // strip v and \n
 description = 'Yaml serialization for fulib object models. Used for storage and communication.'
 
-publishInfo {
-   organization = 'fujaba'
-   githubRepo = 'fujaba/fulibYaml'
-   labels = [ 'fulib', 'yaml' ]
+modifyPom {
+   project {
+      name = project.name
+      description = project.description
+      url = 'https://github.com/fujaba/fulibYaml'
+      inceptionYear = '2018'
 
-   developer {
-      id = 'zuendorf'
-      name = 'Albert Zuendorf'
-   }
-   developer {
-      id = 'digitalhoax'
-      name = 'Tobias George'
-   }
-   developer {
-      id = 'eicke123'
-      name = 'Christoph Eickhoff'
-   }
-   developer {
-      id = 'clashsoft'
-      name = 'Adrian Kunz'
-   }
+      scm {
+         url = 'https://github.com/fujaba/fulibYaml'
+      }
 
-   license {
-      name = 'MIT License'
-      url = 'http://www.opensource.org/licenses/mit-license.php'
+      licenses {
+         license {
+            name = 'MIT License'
+            url = 'http://www.opensource.org/licenses/mit-license.php'
+         }
+      }
+
+      developers {
+         developer {
+            id = 'zuendorf'
+            name = 'Albert Zuendorf'
+         }
+         developer {
+            id = 'digitalhoax'
+            name = 'Tobias George'
+         }
+         developer {
+            id = 'eicke123'
+            name = 'Christoph Eickhoff'
+         }
+         developer {
+            id = 'clashsoft'
+            name = 'Adrian Kunz'
+         }
+      }
    }
 }
 
