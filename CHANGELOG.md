@@ -78,3 +78,14 @@
 
 * Fixed an exception when serializing an object with an empty ID. #21 #22
 * `Reflector.getOwnProperties` no longer returns properties from superclasses and interfaces. #23
+
+# fulibYaml v1.5.0
+
+## New Features
+
++ Added the `Yaml` class with a new simple API. #25
+
+## Improvements
+
+* `ReflectorMap` can now resolve fully qualified class names. #26
+* `YamlIdMap` now uses fully qualified class names for encoding. #26
