@@ -19,7 +19,7 @@ repositories {
 ```groovy
 dependencies {
    // https://mvnrepository.com/artifact/org.fulib/fulibYaml
-   compile group: 'org.fulib', name: 'fulibYaml', version: '1.5.0'
+   implementation group: 'org.fulib', name: 'fulibYaml', version: '1.5.0'
 }
 ```
 
